@@ -1,2 +1,1 @@
-const message : string = "hello world"
-print(message)
+require("./demo2")()
