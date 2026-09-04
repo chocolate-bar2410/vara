@@ -1,4 +1,5 @@
-io.write("hello world\n")
-local input = io.read(20)
+local contents = buffer.fromstring([[return function()
+    print("testing 123")
+end]])
 
-io.write(input)
+fs.write("./demo_scripts/demo2.luau", contents)
