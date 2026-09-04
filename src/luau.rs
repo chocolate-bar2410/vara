@@ -1,9 +1,6 @@
-use std::io::{self, Read, Write};
+use std::path::{PathBuf};
 
-use std::path::{Path,PathBuf};
-
-use mlua::{Lua,StdLib,LuaOptions};
-use mlua::luau::{FsRequirer};
+use mlua::{Lua, LuaOptions, StdLib};
 
 use crate::stdlib;
 
@@ -26,28 +23,9 @@ impl Runtime {
 
         let io_lib = self.vm.create_table()?;
 
-        io_lib.set("write",self.vm.create_function(|_, arg : mlua::LuaString | {
-
-            let message = arg.as_bytes();
-
-            io::stdout().write_all(&message).unwrap();
-
-            Ok(())
-        })?)?;
-
-        io_lib.set("read",self.vm.create_function(|context,chunk_size: Option<usize>| {
-            io::stdout().flush().map_err(mlua::Error::external)?;
-            
-            let mut stdin = io::stdin().lock();
-            let size = chunk_size.unwrap_or(1024);
-            let mut buffer = vec![0;size];
-
-            let bytes_read = stdin.read(&mut buffer).map_err(mlua::Error::external)?;
-
-            buffer.truncate(bytes_read);
-
-            context.create_string(&buffer)
-        })?)?;
+        io_lib.set("write",self.vm.create_function(stdlib::stdio::write)?)?;
+        io_lib.set("read",self.vm.create_function(stdlib::stdio::read)?)?;
+        io_lib.set("readline",self.vm.create_function(stdlib::stdio::readline)?)?;
 
         globals.set("io",io_lib)?;
 
