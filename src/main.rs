@@ -2,8 +2,10 @@ use std::path::PathBuf;
 use clap::{Parser,Subcommand};
 use clap::builder::styling;
 
-mod luau;
+mod runtime;
 mod stdlib;
+
+use runtime::luau;
 
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3,0x7d,0xf4).into()));
