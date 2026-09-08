@@ -26,3 +26,4 @@ Vara is designed so provide a higher level abstraction for app development witho
     - [x] io
     - [x] file system
     - [ ] serde
+    - [ ] UI
