@@ -5,4 +5,5 @@ edition = "2024"
 
 [dependencies]
 clap = { version = "4.6.6", features = ["derive","wrap_help"] }
-mlua = { version = "0.12.1", features = ["async", "luau-jit", "send"] }
+iced = "0.14.0"
+mlua = { version = "0.12.1", features = ["async", "luau-jit", "send","vendored"] }
