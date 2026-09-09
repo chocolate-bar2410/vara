@@ -40,8 +40,6 @@ impl Runtime {
             self.vm.create_function(stdlib::file::write_file_fn)?,
         )?;
 
-        globals.set("fs", fs_lib)?;
-
         let gui_lib = self.vm.create_table()?;
 
         let ui_register_arc = Arc::clone(&self.ui);
@@ -60,7 +58,8 @@ impl Runtime {
             ui.create_instance(definition).map_err(mlua::Error::external)
         })?)?;
 
-
+        globals.set("io", io_lib)?;
+        globals.set("fs", fs_lib)?;
         globals.set("gui", gui_lib)?;
 
         Ok(())
