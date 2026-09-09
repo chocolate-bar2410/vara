@@ -7,3 +7,4 @@ edition = "2024"
 clap = { version = "4.6.6", features = ["derive","wrap_help"] }
 mlua = { version = "0.12.1", features = ["async", "luau-jit", "send","vendored"] }
 slint-interpreter = "1.17.1"
+spin_on = "0.1.1"
