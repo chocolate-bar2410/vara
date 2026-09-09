@@ -34,7 +34,6 @@ impl UIManager {
         for name in &names {
             if let Some(defintion) = compile_results.component(name) {
                 self.definitions.insert(name.to_string(), defintion);
-                println!(format!("loaded component {}",name));
             }
         }
 
