@@ -70,7 +70,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
         Commands::Test{} => {  
             let mut ui = ui_manager::UIManager::new();
 
-            match ui.consume_file(&PathBuf::from("./test.slint")) {
+            match ui.consume_file(&PathBuf::from("./demo_ui/test.slint")) {
                 Ok(()) => println!("successfully compiled"),
                 Err(err) => println!("failed to compile {}",err),
             }

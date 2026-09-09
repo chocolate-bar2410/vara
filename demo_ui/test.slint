@@ -1,0 +1,33 @@
+import { LineEdit, Button } from "std-widgets.slint";
+export component MainWindow inherits Window {
+    default-font-size: 24px;
+    background: #313e50;
+    GridLayout {
+        padding: 50px;
+        spacing: 25px;
+        Row {
+            Text {
+                text: "hello guys";
+                horizontal-alignment: center;
+                font-weight: 900;
+                height: 35px;
+            }
+        }
+
+        Row {
+            LineEdit {
+                horizontal-alignment: center;
+                placeholder-text: "hi!!!!";
+                height: 35px;
+            }
+        }
+
+        Row {
+            Button {
+                text: "print";
+                primary: true;
+                height: 35px;
+            }
+        }
+    }
+}
