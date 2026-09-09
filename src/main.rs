@@ -6,6 +6,7 @@ mod runtime;
 mod stdlib;
 
 use runtime::luau;
+use runtime::ui_manager;
 
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3,0x7d,0xf4).into()));
@@ -42,7 +43,8 @@ struct CLI {
 
 #[derive(Subcommand)]
 enum Commands{
-    Run(RunArgs)
+    Run(RunArgs),
+    Test{}
 }
 
 #[derive(Parser)]
@@ -58,7 +60,20 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
         Commands::Run(args) => {
             let mut current = luau::Runtime::new();
             let path = args.path;
-            current.run(&path)?;
+            match current.run(&path) {
+                Ok(()) => println!("file {} ran successfully!",path.display()),
+                Err(err) => println!("file {} failed to run\n{}",path.display(),err)
+            }
+        },
+
+
+        Commands::Test{} => {  
+            let mut ui = ui_manager::UIManager::new();
+
+            match ui.consume_file(&PathBuf::from("./test.slint")) {
+                Ok(()) => println!("successfully compiled"),
+                Err(err) => println!("failed to compile {}",err),
+            }
         }
     }
 
