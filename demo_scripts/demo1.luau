@@ -1,5 +1,3 @@
-local contents = buffer.fromstring([[return function()
-    print("testing 123")
-end]])
+gui.registerFile("./demo_ui/test.slint")
 
-fs.write("./demo_scripts/demo2.luau", contents)
+gui.createInstance("MainWindow"):run()
