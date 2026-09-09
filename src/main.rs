@@ -52,7 +52,25 @@ struct RunArgs{
     path : PathBuf
 }
 
+// if only windows used utf8 🥀
+#[cfg(windows)]
+mod handle_windows{
+    use std::ffi::c_uint;
+    const CP_UTF8: c_uint = 65001;
+
+    #[cfg(windows)]
+    unsafe extern "system" {
+        fn SetConsoleOutputCP(wCodePageID: c_uint) -> i32;
+    }
+
+    pub fn init(){
+        unsafe{SetConsoleOutputCP(CP_UTF8)};
+    }
+}
+
 fn main() -> Result<(),Box<dyn std::error::Error>> {
+    #[cfg(windows)]
+    handle_windows::init();
 
     let cli = CLI::parse();
 
