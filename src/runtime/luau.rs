@@ -1,10 +1,11 @@
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
+use std::sync::{Arc,Mutex};
 
-use crate::{runtime::ui_manager, stdlib};
+use crate::{runtime::ui_manager::UIManager, stdlib};
 pub struct Runtime {
     vm: Lua,
-    ui: ui_manager::UIManager,
+    ui: Arc<Mutex<UIManager>>,
 }
 
 impl Runtime {
@@ -13,7 +14,7 @@ impl Runtime {
 
         let mut runtime = Self {
             vm: lua,
-            ui: ui_manager::UIManager::new(),
+            ui: Arc::new(Mutex::new(UIManager::new())),
         };
         runtime.setup_globals().unwrap();
 
@@ -40,6 +41,27 @@ impl Runtime {
         )?;
 
         globals.set("fs", fs_lib)?;
+
+        let gui_lib = self.vm.create_table()?;
+
+        let ui_register_arc = Arc::clone(&self.ui);
+        gui_lib.set("registerFile",self.vm.create_function(move |_ : &Lua,luau_path : mlua::LuaString|{
+            let filepath = PathBuf::from(luau_path.to_string_lossy());
+
+            let mut ui = ui_register_arc.lock().map_err(|_| mlua::Error::external("UI manager mutex poisioned"))?;
+            ui.consume_file(&filepath).map_err(mlua::Error::external)
+        })?)?;
+
+        let ui_create_arc = Arc::clone(&self.ui);
+        gui_lib.set("createInstance",self.vm.create_function(move |_ : &Lua,definition_luaustr : mlua::LuaString|{
+            let definition = definition_luaustr.to_string_lossy();
+
+            let ui = ui_create_arc.lock().map_err(|_| mlua::Error::external("UI manager mutex poisioned"))?;
+            ui.create_instance(definition).map_err(mlua::Error::external)
+        })?)?;
+
+
+        globals.set("gui", gui_lib)?;
 
         Ok(())
     }
