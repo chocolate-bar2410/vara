@@ -3,6 +3,8 @@
 Vara is a rust powered luau runtime designed to create standalone applications.
 Vara is designed so provide a higher level abstraction for app development without having the bloat of javascript runtimes.
 
+Applications target desktop and potentially mobile.
+
 # goals
 
 - crossplatform UI support
@@ -11,19 +13,16 @@ Vara is designed so provide a higher level abstraction for app development witho
 
 # non goals
 - manipulating roblox model/place files (use lune) 
+- web development (maybe in the future)
 
 # todo
 
 - [ ] CLI
     - [x] run
     - [ ] help page
-
-- [ ] require handling
-    - [ ] proper relative paths
-    - [ ] .luarc aliases
-    
 - [ ] standard library
     - [x] io
     - [x] file system
-    - [ ] serde
     - [ ] UI
+    - [ ] serde
+    
