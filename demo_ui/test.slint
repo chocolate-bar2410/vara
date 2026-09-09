@@ -1,5 +1,7 @@
 import { LineEdit, Button } from "std-widgets.slint";
 export component MainWindow inherits Window {
+    in-out property <string> message;
+
     min-width: 300px;
     min-height: 300px;
 
@@ -13,7 +15,7 @@ export component MainWindow inherits Window {
         spacing: 25px;
         Row {
             Text {
-                text: "hello guys";
+                text: message;
                 horizontal-alignment: center;
                 font-weight: 900;
                 height: 35px;
@@ -23,7 +25,6 @@ export component MainWindow inherits Window {
         Row {
             LineEdit {
                 horizontal-alignment: center;
-                placeholder-text: "hi!!!!";
                 height: 35px;
             }
         }
