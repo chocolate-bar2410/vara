@@ -1,6 +1,9 @@
 import { LineEdit, Button } from "std-widgets.slint";
 export component MainWindow inherits Window {
     in-out property <string> message;
+    callback printmessage(string);
+
+    title: "luau runtime";
 
     min-width: 300px;
     min-height: 300px;
@@ -23,7 +26,7 @@ export component MainWindow inherits Window {
         }
 
         Row {
-            LineEdit {
+            input := LineEdit {
                 horizontal-alignment: center;
                 height: 35px;
             }
@@ -34,6 +37,10 @@ export component MainWindow inherits Window {
                 text: "print";
                 primary: true;
                 height: 35px;
+                clicked => {
+                    message = input.text;
+                    printmessage(input.text)
+                }
             }
         }
     }
