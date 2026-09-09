@@ -2,6 +2,7 @@ use std::path::PathBuf;
 use std::collections::HashMap;
 
 use slint_interpreter as slint;
+use crate::runtime::ui_instance;
 
 pub struct UIManager {
     compiler: slint::Compiler,
@@ -38,5 +39,11 @@ impl UIManager {
         }
 
         Ok(())
+    }
+
+    pub fn create_instance(&self, defintion_name : String) -> Result<ui_instance::UIInstance, Box<dyn std::error::Error>> {
+        let definition = self.definitions.get(&defintion_name).expect(&format!("Component {} is not defined\n",defintion_name).to_string());
+
+        Ok(ui_instance::UIInstance::new(definition))
     }
 }
