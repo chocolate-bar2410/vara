@@ -9,21 +9,21 @@ pub struct Runtime {
 }
 
 impl Runtime {
-    pub fn new() -> Self {
+    pub fn new() -> Result<Self,Box<dyn std::error::Error>> {
         let lua = Lua::new_with(StdLib::ALL, LuaOptions::default()).unwrap();
 
         let mut runtime = Self {
             vm: lua,
             ui: Arc::new(Mutex::new(UIManager::new())),
         };
-        runtime.setup_globals().unwrap();
-
-        runtime
+        
+        match runtime.setup_standard_library(){
+            Ok(_) => Ok(runtime),
+            Err(err) => Err(format!("failed to initialise standard library\n{err}").into())
+        }
     }
 
-    fn setup_globals(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        let globals = self.vm.globals();
-
+    fn setup_standard_library(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let io_lib = self.vm.create_table()?;
 
         io_lib.set("write", self.vm.create_function(stdlib::stdio::write)?)?;
@@ -58,9 +58,9 @@ impl Runtime {
             ui.create_instance(definition).map_err(mlua::Error::external)
         })?)?;
 
-        globals.set("io", io_lib)?;
-        globals.set("fs", fs_lib)?;
-        globals.set("gui", gui_lib)?;
+        self.vm.register_module("@vara/io", io_lib)?;
+        self.vm.register_module("@vara/fs", fs_lib)?;
+        self.vm.register_module("@vara/gui", gui_lib)?;
 
         Ok(())
     }

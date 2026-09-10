@@ -76,7 +76,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
 
     match cli.command {
         Commands::Run(args) => {
-            let mut current = luau::Runtime::new();
+            let mut current = luau::Runtime::new()?;
             let path = args.path;
             match current.run(&path) {
                 Ok(()) => println!("file {} ran successfully!",path.display()),
