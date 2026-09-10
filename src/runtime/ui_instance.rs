@@ -85,5 +85,21 @@ impl mlua::UserData for UIInstance{
                 luau_to_slint(callback_result).unwrap()
             }).into_lua_err()
         });
+    
+        methods.add_method("getGlobal", |context : &mlua::Lua,this,(globalname,property) : (mlua::LuaString,mlua::LuaString)|{
+            let property_string = property.to_string_lossy();
+            let global_string = globalname.to_string_lossy();
+            
+            match this.instance.get_global_property(&global_string,&property_string){
+                Ok(property) => {
+                    match slint_to_luau(context,&property){
+                        Ok(value) => Ok(value),
+                        Err(err) => Err(format!("failed to set property {}\n{}",property_string,err).into_lua_err())
+                    }
+                },
+                Err(err) => Err(format!("Failed to get property {}\n{}",property_string,err).into_lua_err()),
+            }
+        });
+
     }
 }
