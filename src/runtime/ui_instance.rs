@@ -5,6 +5,9 @@ fn luau_to_slint(value : mlua::Value) -> Result<slint::Value,mlua::error::Error>
     match value {
         mlua::Value::Boolean(value) => Ok(slint::Value::Bool(value)),
         mlua::Value::Number(value) => Ok(slint::Value::Number(value)),
+
+        // wtf is an integer, luau doesn't even have integer types :sob:
+        mlua::Value::Integer(value) => Ok(slint::Value::Number(value as f64)),
         mlua::Value::String(value) => Ok(slint::Value::String(value.to_string_lossy().into())),
         mlua::Value::Nil => Ok(slint::Value::Void),
 
@@ -94,10 +97,21 @@ impl mlua::UserData for UIInstance{
                 Ok(property) => {
                     match slint_to_luau(context,&property){
                         Ok(value) => Ok(value),
-                        Err(err) => Err(format!("Failed to get property '{}'\n{}",property_string,err).into_lua_err())
+                        Err(err) => Err(format!("Failed to get global property '{}'\n{}",property_string,err).into_lua_err())
                     }
                 },
-                Err(err) => Err(format!("Failed to get property '{}'\n{}",property_string,err).into_lua_err()),
+                Err(err) => Err(format!("Failed to get global property '{}'\n{}",property_string,err).into_lua_err()),
+            }
+        });
+
+        methods.add_method_mut("setGlobal", |_,this,(globalname,property,value) : (mlua::LuaString,mlua::LuaString,mlua::Value)|{
+            let global_string = globalname.to_string_lossy();
+            let property_string = property.to_string_lossy();
+
+            let converted = luau_to_slint(value)?;
+            match this.instance.set_global_property(&global_string,&property_string, converted){
+                Ok(_) => Ok(()), 
+                Err(err) => Err(format!("could not set global property '{}'\n{}",property_string,err).into_lua_err()),
             }
         });
 
