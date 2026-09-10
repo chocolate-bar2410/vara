@@ -4,7 +4,7 @@ gui.registerFile("./demo_ui/test.slint")
 
 local window = gui.createInstance("MainWindow")
 
-window:connect("onClick", function(message)
+window:connectGlobal("Testing", "onClick", function(message)
 	if message == "" then
 		return
 	end

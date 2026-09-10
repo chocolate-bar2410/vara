@@ -115,5 +115,25 @@ impl mlua::UserData for UIInstance{
             }
         });
 
+         methods.add_method("connectGlobal", |context : &mlua::Lua,this,(globalname,callback_luauname,callbackfn) : (mlua::LuaString,mlua::LuaString,mlua::Function)|{
+            let callback_name = &callback_luauname.to_str()?;
+            let global_string = &globalname.to_string_lossy();
+
+            let key = context.create_registry_value(callbackfn)?;
+
+            let context_clone = context.clone();
+
+            this.instance.set_global_callback(global_string,callback_name, move |args|{
+                let callback : mlua::Function = context_clone.registry_value(&key).unwrap();
+                let luau_args = args.iter()
+                                    .map(|value| slint_to_luau(&context_clone, value))
+                                    .collect::<mlua::Result<Vec<_>>>();
+                
+                let callback_result = callback.call::<_>(mlua::MultiValue::from_vec(luau_args.unwrap())).expect("callback function errored");
+
+                luau_to_slint(callback_result).unwrap()
+            }).into_lua_err()
+        });
+    
     }
 }

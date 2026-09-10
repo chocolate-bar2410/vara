@@ -1,7 +1,10 @@
 import { LineEdit, Button, Palette, ListView } from "std-widgets.slint";
 
-export component MainWindow inherits Window {
+export global Testing {
     callback onClick(string);
+}
+
+export component MainWindow inherits Window {
     property <string> message;
     title: "luau runtime";
 
@@ -33,7 +36,7 @@ export component MainWindow inherits Window {
 
                 accepted(text) => {
                     message = text;
-                    onClick(message);
+                    Testing.onClick(message);
                     input.text = ""
                 }
             }
@@ -43,7 +46,7 @@ export component MainWindow inherits Window {
             Button {
                 clicked => {
                     message = input.text;
-                    onClick(message);
+                    Testing.onClick(message);
                     input.text = ""
                 }
 

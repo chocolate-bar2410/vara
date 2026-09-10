@@ -4,20 +4,22 @@
 
 	A reference to a slint gui instance.
 
-	* `get/set` - to access and modify properties.
-	* `getGlobal/setGlobal` - to access and modify globals.
-	* `connect` - to connect a function to a callback.
-	* `run` - to start rendering the UI.
+	* `get/set` - To access and modify properties.
+	* `getGlobal/setGlobal` - To access and modify globals.
+	* `connect` - To connect a function to a callback.
+	* `connectGlobal` - To connect a function to a global callback.
+	* `run` - To start rendering the UI.
 
 ]=]
 export type UIInstance = {
 	run: (self: UIInstance) -> (),
 	get: <T>(self: UIInstance, property: string) -> T,
 	set: <T>(self: UIInstance, property: string, value: T) -> (),
-	connect: (self: UIInstance, (...unknown) -> unknown) -> (),
+	connect: (self: UIInstance, callbackName: string, (...unknown) -> unknown) -> (),
 
 	getGlobal: <T>(self: UIInstance, global: string, property: string) -> T,
 	setGlobal: <T>(self: UIInstance, global: string, property: string, value: T) -> (),
+	connectGlobal: (self: UIInstance, global: string, callbackName: string, (...unknown) -> unknown) -> (),
 }
 
 --[=[
