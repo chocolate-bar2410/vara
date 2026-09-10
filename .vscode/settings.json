@@ -1,5 +1,0 @@
-{
-    "luau-lsp.types.definitionFiles": {
-        "vara": "demo_scripts/types.d.luau"
-    }
-}
