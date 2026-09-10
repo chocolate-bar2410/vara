@@ -1,8 +1,8 @@
-import { LineEdit, Button } from "std-widgets.slint";
-export component MainWindow inherits Window {
-    in-out property <string> message;
-    callback printmessage(string);
+import { LineEdit, Button, Palette, ListView } from "std-widgets.slint";
 
+export component MainWindow inherits Window {
+    callback onClick(string);
+    property <string> message;
     title: "luau runtime";
 
     min-width: 300px;
@@ -12,35 +12,60 @@ export component MainWindow inherits Window {
     max-height: 300px;
 
     default-font-size: 24px;
-    background: #313e50;
     GridLayout {
         padding: 50px;
         spacing: 25px;
+
         Row {
             Text {
-                text: message;
+                text: "enter message";
                 horizontal-alignment: center;
-                font-weight: 900;
-                height: 35px;
+                height: 24px;
+                font-size: 16px;
             }
         }
 
         Row {
             input := LineEdit {
                 horizontal-alignment: center;
-                height: 35px;
+                height: 24px;
+                font-size: 16px;
+
+                accepted(text) => {
+                    message = text;
+                    onClick(message);
+                    input.text = ""
+                }
             }
         }
 
         Row {
             Button {
-                text: "print";
-                primary: true;
-                height: 35px;
                 clicked => {
                     message = input.text;
-                    printmessage(input.text)
+                    onClick(message);
+                    input.text = ""
                 }
+
+                text: "print";
+                height: 35px;
+            }
+        }
+
+        Row {
+            themebutton := Button {
+                clicked => {
+                    Palette.color-scheme = Palette.color-scheme == ColorScheme.dark
+                        ? ColorScheme.light
+                        : ColorScheme.dark;
+
+                    themebutton.text = Palette.color-scheme == ColorScheme.dark
+                        ? "dark"
+                        : "light"
+                }
+
+                text: "darkmode";
+                height: 35px;
             }
         }
     }
