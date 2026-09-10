@@ -1,12 +1,11 @@
 use std::path::PathBuf;
-use clap::{Parser,Subcommand};
+use clap::{CommandFactory, Parser, Subcommand};
 use clap::builder::styling;
 
 mod runtime;
 mod stdlib;
 
 use runtime::luau;
-use runtime::ui_manager;
 
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3,0x7d,0xf4).into()));
@@ -38,13 +37,12 @@ fn get_style() -> styling::Styles {
 )]
 struct CLI {
     #[command(subcommand)]
-    command : Commands
+    command : Option<Commands>
 }
 
 #[derive(Subcommand)]
 enum Commands{
-    Run(RunArgs),
-    Test{}
+    Run(RunArgs)
 }
 
 #[derive(Parser)]
@@ -75,7 +73,7 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
     let cli = CLI::parse();
 
     match cli.command {
-        Commands::Run(args) => {
+        Some(Commands::Run(args)) => {
             let mut current = luau::Runtime::new()?;
             let path = args.path;
             match current.run(&path) {
@@ -84,17 +82,10 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
             }
         },
 
-
-        Commands::Test{} => {  
-            let mut ui = ui_manager::UIManager::new();
-
-            match ui.consume_file(&PathBuf::from("./demo_ui/test.slint")) {
-                Ok(()) => println!("successfully compiled"),
-                Err(err) => println!("failed to compile {}",err),
-            }
+        None => {
+            CLI::command().print_help()?;
         }
     }
-
 
     Ok(())
 }
