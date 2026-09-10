@@ -70,7 +70,7 @@ impl mlua::UserData for UIInstance{
             }
         });
 
-        methods.add_method_mut("connect", |context : &mlua::Lua,this,(callback_luauname,callbackfn) : (mlua::LuaString,mlua::Function)|{
+        methods.add_method("connect", |context : &mlua::Lua,this,(callback_luauname,callbackfn) : (mlua::LuaString,mlua::Function)|{
             let callback_name = &callback_luauname.to_str()?;
 
             let key = context.create_registry_value(callbackfn)?;
@@ -104,7 +104,7 @@ impl mlua::UserData for UIInstance{
             }
         });
 
-        methods.add_method_mut("setGlobal", |_,this,(globalname,property,value) : (mlua::LuaString,mlua::LuaString,mlua::Value)|{
+        methods.add_method("setGlobal", |_,this,(globalname,property,value) : (mlua::LuaString,mlua::LuaString,mlua::Value)|{
             let global_string = globalname.to_string_lossy();
             let property_string = property.to_string_lossy();
 
