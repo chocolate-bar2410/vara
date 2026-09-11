@@ -1,14 +1,11 @@
-use std::path::PathBuf;
-use clap::{CommandFactory, Parser, Subcommand};
 use clap::builder::styling;
+use clap::{CommandFactory, Parser, Subcommand};
+use std::path::PathBuf;
 
-mod runtime;
-mod stdlib;
-
-use runtime::luau;
+use vara_core::runtime::luau as vara_runtime;
 
 fn get_style() -> styling::Styles {
-    let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3,0x7d,0xf4).into()));
+    let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3, 0x7d, 0xf4).into()));
     let dimmed = styling::Style::new().fg_color(Some(styling::AnsiColor::BrightBlack.into()));
 
     styling::Styles::styled()
@@ -37,22 +34,22 @@ fn get_style() -> styling::Styles {
 )]
 struct CLI {
     #[command(subcommand)]
-    command : Option<Commands>
+    command: Option<Commands>,
 }
 
 #[derive(Subcommand)]
-enum Commands{
-    Run(RunArgs)
+enum Commands {
+    Run(RunArgs),
 }
 
 #[derive(Parser)]
-struct RunArgs{
-    path : PathBuf
+struct RunArgs {
+    path: PathBuf,
 }
 
 // if only windows used utf8 🥀
 #[cfg(windows)]
-mod handle_windows{
+mod handle_windows {
     use std::ffi::c_uint;
     const CP_UTF8: c_uint = 65001;
 
@@ -61,12 +58,12 @@ mod handle_windows{
         fn SetConsoleOutputCP(wCodePageID: c_uint) -> i32;
     }
 
-    pub fn init(){
-        unsafe{SetConsoleOutputCP(CP_UTF8)};
+    pub fn init() {
+        unsafe { SetConsoleOutputCP(CP_UTF8) };
     }
 }
 
-fn main() -> Result<(),Box<dyn std::error::Error>> {
+fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(windows)]
     handle_windows::init();
 
@@ -74,13 +71,13 @@ fn main() -> Result<(),Box<dyn std::error::Error>> {
 
     match cli.command {
         Some(Commands::Run(args)) => {
-            let mut current = luau::Runtime::new()?;
+            let mut current = vara_runtime::Runtime::new()?;
             let path = args.path;
             match current.run(&path) {
-                Ok(()) => println!("file {} ran successfully!",path.display()),
-                Err(err) => println!("file {} failed to run\n{}",path.display(),err)
+                Ok(()) => println!("file {} ran successfully!", path.display()),
+                Err(err) => println!("file {} failed to run\n{}", path.display(), err),
             }
-        },
+        }
 
         None => {
             CLI::command().print_help()?;

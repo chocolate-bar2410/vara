@@ -1,0 +1,12 @@
+[package]
+name = "vara_core"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+mlua = { version = "0.12.1", features = ["async", "luau-jit", "vendored"] }
+slint-interpreter = "1.17.1"
+spin_on = "0.1.1"

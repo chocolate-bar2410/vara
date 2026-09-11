@@ -4750,6 +4750,13 @@ name = "vara"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "vara_core",
+]
+
+[[package]]
+name = "vara_core"
+version = "0.1.0"
+dependencies = [
  "mlua",
  "slint-interpreter",
  "spin_on",
