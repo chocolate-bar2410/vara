@@ -19,7 +19,6 @@ Applications target desktop and potentially mobile.
 
 - [ ] CLI
     - [x] run
-    - [ ] help page
 - [ ] standard library
     - [x] io
     - [x] file system
