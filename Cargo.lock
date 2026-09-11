@@ -4750,6 +4750,7 @@ name = "vara"
 version = "0.1.0"
 dependencies = [
  "clap",
+ "mlua",
  "vara_core",
 ]
 

@@ -1,19 +1,19 @@
-use std::path::PathBuf;
 use std::collections::HashMap;
+use std::path::PathBuf;
 
+use crate::ui::ui_instance;
 use slint_interpreter as slint;
-use crate::runtime::ui_instance;
 
 pub struct UIManager {
     compiler: slint::Compiler,
-    definitions: HashMap<String,slint_interpreter::ComponentDefinition>
+    definitions: HashMap<String, slint_interpreter::ComponentDefinition>,
 }
 
 impl UIManager {
     pub fn new() -> Self {
         Self {
             compiler: slint::Compiler::default(),
-            definitions: HashMap::new()
+            definitions: HashMap::new(),
         }
     }
 
@@ -21,7 +21,8 @@ impl UIManager {
         let compile_results = spin_on::spin_on(self.compiler.build_from_path(filepath));
 
         if compile_results.has_errors() {
-            let mut output_message: String = format!("failed to compile file: {}\n", filepath.display()).to_string();
+            let mut output_message: String =
+                format!("failed to compile file: {}\n", filepath.display()).to_string();
 
             for message in compile_results.diagnostics() {
                 output_message.push_str(message.message());
@@ -30,8 +31,8 @@ impl UIManager {
             return Err(output_message.into());
         }
 
-        let names : Vec<&str> = compile_results.component_names().collect();
-        
+        let names: Vec<&str> = compile_results.component_names().collect();
+
         for name in &names {
             if let Some(defintion) = compile_results.component(name) {
                 self.definitions.insert(name.to_string(), defintion);
@@ -41,8 +42,14 @@ impl UIManager {
         Ok(())
     }
 
-    pub fn create_instance(&self, defintion_name : String) -> Result<ui_instance::UIInstance, Box<dyn std::error::Error>> {
-        let definition = self.definitions.get(&defintion_name).expect(&format!("Component {} is not defined\n",defintion_name).to_string());
+    pub fn create_instance(
+        &self,
+        defintion_name: String,
+    ) -> Result<ui_instance::UIInstance, Box<dyn std::error::Error>> {
+        let definition = self
+            .definitions
+            .get(&defintion_name)
+            .expect(&format!("Component {} is not defined\n", defintion_name).to_string());
 
         Ok(ui_instance::UIInstance::new(definition))
     }

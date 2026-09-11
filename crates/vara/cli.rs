@@ -1,8 +1,8 @@
-use vara_core::runtime::luau as vara_runtime;
-
 use clap::builder::styling;
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+
+use crate::luau;
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3, 0x7d, 0xf4).into()));
     let dimmed = styling::Style::new().fg_color(Some(styling::AnsiColor::BrightBlack.into()));
@@ -51,7 +51,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     match cli.command {
         Some(Commands::Run(args)) => {
-            let mut current = vara_runtime::Runtime::new()?;
+            let mut current = luau::Runtime::new()?;
             let path = args.path;
             match current.run(&path) {
                 Ok(()) => Ok(println!("file {} ran successfully!", path.display())),

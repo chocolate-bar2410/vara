@@ -1,6 +1,7 @@
 use std::process::ExitCode;
 
 mod cli;
+mod luau;
 
 #[cfg(windows)]
 mod win_compat;
