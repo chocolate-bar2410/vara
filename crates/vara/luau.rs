@@ -78,9 +78,20 @@ impl Runtime {
                 })?,
         )?;
 
+        let serde_lib = self.vm.create_table()?;
+        serde_lib.set(
+            "encode",
+            self.vm.create_function(vara_stdlib::serde::encode)?,
+        )?;
+        serde_lib.set(
+            "decode",
+            self.vm.create_function(vara_stdlib::serde::decode)?,
+        )?;
+
         self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;
         self.vm.register_module("@vara/gui", gui_lib)?;
+        self.vm.register_module("@vara/serde", serde_lib)?;
 
         Ok(())
     }

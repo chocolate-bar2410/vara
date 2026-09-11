@@ -1,3 +1,4 @@
-return function()
-    print("testing 123")
-end
+local serde = require("@vara/serde")
+
+local message = serde.encode("JSON", { hello = "world", testing = 123 })
+print(message)
