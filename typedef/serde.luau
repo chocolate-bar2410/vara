@@ -1,6 +1,6 @@
 --[=[
 	@class serde
-	Built in library for handling serialising and deserialising data.
+	Built in library for serialising and deserialising data.
 
 	### example usage
 	```luau
@@ -21,7 +21,7 @@ type SerdeFormat = "JSON"
 	@within serde
 	@method encode
 	@param data The data being encoded.
-	@param format support formats: `JSON`.
+	@param format Support formats: `JSON`.
 	@tag must_use
 	@return string
 	
@@ -35,7 +35,7 @@ end
 	@within serde
 	@method decode
 	@param message The message being sent to stdout.
-	@param format support formats: `JSON`.
+	@param format Support formats: `JSON`.
 	@tag must_use
 	@return unknown
 	
