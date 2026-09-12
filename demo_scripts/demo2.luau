@@ -1,11 +1,11 @@
 local fs = require("@vara/fs")
 local serde = require("@vara/serde")
 
-local message = serde.encode("TOML", { hello = "world", testing = 123 })
+local message = serde.encode("YAML", { globals = { hello = "world", testing = 123 } })
 print(message)
 
-local data: { hello: string, testing: number } = serde.decode("TOML", message)
-print(data.hello)
-print(data.testing)
+local data: { hello: string, testing: number } = serde.decode("YAML", message)
+print(data.globals.hello)
+print(data.globals.testing)
 
-fs.write("testing.toml", message)
+fs.write("testing.yaml", message)

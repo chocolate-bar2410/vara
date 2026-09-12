@@ -18,6 +18,7 @@ const LUAU_DESERIALISE_OPTION: DeserializeOptions = DeserializeOptions::new()
 pub enum SerdeFormat {
     JSON,
     TOML,
+    YAML,
 }
 
 impl mlua::FromLua for SerdeFormat {
@@ -33,6 +34,7 @@ impl mlua::FromLua for SerdeFormat {
         match s.to_string_lossy().to_ascii_uppercase().trim() {
             "JSON" => Ok(SerdeFormat::JSON),
             "TOML" => Ok(SerdeFormat::TOML),
+            "YAML" => Ok(SerdeFormat::YAML),
             _ => Err(mlua::Error::FromLuaConversionError {
                 from: value.type_name(),
                 to: "SerdeFormat".to_string(),
@@ -61,6 +63,16 @@ pub fn encode(
                 .as_bytes()
                 .to_vec()
         }
+
+        SerdeFormat::YAML => {
+            // saphyr for some reason needs us to use serde_json values
+            let serialised: serde_json::Value =
+                context.from_value_with(value, LUAU_DESERIALISE_OPTION)?;
+
+            serde_saphyr::to_string(&serialised)
+                .into_lua_err()?
+                .into_bytes()
+        }
     };
 
     context.create_string(bytes)
@@ -85,6 +97,12 @@ pub fn decode(
             };
 
             let serialised: toml::Value = toml::from_str(&s).into_lua_err()?;
+
+            context.to_value_with(&serialised, LUAU_SERIALISE_OPTION)
+        }
+
+        SerdeFormat::YAML => {
+            let serialised: serde_json::Value = serde_saphyr::from_slice(bytes).into_lua_err()?;
 
             context.to_value_with(&serialised, LUAU_SERIALISE_OPTION)
         }
