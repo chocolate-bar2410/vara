@@ -8,7 +8,9 @@ path = "lib.rs"
 
 [dependencies]
 mlua = { version = "0.12.1", features = ["async", "luau-jit", "serde"] }
+saphyr = "0.0.12"
 serde = "1.0.229"
-serde_json = "1.0.151"
+serde_json = { version = "1.0.151", features = ["preserve_order"] }
 slint-interpreter = "1.17.1"
 spin_on = "0.1.1"
+toml = { version = "1.1.6", features = ["preserve_order"] }

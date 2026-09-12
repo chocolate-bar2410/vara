@@ -16,12 +16,12 @@
 ]=]
 const module = {}
 
-type SerdeFormat = "JSON"
+type SerdeFormat = "JSON" | "TOML"
 --[=[
 	@within serde
 	@method encode
 	@param data The data being encoded.
-	@param format Support formats: `JSON`.
+	@param format Support formats: `JSON` & `TOML`.
 	@tag must_use
 	@return string
 	
@@ -35,7 +35,7 @@ end
 	@within serde
 	@method decode
 	@param message The message being sent to stdout.
-	@param format Support formats: `JSON`.
+	@param format Support formats: `JSON` & `TOML`.
 	@tag must_use
 	@return unknown
 	

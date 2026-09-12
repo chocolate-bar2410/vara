@@ -1,3 +1,4 @@
+use mlua::ExternalError;
 use mlua::ExternalResult;
 use mlua::LuaSerdeExt;
 use mlua::serde::DeserializeOptions;
@@ -16,6 +17,7 @@ const LUAU_DESERIALISE_OPTION: DeserializeOptions = DeserializeOptions::new()
 #[derive(Debug, Clone, Copy)]
 pub enum SerdeFormat {
     JSON,
+    TOML,
 }
 
 impl mlua::FromLua for SerdeFormat {
@@ -30,6 +32,7 @@ impl mlua::FromLua for SerdeFormat {
 
         match s.to_string_lossy().to_ascii_uppercase().trim() {
             "JSON" => Ok(SerdeFormat::JSON),
+            "TOML" => Ok(SerdeFormat::TOML),
             _ => Err(mlua::Error::FromLuaConversionError {
                 from: value.type_name(),
                 to: "SerdeFormat".to_string(),
@@ -49,6 +52,15 @@ pub fn encode(
                 context.from_value_with(value, LUAU_DESERIALISE_OPTION)?;
             serde_json::to_vec(&serialised).into_lua_err()?
         }
+
+        SerdeFormat::TOML => {
+            let serialised: toml::Value =
+                context.from_value_with(value, LUAU_DESERIALISE_OPTION)?;
+            toml::to_string(&serialised)
+                .into_lua_err()?
+                .as_bytes()
+                .to_vec()
+        }
     };
 
     context.create_string(bytes)
@@ -58,10 +70,21 @@ pub fn decode(
     context: &mlua::Lua,
     (format, value): (SerdeFormat, mlua::LuaString),
 ) -> mlua::Result<mlua::Value> {
+    let bytes = &value.as_bytes();
+
     match format {
         SerdeFormat::JSON => {
-            let serialised: serde_json::Value =
-                serde_json::from_slice(&value.as_bytes()).into_lua_err()?;
+            let serialised: serde_json::Value = serde_json::from_slice(bytes).into_lua_err()?;
+
+            context.to_value_with(&serialised, LUAU_SERIALISE_OPTION)
+        }
+
+        SerdeFormat::TOML => {
+            let Ok(s) = String::from_utf8(bytes.to_vec()) else {
+                return Err("TOML must be valid utf8".into_lua_err());
+            };
+
+            let serialised: toml::Value = toml::from_str(&s).into_lua_err()?;
 
             context.to_value_with(&serialised, LUAU_SERIALISE_OPTION)
         }
