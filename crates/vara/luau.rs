@@ -88,6 +88,11 @@ impl Runtime {
             self.vm.create_function(vara_stdlib::serde::decode)?,
         )?;
 
+        io_lib.set_readonly(true);
+        fs_lib.set_readonly(true);
+        gui_lib.set_readonly(true);
+        serde_lib.set_readonly(true);
+
         self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;
         self.vm.register_module("@vara/gui", gui_lib)?;
