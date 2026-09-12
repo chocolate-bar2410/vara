@@ -23,5 +23,8 @@ Applications target desktop and potentially mobile.
     - [x] io
     - [x] file system
     - [x] UI
-    - [ ] serde
+    - [x] serde
+- [ ] require
+    - relative requires
+    - aliases
     
