@@ -17,14 +17,14 @@ Applications target desktop and potentially mobile.
 
 # todo
 
-- [ ] CLI
+- [x] CLI
     - [x] run
-- [ ] standard library
+- [x] standard library
     - [x] io
     - [x] file system
     - [x] UI
     - [x] serde
 - [ ] require
-    - relative requires
-    - aliases
+    - [ ] relative requires
+    - [ ] aliases
     
