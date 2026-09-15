@@ -4,12 +4,12 @@ use std::{
 };
 
 #[derive(Debug, Clone, PartialEq, Eq)]
-pub enum LuauPath {
+pub enum LuauFile {
     File(PathBuf),
     Directory(PathBuf),
 }
 
-impl LuauPath {
+impl LuauFile {
     fn resolve(module: impl AsRef<Path>) -> Result<Self, mlua::luau::NavigateError> {
         let module = module.as_ref();
 
@@ -71,7 +71,7 @@ impl LuauPath {
     }
 }
 
-impl AsRef<Path> for LuauPath {
+impl AsRef<Path> for LuauFile {
     fn as_ref(&self) -> &Path {
         match self {
             Self::File(path) | Self::Directory(path) => path.as_ref(),
@@ -79,7 +79,7 @@ impl AsRef<Path> for LuauPath {
     }
 }
 
-impl std::fmt::Display for LuauPath {
+impl std::fmt::Display for LuauFile {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         match self {
             Self::File(path) | Self::Directory(path) => path.display().fmt(f),
