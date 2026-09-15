@@ -149,3 +149,19 @@ fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
         }
     }
 }
+
+pub fn relative_path_normalize(path: impl AsRef<Path>) -> PathBuf {
+    let path = path.as_ref();
+
+    let mut it = path.components().peekable();
+    if it
+        .peek()
+        .is_none_or(|c| matches!(c, std::path::Component::Normal(..)))
+    {
+        std::iter::once(std::path::Component::CurDir)
+            .chain(it)
+            .collect()
+    } else {
+        path.to_path_buf()
+    }
+}
