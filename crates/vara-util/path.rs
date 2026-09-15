@@ -115,6 +115,20 @@ impl LuauModule {
 
         path
     }
+
+    pub fn resolve(module: impl Into<PathBuf>) -> Result<Self, mlua::luau::NavigateError> {
+        let source = module.into();
+        let target = LuauFile::resolve(&source)?;
+        Ok(Self { source, target })
+    }
+
+    pub fn get_source(&self) -> &Path {
+        &self.source
+    }
+
+    pub fn get_target(&self) -> &LuauFile {
+        &self.target
+    }
 }
 
 fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
