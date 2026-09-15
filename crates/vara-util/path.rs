@@ -87,6 +87,36 @@ impl std::fmt::Display for LuauFile {
     }
 }
 
+#[derive(Debug, Clone, PartialEq, Eq)]
+pub struct LuauModule {
+    source: PathBuf,
+    target: LuauFile,
+}
+
+impl LuauModule {
+    pub fn strip(path: impl Into<PathBuf>) -> PathBuf {
+        let mut path: PathBuf = path.into();
+
+        if path
+            .extension()
+            .and_then(|e| e.to_str())
+            .is_some_and(|e| super::constants::FILE_EXTENSIONS.contains(&e))
+        {
+            path = path.with_extension("");
+        }
+
+        if path
+            .file_name()
+            .and_then(|e| e.to_str())
+            .is_some_and(|f| f == super::constants::FILE_NAME_INIT)
+        {
+            path.pop();
+        }
+
+        path
+    }
+}
+
 fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
     let path = path.as_ref();
     match path.extension() {
