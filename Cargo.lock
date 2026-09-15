@@ -4899,6 +4899,7 @@ dependencies = [
  "clap",
  "mlua",
  "vara_core",
+ "vara_util",
 ]
 
 [[package]]
@@ -4912,6 +4913,13 @@ dependencies = [
  "slint-interpreter",
  "spin_on",
  "toml",
+]
+
+[[package]]
+name = "vara_util"
+version = "0.1.0"
+dependencies = [
+ "mlua",
 ]
 
 [[package]]
