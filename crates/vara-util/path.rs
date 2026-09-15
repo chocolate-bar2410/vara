@@ -131,6 +131,12 @@ impl LuauModule {
     }
 }
 
+impl std::fmt::Display for LuauModule {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        self.get_source().display().fmt(f)
+    }
+}
+
 fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
     let path = path.as_ref();
     match path.extension() {
