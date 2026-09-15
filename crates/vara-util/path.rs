@@ -79,6 +79,14 @@ impl AsRef<Path> for LuauPath {
     }
 }
 
+impl std::fmt::Display for LuauPath {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::File(path) | Self::Directory(path) => path.display().fmt(f),
+        }
+    }
+}
+
 fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
     let path = path.as_ref();
     match path.extension() {
