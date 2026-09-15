@@ -71,6 +71,14 @@ impl LuauPath {
     }
 }
 
+impl AsRef<Path> for LuauPath {
+    fn as_ref(&self) -> &Path {
+        match self {
+            Self::File(path) | Self::Directory(path) => path.as_ref(),
+        }
+    }
+}
+
 fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
     let path = path.as_ref();
     match path.extension() {
