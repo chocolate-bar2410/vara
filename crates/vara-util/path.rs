@@ -47,6 +47,28 @@ impl LuauPath {
             .map(Self::File)
             .ok_or(mlua::luau::NavigateError::NotFound)
     }
+
+    pub const fn is_file(&self) -> bool {
+        matches!(self, Self::File(_))
+    }
+
+    pub const fn is_dir(&self) -> bool {
+        matches!(self, Self::Directory(_))
+    }
+
+    pub fn as_file(&self) -> Option<&Path> {
+        match self {
+            Self::File(path) => Some(path),
+            Self::Directory(_) => None,
+        }
+    }
+
+    pub fn as_dir(&self) -> Option<&Path> {
+        match self {
+            Self::Directory(path) => Some(path),
+            Self::File(_) => None,
+        }
+    }
 }
 
 fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
