@@ -91,15 +91,20 @@ impl mlua::luau::Require for Resolver {
     }
 
     fn cache_key(&self) -> String {
-        todo!()
+        let resolved = self.resolved.as_ref();
+        resolved.expect("called has_module first").to_string()
     }
 
     fn has_config(&self) -> bool {
-        self.absolute.is_dir() && self.absolute.join(".luaurc").is_file()
+        self.absolute.is_dir()
+            && self
+                .absolute
+                .join(vara_util::constants::FILE_NAME_CONFIG)
+                .is_file()
     }
 
     fn config(&self) -> std::io::Result<Vec<u8>> {
-        fs::read(self.absolute.join(".luaurc"))
+        fs::read(self.absolute.join(vara_util::constants::FILE_NAME_CONFIG))
     }
 
     fn loader(&self, lua: &mlua::Lua) -> mlua::Result<mlua::Function> {
