@@ -1,7 +1,8 @@
 local fs = require("@vara/fs")
 local serde = require("@vara/serde")
 
-local message = serde.encode("YAML", { globals = { hello = "world", testing = 123 } })
+local load = require("./demo3")
+local message = serde.encode("YAML", load)
 print(message)
 
 local data: { hello: string, testing: number } = serde.decode("YAML", message)

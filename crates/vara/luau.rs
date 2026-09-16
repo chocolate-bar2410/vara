@@ -7,6 +7,8 @@ use vara_core::ui::ui_manager as vara_UI;
 
 use vara_UI::UIManager;
 
+use crate::require;
+
 pub struct Runtime {
     vm: Lua,
     ui: Arc<Mutex<UIManager>>,
@@ -98,12 +100,31 @@ impl Runtime {
         self.vm.register_module("@vara/gui", gui_lib)?;
         self.vm.register_module("@vara/serde", serde_lib)?;
 
+        self.vm.globals().set(
+            "require",
+            self.vm
+                .create_require_function(require::Resolver::new())
+                .map(mlua::Value::Function)?,
+        )?;
+
         Ok(())
     }
 
     pub fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         let file_contents = vara_stdlib::file::read_file(file_path)?;
-        self.vm.load(file_contents.as_str()).exec()?;
+
+        let module_path =
+            vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))
+                .map_err(|e| mlua::Error::external(format!("{e:?}")))?;
+
+        self.vm
+            .load(file_contents.as_str())
+            .set_name(format!(
+                "{}{}",
+                vara_util::constants::FILE_CHUNK_PREFIX,
+                module_path
+            ))
+            .exec()?;
         Ok(())
     }
 }

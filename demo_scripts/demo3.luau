@@ -1,0 +1,1 @@
+return { globals = { hello = "world", testing = 123 } }

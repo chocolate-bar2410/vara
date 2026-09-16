@@ -7,10 +7,13 @@ use vara_util::path::clean_path_and_make_absolute;
 use vara_util::path::relative_path_normalize;
 use vara_util::path::relative_path_parent;
 
+use crate::require_loader::RequireLoader;
+
 pub struct Resolver {
     relative: PathBuf,
     absolute: PathBuf,
     resolved: Option<LuauModule>,
+    loader: RequireLoader,
 }
 
 impl Resolver {
@@ -19,6 +22,7 @@ impl Resolver {
             relative: PathBuf::new(),
             absolute: PathBuf::new(),
             resolved: None,
+            loader: RequireLoader::new(),
         }
     }
 
@@ -125,6 +129,7 @@ impl mlua::luau::Require for Resolver {
             .as_file()
             .expect("tried to require a directory");
 
-        todo!()
+        self.loader
+            .load(context, &self.relative.as_path(), resolved)
     }
 }

@@ -33,7 +33,7 @@ impl RequireLoader {
     }
 
     pub fn load(
-        &mut self,
+        &self,
         context: &mlua::Lua,
         relative: &Path,
         absolute: &Path,
@@ -60,7 +60,12 @@ impl RequireLoader {
             let chunk_bytes =
                 fs::read(&absolute).map_err(|e| mlua::Error::RuntimeError(e.to_string()))?;
 
-            let chunk_name = format!("chunk: {}", relative.display());
+            let chunk_name = format!(
+                "{}{}",
+                vara_util::constants::FILE_CHUNK_PREFIX,
+                relative.display()
+            );
+
             let chunk = context.load(&chunk_bytes).set_name(chunk_name);
 
             let result = chunk.call::<mlua::MultiValue>(())?;
