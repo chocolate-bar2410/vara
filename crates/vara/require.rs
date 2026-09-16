@@ -5,6 +5,7 @@ use std::{
 use vara_util::path::LuauModule;
 use vara_util::path::clean_path_and_make_absolute;
 use vara_util::path::relative_path_normalize;
+use vara_util::path::relative_path_parent;
 
 pub struct Resolver {
     relative: PathBuf,
@@ -74,7 +75,15 @@ impl mlua::luau::Require for Resolver {
     }
 
     fn to_parent(&mut self) -> Result<(), mlua::luau::NavigateError> {
-        todo!()
+        let mut relative = self.relative.clone();
+        let mut absolute = self.absolute.clone();
+
+        if absolute.pop() {
+            relative_path_parent(&mut relative);
+            return self.navigate_to(relative, absolute);
+        }
+
+        Err(mlua::luau::NavigateError::NotFound)
     }
 
     fn to_child(&mut self, name: &str) -> Result<(), mlua::luau::NavigateError> {

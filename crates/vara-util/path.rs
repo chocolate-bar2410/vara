@@ -1,6 +1,6 @@
 use std::{
     ffi::OsStr,
-    path::{Path, PathBuf},
+    path::{Component, Path, PathBuf},
     sync::{Arc, LazyLock},
 };
 
@@ -168,6 +168,16 @@ fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
     }
 }
 
+pub fn relative_path_parent(relative: &mut PathBuf) {
+    if relative.as_os_str() == Component::CurDir.as_os_str() {
+        *relative = PathBuf::from(Component::ParentDir.as_os_str());
+    } else if relative.components().all(|c| c == Component::ParentDir) {
+        relative.push(Component::ParentDir.as_os_str());
+    } else {
+        relative.pop();
+    }
+}
+
 pub fn clean_path_and_make_absolute(path: impl AsRef<Path>) -> PathBuf {
     let path = path.as_ref();
 
@@ -182,13 +192,8 @@ pub fn relative_path_normalize(path: impl AsRef<Path>) -> PathBuf {
     let path = path.as_ref().clean();
 
     let mut it = path.components().peekable();
-    if it
-        .peek()
-        .is_none_or(|c| matches!(c, std::path::Component::Normal(..)))
-    {
-        std::iter::once(std::path::Component::CurDir)
-            .chain(it)
-            .collect()
+    if it.peek().is_none_or(|c| matches!(c, Component::Normal(..))) {
+        std::iter::once(Component::CurDir).chain(it).collect()
     } else {
         path
     }
