@@ -1,7 +1,25 @@
 use std::{
     ffi::OsStr,
     path::{Path, PathBuf},
+    sync::{Arc, LazyLock},
 };
+
+use path_clean::PathClean;
+
+static CURRENT_WORKING_DIR: LazyLock<Arc<Path>> = LazyLock::new(|| {
+    let mut cwd = std::env::current_dir()
+        .expect("failed to find current working directory")
+        .to_str()
+        .expect("current working directory is not valid UTF-8")
+        .to_string();
+
+    if !cwd.ends_with(std::path::MAIN_SEPARATOR) {
+        cwd.push(std::path::MAIN_SEPARATOR);
+    }
+    dunce::canonicalize(cwd)
+        .expect("failed to canonicalize current working directory")
+        .into()
+});
 
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub enum LuauFile {
@@ -150,8 +168,18 @@ fn append_extension(path: impl AsRef<Path>, ext: impl AsRef<OsStr>) -> PathBuf {
     }
 }
 
-pub fn relative_path_normalize(path: impl AsRef<Path>) -> PathBuf {
+pub fn clean_path_and_make_absolute(path: impl AsRef<Path>) -> PathBuf {
     let path = path.as_ref();
+
+    if path.is_relative() {
+        CURRENT_WORKING_DIR.join(path).clean()
+    } else {
+        path.clean()
+    }
+}
+
+pub fn relative_path_normalize(path: impl AsRef<Path>) -> PathBuf {
+    let path = path.as_ref().clean();
 
     let mut it = path.components().peekable();
     if it
@@ -162,6 +190,6 @@ pub fn relative_path_normalize(path: impl AsRef<Path>) -> PathBuf {
             .chain(it)
             .collect()
     } else {
-        path.to_path_buf()
+        path
     }
 }
