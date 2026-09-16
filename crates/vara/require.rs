@@ -67,7 +67,10 @@ impl mlua::luau::Require for Resolver {
     }
 
     fn jump_to_alias(&mut self, path: &str) -> Result<(), mlua::luau::NavigateError> {
-        todo!()
+        let relative = relative_path_normalize(Path::new(path));
+        let absolute = clean_path_and_make_absolute(&relative);
+
+        self.navigate_to(relative, absolute)
     }
 
     fn to_parent(&mut self) -> Result<(), mlua::luau::NavigateError> {
@@ -82,7 +85,9 @@ impl mlua::luau::Require for Resolver {
     }
 
     fn has_module(&self) -> bool {
-        todo!()
+        let resolved = self.resolved.as_ref();
+
+        resolved.is_some_and(|p| p.get_target().is_file())
     }
 
     fn cache_key(&self) -> String {
