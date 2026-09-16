@@ -3,6 +3,7 @@ use std::process::ExitCode;
 mod cli;
 mod luau;
 mod require;
+mod require_loader;
 
 #[cfg(windows)]
 mod win_compat;

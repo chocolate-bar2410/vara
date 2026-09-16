@@ -116,7 +116,15 @@ impl mlua::luau::Require for Resolver {
         fs::read(self.absolute.join(vara_util::constants::FILE_NAME_CONFIG))
     }
 
-    fn loader(&self, lua: &mlua::Lua) -> mlua::Result<mlua::Function> {
+    fn loader(&self, context: &mlua::Lua) -> mlua::Result<mlua::Function> {
+        let resolved = self
+            .resolved
+            .as_ref()
+            .expect("called has_module first")
+            .get_target()
+            .as_file()
+            .expect("tried to require a directory");
+
         todo!()
     }
 }
