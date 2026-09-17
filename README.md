@@ -7,9 +7,11 @@ Applications target desktop and potentially mobile.
 
 # goals
 
-- crossplatform UI support
 - inbuilt media file loading, exporting and usage
 - minimal resource usage footprint
+
+# far goals (stuff i plan on adding at a more stable version)
+- crossplatform UI support
 
 # non goals
 - manipulating roblox model/place files (use lune) 
