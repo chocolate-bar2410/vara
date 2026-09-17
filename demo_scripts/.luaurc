@@ -1,5 +1,6 @@
 {
     "aliases": {
-        "vara" : "../typedef"
+        "vara": "../typedef",
+        "config": "./democonfig"
     }
 }
