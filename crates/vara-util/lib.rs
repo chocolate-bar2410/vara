@@ -1,4 +1,5 @@
 pub mod path;
+pub mod table_builder;
 
 pub mod constants {
     pub const FILE_CHUNK_PREFIX: char = '@';
