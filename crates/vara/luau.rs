@@ -22,38 +22,9 @@ impl Runtime {
     }
 
     fn setup_standard_library(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        let io_lib = self.vm.create_table()?;
-
-        io_lib.set("write", self.vm.create_function(vara_stdlib::stdio::write)?)?;
-        io_lib.set("read", self.vm.create_function(vara_stdlib::stdio::read)?)?;
-        io_lib.set(
-            "readline",
-            self.vm.create_function(vara_stdlib::stdio::readline)?,
-        )?;
-
-        let fs_lib = self.vm.create_table()?;
-        fs_lib.set(
-            "read",
-            self.vm.create_function(vara_stdlib::file::read_file_fn)?,
-        )?;
-        fs_lib.set(
-            "write",
-            self.vm.create_function(vara_stdlib::file::write_file_fn)?,
-        )?;
-
-        let serde_lib = self.vm.create_table()?;
-        serde_lib.set(
-            "encode",
-            self.vm.create_function(vara_stdlib::serde::encode)?,
-        )?;
-        serde_lib.set(
-            "decode",
-            self.vm.create_function(vara_stdlib::serde::decode)?,
-        )?;
-
-        io_lib.set_readonly(true);
-        fs_lib.set_readonly(true);
-        serde_lib.set_readonly(true);
+        let io_lib = vara_stdlib::stdio::get_module(&self.vm)?;
+        let fs_lib = vara_stdlib::file::get_module(&self.vm)?;
+        let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
 
         self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;

@@ -4,6 +4,8 @@ use mlua::LuaSerdeExt;
 use mlua::serde::DeserializeOptions;
 use mlua::serde::SerializeOptions;
 
+use vara_util::table_builder::TableBuilder;
+
 const LUAU_SERIALISE_OPTION: SerializeOptions = SerializeOptions::new()
     .set_array_metatable(false)
     .serialize_none_to_null(false)
@@ -44,7 +46,7 @@ impl mlua::FromLua for SerdeFormat {
     }
 }
 
-pub fn encode(
+fn encode(
     context: &mlua::Lua,
     (format, value): (SerdeFormat, mlua::Value),
 ) -> mlua::Result<mlua::LuaString> {
@@ -78,7 +80,7 @@ pub fn encode(
     context.create_string(bytes)
 }
 
-pub fn decode(
+fn decode(
     context: &mlua::Lua,
     (format, value): (SerdeFormat, mlua::LuaString),
 ) -> mlua::Result<mlua::Value> {
@@ -107,4 +109,11 @@ pub fn decode(
             context.to_value_with(&serialised, LUAU_SERIALISE_OPTION)
         }
     }
+}
+
+pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
+    TableBuilder::new(context.clone())?
+        .add_function("encode", encode)?
+        .add_function("decode", decode)?
+        .build_readonly()
 }

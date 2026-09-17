@@ -805,6 +805,7 @@ dependencies = [
  "serde_json",
  "spin_on",
  "toml",
+ "vara_util",
 ]
 
 [[package]]

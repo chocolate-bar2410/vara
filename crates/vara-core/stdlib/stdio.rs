@@ -1,7 +1,7 @@
-use std::io::{self,Read, Write};
+use std::io::{self, Read, Write};
+use vara_util::table_builder::TableBuilder;
 
-pub fn write(_ : &mlua::Lua, arg : mlua::LuaString) -> Result<(),mlua::error::Error> {
-
+fn write(_: &mlua::Lua, arg: mlua::LuaString) -> Result<(), mlua::error::Error> {
     let message = arg.as_bytes();
 
     io::stdout().write_all(&message).unwrap();
@@ -9,12 +9,15 @@ pub fn write(_ : &mlua::Lua, arg : mlua::LuaString) -> Result<(),mlua::error::Er
     Ok(())
 }
 
-pub fn read(context : &mlua::Lua,chunk_size: Option<usize>) -> Result<mlua::LuaString, mlua::error::Error> {
+fn read(
+    context: &mlua::Lua,
+    chunk_size: Option<usize>,
+) -> Result<mlua::LuaString, mlua::error::Error> {
     io::stdout().flush().map_err(mlua::Error::external)?;
 
     let mut stdin = io::stdin().lock();
     let size = chunk_size.unwrap_or(1024);
-    let mut buffer = vec![0;size];
+    let mut buffer = vec![0; size];
 
     let bytes_read = stdin.read(&mut buffer).map_err(mlua::Error::external)?;
 
@@ -23,10 +26,18 @@ pub fn read(context : &mlua::Lua,chunk_size: Option<usize>) -> Result<mlua::LuaS
     context.create_string(&buffer)
 }
 
-pub fn readline(context : &mlua::Lua,_ : ()) -> Result<mlua::LuaString, mlua::error::Error> {
+fn readline(context: &mlua::Lua, _: ()) -> Result<mlua::LuaString, mlua::error::Error> {
     let mut input = String::new();
 
     io::stdin().read_line(&mut input)?;
 
     context.create_string(&input.trim())
+}
+
+pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
+    TableBuilder::new(context.clone())?
+        .add_function("write", write)?
+        .add_function("read", read)?
+        .add_function("readline", readline)?
+        .build_readonly()
 }

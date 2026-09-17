@@ -1,6 +1,4 @@
-use mlua::IntoLua;
-
-struct TableBuilder {
+pub struct TableBuilder {
     context: mlua::Lua,
     result: mlua::Table,
 }
