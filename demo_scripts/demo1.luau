@@ -1,14 +1,12 @@
-local gui = require("@vara/gui")
+local fs = require("@vara/fs")
+local serde = require("@vara/serde")
 
-gui.registerFile("./demo_ui/test.slint")
+local load = require("@config")
+local message = serde.encode("YAML", load)
+print(message)
 
-local window = gui.createInstance("MainWindow")
+local data: { hello: string, testing: number } = serde.decode("YAML", message)
+print(data.globals.hello)
+print(data.globals.testing)
 
-window:connectGlobal("Testing", "onClick", function(message)
-	if message == "" then
-		return
-	end
-	print(message)
-end)
-
-window:run()
+fs.write("testing.yaml", message)
