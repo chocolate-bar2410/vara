@@ -19,12 +19,12 @@ Applications target desktop and potentially mobile.
 
 - [x] CLI
     - [x] run
-- [x] standard library
+- [ ] standard library
     - [x] io
     - [x] file system
-    - [x] UI
     - [x] serde
-- [ ] require
-    - [ ] relative requires
-    - [ ] aliases
+    - [ ] UI
+- [x] require
+    - [x] relative requires
+    - [x] aliases
     
