@@ -1,0 +1,24 @@
+mod datetime;
+
+use std::time::{SystemTime, UNIX_EPOCH};
+
+use vara_util::table_builder::TableBuilder;
+
+use crate::stdlib::chrono::datetime::DateTime;
+
+fn now(_: &mlua::Lua, _: ()) -> mlua::Result<DateTime> {
+    let sys_time: i64 = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .map_err(|e| mlua::Error::external(e))?
+        .as_millis()
+        .try_into()
+        .map_err(|e| mlua::Error::external(e))?;
+
+    Ok(DateTime::new(sys_time, 0))
+}
+
+pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
+    TableBuilder::new(context.clone())?
+        .add_function("now", now)?
+        .build_readonly()
+}
