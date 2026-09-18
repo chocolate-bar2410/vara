@@ -122,9 +122,8 @@ impl DateTime {
             .div_euclid(SECONDS_PER_MINUTE as i32);
 
         let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
-        let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
-
-        let day_of_week = match (seconds_of_day + 4) % 7 {
+        let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
+        let day_of_week = match (days_since_unix + 4) % 7 {
             0 => "Sun",
             1 => "Mon",
             2 => "Tue",
@@ -164,6 +163,57 @@ impl DateTime {
             offset_minutes
         )
     }
+
+    pub fn humanise(&self) -> String {
+        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_minutes = self
+            .timezone_offset
+            .rem_euclid(SECONDS_PER_HOUR as i32)
+            .div_euclid(SECONDS_PER_MINUTE as i32);
+
+        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
+
+        let day_of_week = match (days_since_unix + 4) % 7 {
+            0 => "Sunday",
+            1 => "Monday",
+            2 => "Tuesday",
+            3 => "Wednesday",
+            4 => "Thursday",
+            5 => "Friday",
+            6 => "Saturday",
+            _ => "???",
+        };
+
+        let month_name = match self.months {
+            1 => "January",
+            2 => "February",
+            3 => "March",
+            4 => "April",
+            5 => "May",
+            6 => "June",
+            7 => "July",
+            8 => "August",
+            9 => "September",
+            10 => "October",
+            11 => "November",
+            12 => "December",
+            _ => "Unknown",
+        };
+
+        format!(
+            "{}, {} {} {} {:02}:{:02}:{:02} UTC{:+2}:{:02}",
+            day_of_week,
+            self.days,
+            month_name,
+            self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            offset_hours,
+            offset_minutes
+        )
+    }
 }
 
 impl mlua::UserData for DateTime {
@@ -177,6 +227,10 @@ impl mlua::UserData for DateTime {
             "toRFC2822",
             |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_rfc2822().into_lua(context)),
         );
+
+        methods.add_method("humanise", |context: &mlua::Lua, this: &DateTime, _: ()| {
+            Ok(this.humanise().into_lua(context))
+        });
 
         methods.add_meta_method(
             mlua::MetaMethod::ToString,
