@@ -84,7 +84,7 @@ impl DateTime {
         let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
 
         self.hours = seconds_of_day.div_euclid(SECONDS_PER_HOUR);
-        self.minutes = (seconds_of_day % SECONDS_PER_HOUR) / MINUTES_PER_HOUR;
+        self.minutes = (seconds_of_day % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE;
         self.seconds = seconds_of_day % SECONDS_PER_MINUTE;
     }
 }
