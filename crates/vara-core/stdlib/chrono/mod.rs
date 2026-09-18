@@ -17,8 +17,13 @@ fn now(_: &mlua::Lua, _: ()) -> mlua::Result<DateTime> {
     Ok(DateTime::new(sys_time, 0))
 }
 
+fn from_unix(_: &mlua::Lua, unix_time: i64) -> mlua::Result<DateTime> {
+    Ok(DateTime::new(unix_time * 1000, 0))
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_function("now", now)?
+        .add_function("fromUnix", from_unix)?
         .build_readonly()
 }

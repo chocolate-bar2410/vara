@@ -1,3 +1,3 @@
 local chrono = require("@vara/chrono")
 
-print(chrono.now())
+print(chrono.fromUnix(os.time()))
