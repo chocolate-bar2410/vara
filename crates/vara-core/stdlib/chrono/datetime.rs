@@ -113,6 +113,57 @@ impl DateTime {
             offset_minutes
         )
     }
+
+    pub fn to_rfc2822(&self) -> String {
+        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_minutes = self
+            .timezone_offset
+            .rem_euclid(SECONDS_PER_HOUR as i32)
+            .div_euclid(SECONDS_PER_MINUTE as i32);
+
+        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
+
+        let day_of_week = match (seconds_of_day + 4) % 7 {
+            0 => "Sun",
+            1 => "Mon",
+            2 => "Tue",
+            3 => "Wed",
+            4 => "Thu",
+            5 => "Fri",
+            6 => "Sat",
+            _ => "???",
+        };
+
+        let month_name = match self.months {
+            1 => "Jan",
+            2 => "Feb",
+            3 => "Mar",
+            4 => "Apr",
+            5 => "May",
+            6 => "Jun",
+            7 => "Jul",
+            8 => "Aug",
+            9 => "Sep",
+            10 => "Oct",
+            11 => "Nov",
+            12 => "Dec",
+            _ => "Unknown",
+        };
+
+        format!(
+            "{}, {:02} {} {:04} {:02}:{:02}:{:02} {:+03}{:02}",
+            day_of_week,
+            self.days,
+            month_name,
+            self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            offset_hours,
+            offset_minutes
+        )
+    }
 }
 
 impl mlua::UserData for DateTime {
@@ -120,6 +171,11 @@ impl mlua::UserData for DateTime {
         methods.add_method(
             "toISO8601",
             |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_iso8601().into_lua(context)),
+        );
+
+        methods.add_method(
+            "toRFC2822",
+            |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_rfc2822().into_lua(context)),
         );
 
         methods.add_meta_method(
