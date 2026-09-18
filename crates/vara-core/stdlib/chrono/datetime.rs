@@ -249,6 +249,43 @@ impl DateTime {
             offset_minutes
         )
     }
+
+    pub fn to_apache_log(&self) -> String {
+        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_minutes = self
+            .timezone_offset
+            .rem_euclid(SECONDS_PER_HOUR as i32)
+            .div_euclid(SECONDS_PER_MINUTE as i32);
+
+        let month_name = match self.months {
+            1 => "Jan",
+            2 => "Feb",
+            3 => "Mar",
+            4 => "Apr",
+            5 => "May",
+            6 => "Jun",
+            7 => "Jul",
+            8 => "Aug",
+            9 => "Sep",
+            10 => "Oct",
+            11 => "Nov",
+            12 => "Dec",
+            _ => "Unknown",
+        };
+
+        format!(
+            "[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {:+03}{:02}]",
+            self.days,
+            month_name,
+            self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            self.milliseconds,
+            offset_hours,
+            offset_minutes
+        )
+    }
 }
 
 impl mlua::UserData for DateTime {
@@ -270,6 +307,12 @@ impl mlua::UserData for DateTime {
         methods.add_method("toZH", |context: &mlua::Lua, this: &DateTime, _: ()| {
             Ok(this.to_zh().into_lua(context))
         });
+        methods.add_method(
+            "toApacheLog",
+            |context: &mlua::Lua, this: &DateTime, _: ()| {
+                Ok(this.to_apache_log().into_lua(context))
+            },
+        );
 
         methods.add_meta_method(
             mlua::MetaMethod::ToString,
