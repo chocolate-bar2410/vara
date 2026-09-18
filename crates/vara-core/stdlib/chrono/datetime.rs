@@ -92,35 +92,39 @@ impl DateTime {
         self.seconds = seconds_of_day % SECONDS_PER_MINUTE;
         self.milliseconds = self.unix_ms.rem_euclid(1000);
     }
+
+    pub fn to_iso8601(&self) -> String {
+        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_minutes = self
+            .timezone_offset
+            .rem_euclid(SECONDS_PER_HOUR as i32)
+            .div_euclid(SECONDS_PER_MINUTE as i32);
+
+        format!(
+            "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{:+03}:{:02}",
+            self.years,
+            self.months,
+            self.days,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            self.milliseconds,
+            offset_hours,
+            offset_minutes
+        )
+    }
 }
 
 impl mlua::UserData for DateTime {
     fn add_methods<M: mlua::prelude::LuaUserDataMethods<Self>>(methods: &mut M) {
+        methods.add_method(
+            "toISO8601",
+            |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_iso8601().into_lua(context)),
+        );
+
         methods.add_meta_method(
             mlua::MetaMethod::ToString,
-            |context: &mlua::Lua, this: &DateTime, _: ()| {
-                let offset_hours = this.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
-                let offset_minutes = this
-                    .timezone_offset
-                    .rem_euclid(SECONDS_PER_HOUR as i32)
-                    .div_euclid(SECONDS_PER_MINUTE as i32);
-
-                let result = format!(
-                    "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{:+03}:{:02}",
-                    this.years,
-                    this.months,
-                    this.days,
-                    this.hours,
-                    this.minutes,
-                    this.seconds,
-                    this.milliseconds,
-                    offset_hours,
-                    offset_minutes
-                )
-                .into_lua(context);
-
-                Ok(result)
-            },
+            |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_iso8601().into_lua(context)),
         );
     }
 }

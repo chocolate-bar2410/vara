@@ -1,3 +1,5 @@
 local chrono = require("@vara/chrono")
 
-print(chrono.fromUnix(os.time()))
+local timestamp = chrono.now()
+
+print(timestamp:toISO8601())
