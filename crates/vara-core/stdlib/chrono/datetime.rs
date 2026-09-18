@@ -16,7 +16,9 @@ const DAYS_PER_ERA: i64 = 146097;
 const UNIX_EPOCH_TO_MARCH_EPOCH: i64 = 719468;
 
 pub struct DateTime {
-    unix_ms: u64,
+    unix_ms: i64,
+
+    // in seconds
     timezone_offset: i32,
 
     // precomputed values so i dont have to recalculate everything
@@ -30,7 +32,7 @@ pub struct DateTime {
 }
 
 impl DateTime {
-    pub fn new(unix_ms: u64, offset: i32) -> Self {
+    pub fn new(unix_ms: i64, offset: i32) -> Self {
         let mut new_date_time = DateTime {
             unix_ms: unix_ms,
             timezone_offset: offset,
@@ -50,7 +52,7 @@ impl DateTime {
     }
 
     fn compute_date(&mut self) {
-        let total_seconds = (self.unix_ms / 1000) as i64 + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
 
         let days_since_march_epoch = days_since_unix + UNIX_EPOCH_TO_MARCH_EPOCH;
@@ -80,7 +82,7 @@ impl DateTime {
         }
     }
     fn compute_time(&mut self) {
-        let total_seconds = (self.unix_ms / 1000) as i64 + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
         let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
 
         self.hours = seconds_of_day.div_euclid(SECONDS_PER_HOUR);
@@ -94,9 +96,22 @@ impl mlua::UserData for DateTime {
         methods.add_meta_method(
             mlua::MetaMethod::ToString,
             |context: &mlua::Lua, this: &DateTime, _: ()| {
+                let offset_hours = this.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+                let offset_minutes = this
+                    .timezone_offset
+                    .rem_euclid(SECONDS_PER_HOUR as i32)
+                    .div_euclid(SECONDS_PER_MINUTE as i32);
+
                 let result = format!(
-                    "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}+00:00",
-                    this.years, this.months, this.days, this.hours, this.minutes, this.seconds
+                    "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}{:+03}:{:02}",
+                    this.years,
+                    this.months,
+                    this.days,
+                    this.hours,
+                    this.minutes,
+                    this.seconds,
+                    offset_hours,
+                    offset_minutes
                 )
                 .into_lua(context);
 

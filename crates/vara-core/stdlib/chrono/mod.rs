@@ -7,7 +7,7 @@ use vara_util::table_builder::TableBuilder;
 use crate::stdlib::chrono::datetime::DateTime;
 
 fn now(_: &mlua::Lua, _: ()) -> mlua::Result<DateTime> {
-    let sys_time: u64 = SystemTime::now()
+    let sys_time: i64 = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|e| mlua::Error::external(e))?
         .as_millis()
