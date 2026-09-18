@@ -51,14 +51,6 @@ impl DateTime {
 
     fn compute_date(&mut self) {
         let total_seconds = (self.unix_ms / 1000) as i64 + self.timezone_offset as i64;
-        let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
-
-        self.hours = seconds_of_day.div_euclid(SECONDS_PER_HOUR);
-        self.minutes = (seconds_of_day % SECONDS_PER_HOUR) / MINUTES_PER_HOUR;
-        self.seconds = seconds_of_day % SECONDS_PER_MINUTE;
-    }
-    fn compute_time(&mut self) {
-        let total_seconds = (self.unix_ms / 1000) as i64 + self.timezone_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
 
         let days_since_march_epoch = days_since_unix + UNIX_EPOCH_TO_MARCH_EPOCH;
@@ -86,6 +78,14 @@ impl DateTime {
         if self.months <= 2 {
             self.years += 1;
         }
+    }
+    fn compute_time(&mut self) {
+        let total_seconds = (self.unix_ms / 1000) as i64 + self.timezone_offset as i64;
+        let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
+
+        self.hours = seconds_of_day.div_euclid(SECONDS_PER_HOUR);
+        self.minutes = (seconds_of_day % SECONDS_PER_HOUR) / MINUTES_PER_HOUR;
+        self.seconds = seconds_of_day % SECONDS_PER_MINUTE;
     }
 }
 
