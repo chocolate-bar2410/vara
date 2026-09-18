@@ -123,7 +123,7 @@ impl DateTime {
 
         let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
-        let day_of_week = match (days_since_unix + 4) % 7 {
+        let day_of_week = match (days_since_unix + 4).rem_euclid(7) {
             0 => "Sun",
             1 => "Mon",
             2 => "Tue",
@@ -174,7 +174,7 @@ impl DateTime {
         let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
 
-        let day_of_week = match (days_since_unix + 4) % 7 {
+        let day_of_week = match (days_since_unix + 4).rem_euclid(7) {
             0 => "Sunday",
             1 => "Monday",
             2 => "Tuesday",
@@ -202,11 +202,46 @@ impl DateTime {
         };
 
         format!(
-            "{}, {} {} {} {:02}:{:02}:{:02} UTC{:+2}:{:02}",
+            "{}, {} {} {} {:02}:{:02}:{:02} (UTC{:+2}:{:02})",
             day_of_week,
             self.days,
             month_name,
             self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            offset_hours,
+            offset_minutes
+        )
+    }
+
+    pub fn to_zh(&self) -> String {
+        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_minutes = self
+            .timezone_offset
+            .rem_euclid(SECONDS_PER_HOUR as i32)
+            .div_euclid(SECONDS_PER_MINUTE as i32);
+
+        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
+
+        let day_of_week = match (days_since_unix + 4).rem_euclid(7) {
+            0 => "星期日",
+            1 => "星期一",
+            2 => "星期二",
+            3 => "星期三",
+            4 => "星期四",
+            5 => "星期五",
+            6 => "星期六",
+            _ => "???",
+        };
+
+        format!(
+            "{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{:+2}:{:02})",
+            self.years,
+            self.months,
+            self.days,
+            day_of_week,
             self.hours,
             self.minutes,
             self.seconds,
@@ -230,6 +265,10 @@ impl mlua::UserData for DateTime {
 
         methods.add_method("humanise", |context: &mlua::Lua, this: &DateTime, _: ()| {
             Ok(this.humanise().into_lua(context))
+        });
+
+        methods.add_method("toZH", |context: &mlua::Lua, this: &DateTime, _: ()| {
+            Ok(this.to_zh().into_lua(context))
         });
 
         methods.add_meta_method(
