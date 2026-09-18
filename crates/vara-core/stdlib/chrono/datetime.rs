@@ -29,6 +29,7 @@ pub struct DateTime {
     hours: i64,
     minutes: i64,
     seconds: i64,
+    milliseconds: i64,
 }
 
 impl DateTime {
@@ -42,6 +43,7 @@ impl DateTime {
             hours: 0,
             minutes: 0,
             seconds: 0,
+            milliseconds: 0,
         };
 
         // precompute date and time for further use
@@ -88,6 +90,7 @@ impl DateTime {
         self.hours = seconds_of_day.div_euclid(SECONDS_PER_HOUR);
         self.minutes = (seconds_of_day % SECONDS_PER_HOUR) / SECONDS_PER_MINUTE;
         self.seconds = seconds_of_day % SECONDS_PER_MINUTE;
+        self.milliseconds = self.unix_ms.rem_euclid(1000);
     }
 }
 
@@ -103,13 +106,14 @@ impl mlua::UserData for DateTime {
                     .div_euclid(SECONDS_PER_MINUTE as i32);
 
                 let result = format!(
-                    "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}{:+03}:{:02}",
+                    "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{:+03}:{:02}",
                     this.years,
                     this.months,
                     this.days,
                     this.hours,
                     this.minutes,
                     this.seconds,
+                    this.milliseconds,
                     offset_hours,
                     offset_minutes
                 )
