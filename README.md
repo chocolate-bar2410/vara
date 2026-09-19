@@ -25,7 +25,7 @@ Applications target desktop and potentially mobile.
     - [x] io
     - [x] file system
     - [x] serde
-    - [ ] chrono
+    - [x] chrono
     - [ ] process
     - [ ] media
 - [x] require
