@@ -1,4 +1,5 @@
 use mlua::IntoLua;
+use std::cmp::Ordering;
 
 const SECONDS_PER_MINUTE: i64 = 60;
 const MINUTES_PER_HOUR: i64 = 60;
@@ -15,6 +16,7 @@ const DAYS_PER_ERA: i64 = 146097;
 
 const UNIX_EPOCH_TO_MARCH_EPOCH: i64 = 719468;
 
+#[derive(Debug, Clone, Copy)]
 pub struct DateTime {
     unix_ms: i64,
 
@@ -65,9 +67,13 @@ impl DateTime {
         let era = days_since_march_epoch.div_euclid(DAYS_PER_ERA);
 
         let day_of_era = days_since_march_epoch - era * DAYS_PER_ERA;
-        let year_of_era = (day_of_era - day_of_era / (DAYS_PER_QUADRENNIA - 1) + day_of_era / DAYS_PER_CENTURY - day_of_era / (DAYS_PER_ERA - 1)).div_euclid(DAYS_PER_YEAR);
+        let year_of_era = (day_of_era - day_of_era / (DAYS_PER_QUADRENNIA - 1)
+            + day_of_era / DAYS_PER_CENTURY
+            - day_of_era / (DAYS_PER_ERA - 1))
+            .div_euclid(DAYS_PER_YEAR);
 
-        let day_of_year = day_of_era - (DAYS_PER_YEAR * year_of_era + year_of_era / 4 - year_of_era / 100);
+        let day_of_year =
+            day_of_era - (DAYS_PER_YEAR * year_of_era + year_of_era / 4 - year_of_era / 100);
 
         let march_based_month = (5 * day_of_year + 2) / 153;
 
@@ -109,7 +115,18 @@ impl DateTime {
     pub fn to_iso8601(&self) -> String {
         let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
-        format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{sign}{:02}:{:02}", self.years, self.months, self.days, self.hours, self.minutes, self.seconds, self.milliseconds, offset_hours, offset_minutes)
+        format!(
+            "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{sign}{:02}:{:02}",
+            self.years,
+            self.months,
+            self.days,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            self.milliseconds,
+            offset_hours,
+            offset_minutes
+        )
     }
 
     pub fn to_rfc2822(&self) -> String {
@@ -144,7 +161,18 @@ impl DateTime {
             _ => "Unknown",
         };
 
-        format!("{}, {:02} {} {:04} {:02}:{:02}:{:02} {sign}{:02}{:02}", day_of_week, self.days, month_name, self.years, self.hours, self.minutes, self.seconds, offset_hours, offset_minutes)
+        format!(
+            "{}, {:02} {} {:04} {:02}:{:02}:{:02} {sign}{:02}{:02}",
+            day_of_week,
+            self.days,
+            month_name,
+            self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            offset_hours,
+            offset_minutes
+        )
     }
 
     pub fn humanise(&self) -> String {
@@ -180,7 +208,18 @@ impl DateTime {
             _ => "Unknown",
         };
 
-        format!("{}, {} {} {} {:02}:{:02}:{:02} (UTC{sign}{:1}:{:02})", day_of_week, self.days, month_name, self.years, self.hours, self.minutes, self.seconds, offset_hours, offset_minutes)
+        format!(
+            "{}, {} {} {} {:02}:{:02}:{:02} (UTC{sign}{:1}:{:02})",
+            day_of_week,
+            self.days,
+            month_name,
+            self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            offset_hours,
+            offset_minutes
+        )
     }
 
     pub fn to_zh(&self) -> String {
@@ -200,7 +239,18 @@ impl DateTime {
             _ => "???",
         };
 
-        format!("{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{sign}{:1}:{:02})", self.years, self.months, self.days, day_of_week, self.hours, self.minutes, self.seconds, offset_hours, offset_minutes)
+        format!(
+            "{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{sign}{:1}:{:02})",
+            self.years,
+            self.months,
+            self.days,
+            day_of_week,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            offset_hours,
+            offset_minutes
+        )
     }
 
     pub fn to_apache_log(&self) -> String {
@@ -222,7 +272,38 @@ impl DateTime {
             _ => "Unknown",
         };
 
-        format!("[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {sign}{:02}{:02}]", self.days, month_name, self.years, self.hours, self.minutes, self.seconds, self.milliseconds, offset_hours, offset_minutes)
+        format!(
+            "[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {sign}{:02}{:02}]",
+            self.days,
+            month_name,
+            self.years,
+            self.hours,
+            self.minutes,
+            self.seconds,
+            self.milliseconds,
+            offset_hours,
+            offset_minutes
+        )
+    }
+}
+
+impl PartialEq for DateTime {
+    fn eq(&self, other: &Self) -> bool {
+        self.unix_ms == other.unix_ms
+    }
+}
+
+impl Eq for DateTime {}
+
+impl PartialOrd for DateTime {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+impl Ord for DateTime {
+    fn cmp(&self, other: &Self) -> Ordering {
+        self.unix_ms.cmp(&other.unix_ms)
     }
 }
 
@@ -248,10 +329,32 @@ impl mlua::UserData for DateTime {
     fn add_methods<M: mlua::prelude::LuaUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("toISO8601", |_, this, ()| Ok(this.to_iso8601()));
         methods.add_method("toRFC2822", |_, this, ()| Ok(this.to_rfc2822()));
+
         methods.add_method("humanise", |_, this, ()| Ok(this.humanise()));
         methods.add_method("toZH", |_, this, ()| Ok(this.to_zh()));
         methods.add_method("toApacheLog", |_, this, ()| Ok(this.to_apache_log()));
 
-        methods.add_meta_method(mlua::MetaMethod::ToString, |_, this, ()| Ok(this.to_iso8601()));
+        methods.add_meta_method(mlua::MetaMethod::ToString, |_, this, ()| {
+            Ok(this.to_iso8601())
+        });
+
+        methods.add_meta_method(
+            mlua::MetaMethod::Eq,
+            |_, this, other: mlua::UserDataRef<Self>| Ok(this.eq(&other)),
+        );
+
+        methods.add_meta_method(
+            mlua::MetaMethod::Lt,
+            |_, this, other: mlua::UserDataRef<Self>| {
+                Ok(matches!(this.cmp(&other), Ordering::Less))
+            },
+        );
+
+        methods.add_meta_method(
+            mlua::MetaMethod::Le,
+            |_, this, other: mlua::UserDataRef<Self>| {
+                Ok(matches!(this.cmp(&other), Ordering::Less | Ordering::Equal))
+            },
+        );
     }
 }

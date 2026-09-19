@@ -1,12 +1,22 @@
 local chrono = require("@vara/chrono")
 
-local timestamp = chrono.now()
-timestamp.timeOffset = -5.5
+local current = os.time()
+local timestampA = chrono.fromUnix(current)
+local timestampB = chrono.fromUnix(current)
 
-print(timestamp)
+timestampA.timeOffset = 10
 
-print(`ISO8601:   {timestamp:toISO8601()}`)
-print(`RFC2822:   {timestamp:toRFC2822()}`)
-print(`humanised: {timestamp:humanise()}`)
-print(`中国:      {timestamp:toZH()}`)
-print(`Apache:   {timestamp:toApacheLog()}`)
+print(timestampA == timestampB)
+print(timestampA < timestampB)
+print(timestampA <= timestampB)
+
+
+print(timestampA)
+
+-- print(`ISO8601:   {timestampA:toISO8601()}`)
+-- print(`RFC2822:   {timestampA:toRFC2822()}`)
+-- print(`humanised: {timestampA:humanise()}`)
+-- print(`中国:      {timestampA:toZH()}`)
+-- print(`Apache:   {timestampA:toApacheLog()}`)
+
+
