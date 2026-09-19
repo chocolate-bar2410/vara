@@ -18,8 +18,16 @@ print(`humanised: {timestampC:humanise()}`)
 print(`中国:      {timestampC:toZH()}`)
 print(`Apache:   {timestampC:toApacheLog()}`)
 
-local timestampD = chrono.now()
-timestampD.timeOffset = 0
-timestampD.year = 2007
+local timestampD = chrono.fromUniversal({
+    year = 2025,
+    month = 9,
+    day = 10,
 
+    hour = 18,
+    minute = 20,
+    second = 0,
+    millisecond = 0,
+})
+
+timestampD.timeOffset = 10
 print(timestampD:humanise())
