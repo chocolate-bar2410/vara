@@ -1,6 +1,8 @@
 use mlua::IntoLua;
 use std::cmp::Ordering;
 
+use super::param_values::DateTimeParams;
+
 const SECONDS_PER_MINUTE: i64 = 60;
 const MINUTES_PER_HOUR: i64 = 60;
 
@@ -53,6 +55,42 @@ impl DateTime {
         new_date_time.compute_time();
 
         new_date_time
+    }
+
+    pub fn from_params(params: &DateTimeParams) -> Self {
+        let year_corrected = (params.years - if params.months <= 2 { 1 } else { 0 }) as i64;
+
+        let era = (if year_corrected >= 0 {
+            year_corrected
+        } else {
+            year_corrected - 399
+        } as i64)
+            .div_euclid(YEARS_PER_ERA);
+
+        let year_of_era = (year_corrected - era * YEARS_PER_ERA) as u64;
+        let march_based_month = if params.months > 2 {
+            params.months - 3
+        } else {
+            params.months + 9
+        };
+
+        let day_of_year = ((153 * march_based_month + 2) / 5 + params.days - 1) as u64;
+
+        let day_of_era = year_of_era * DAYS_PER_YEAR as u64 + year_of_era / 4 as u64
+            - year_of_era / 100 as u64
+            + day_of_year;
+
+        let days_since_unix: i64 =
+            era as i64 * DAYS_PER_ERA + day_of_era as i64 - UNIX_EPOCH_TO_MARCH_EPOCH;
+
+        let seconds_since_unix = days_since_unix * SECONDS_PER_DAY
+            + params.hours as i64 * SECONDS_PER_HOUR
+            + params.minutes as i64 * SECONDS_PER_MINUTE
+            + params.seconds as i64;
+
+        let unix_ms = seconds_since_unix * 1000 + params.milliseconds as i64;
+
+        DateTime::new(unix_ms, 0)
     }
 
     fn compute_date(&mut self) {

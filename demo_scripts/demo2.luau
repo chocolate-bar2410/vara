@@ -17,3 +17,16 @@ print(`RFC2822:   {timestampC:toRFC2822()}`)
 print(`humanised: {timestampC:humanise()}`)
 print(`中国:      {timestampC:toZH()}`)
 print(`Apache:   {timestampC:toApacheLog()}`)
+
+local timestampD = chrono.fromUniversal({
+    year = 0,
+    month = 1,
+    day = 1,
+
+    hour = 0,
+    minute = 0,
+    second = 0,
+    millisecond = 0,
+})
+
+print(timestampD:humanise())

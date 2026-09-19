@@ -1,5 +1,5 @@
 use mlua::ExternalError;
-use vara_util::table_builder::TableBuilder;
+// use vara_util::table_builder::TableBuilder;
 
 #[derive(Debug, Clone, Copy)]
 pub struct DateTimeParams {
@@ -14,13 +14,13 @@ pub struct DateTimeParams {
 }
 impl DateTimeParams {
     pub fn verify(self) -> mlua::Result<Self> {
-        verify_in_range("years", self.years, 0, 0)?;
-        verify_in_range("months", self.months, 0, 0)?;
-        verify_in_range("days", self.days, 0, 0)?;
-        verify_in_range("hours", self.hours, 0, 0)?;
-        verify_in_range("minutes", self.minutes, 0, 0)?;
-        verify_in_range("seconds", self.seconds, 0, 0)?;
-        verify_in_range("milliseconds", self.milliseconds, 0, 0)?;
+        verify_in_range("years", self.years, -9999, 9999)?;
+        verify_in_range("months", self.months, 1, 12)?;
+        verify_in_range("days", self.days, 1, 31)?;
+        verify_in_range("hours", self.hours, 0, 24)?;
+        verify_in_range("minutes", self.minutes, 0, 59)?;
+        verify_in_range("seconds", self.seconds, 0, 59)?;
+        verify_in_range("milliseconds", self.milliseconds, 0, 999)?;
         Ok(self)
     }
 }
@@ -30,7 +30,7 @@ where
     T: PartialOrd + std::fmt::Display,
 {
     assert!(max > min);
-    if (value <= max && value >= min) {
+    if value <= max && value >= min {
         return Ok(());
     }
 
@@ -45,14 +45,14 @@ impl mlua::FromLua for DateTimeParams {
 
         let value = value.as_table().unwrap();
         let parameters = Self {
-            years: value.get("years")?,
-            months: value.get("months")?,
-            days: value.get("days")?,
+            years: value.get("year")?,
+            months: value.get("month")?,
+            days: value.get("day")?,
 
-            hours: value.get("hours")?,
-            minutes: value.get("minutes")?,
-            seconds: value.get("seconds")?,
-            milliseconds: value.get("milliseconds").unwrap_or(0),
+            hours: value.get("hour")?,
+            minutes: value.get("minute")?,
+            seconds: value.get("second")?,
+            milliseconds: value.get("millisecond").unwrap_or(0),
         };
 
         match parameters.verify() {

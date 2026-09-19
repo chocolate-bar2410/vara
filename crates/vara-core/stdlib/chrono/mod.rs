@@ -4,7 +4,8 @@ use std::time::{SystemTime, UNIX_EPOCH};
 
 use vara_util::table_builder::TableBuilder;
 
-use crate::stdlib::chrono::datetime::DateTime;
+use datetime::DateTime;
+use param_values::DateTimeParams;
 
 fn now(_: &mlua::Lua, _: ()) -> mlua::Result<DateTime> {
     let sys_time: i64 = SystemTime::now()
@@ -31,5 +32,8 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_function("now", now)?
         .add_function("fromUnix", from_unix)?
+        .add_function("fromUniversal", |_, params: DateTimeParams| {
+            Ok(DateTime::from_params(&params))
+        })?
         .build_readonly()
 }
