@@ -21,6 +21,17 @@ impl TableBuilder {
         Ok(self)
     }
 
+    pub fn add_values<K, V>(self, keyvalues: Vec<(K, V)>) -> mlua::Result<Self>
+    where
+        K: mlua::IntoLua,
+        V: mlua::IntoLua,
+    {
+        for (key, value) in keyvalues {
+            self.result.set(key, value)?;
+        }
+        Ok(self)
+    }
+
     pub fn add_function<A, R, K, F>(self, key: K, callback: F) -> mlua::Result<Self>
     where
         A: mlua::FromLuaMulti,
