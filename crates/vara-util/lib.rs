@@ -1,6 +1,9 @@
 pub mod path;
 pub mod table_builder;
 
+#[cfg(windows)]
+pub mod win_compat;
+
 pub mod constants {
     pub const FILE_CHUNK_PREFIX: char = '@';
     pub const FILE_NAME_INIT: &str = "init";

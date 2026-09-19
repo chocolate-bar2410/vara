@@ -14,7 +14,10 @@ fn now(_: &mlua::Lua, _: ()) -> mlua::Result<DateTime> {
         .try_into()
         .map_err(|e| mlua::Error::external(e))?;
 
-    Ok(DateTime::new(sys_time, 0))
+    Ok(DateTime::new(
+        sys_time,
+        vara_util::win_compat::get_timezone_offset(),
+    ))
 }
 
 fn from_unix(_: &mlua::Lua, unix_time: i64) -> mlua::Result<DateTime> {

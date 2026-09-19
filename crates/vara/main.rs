@@ -5,12 +5,9 @@ mod luau;
 mod require;
 mod require_loader;
 
-#[cfg(windows)]
-mod win_compat;
-
 fn main() -> ExitCode {
     #[cfg(windows)]
-    win_compat::init();
+    vara_util::win_compat::init();
 
     match cli::run() {
         Ok(_) => ExitCode::SUCCESS,
