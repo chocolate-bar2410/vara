@@ -93,8 +93,8 @@ impl DateTime {
         self.milliseconds = self.unix_ms.rem_euclid(1000);
     }
 
-    pub fn to_iso8601(&self) -> String {
-        let sign = if self.time_offset < 0 { "-" } else { "+" };
+    fn get_offset_formatted(&self) -> (char, u32, u32) {
+        let sign = if self.time_offset < 0 { '-' } else { '+' };
 
         let offset_hours = self
             .time_offset
@@ -106,6 +106,12 @@ impl DateTime {
             .unsigned_abs()
             .rem_euclid(SECONDS_PER_HOUR as u32)
             .div_euclid(SECONDS_PER_MINUTE as u32);
+
+        (sign, offset_hours, offset_minutes)
+    }
+
+    pub fn to_iso8601(&self) -> String {
+        let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
         format!(
             "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{sign}{:02}:{:02}",
@@ -122,11 +128,7 @@ impl DateTime {
     }
 
     pub fn to_rfc2822(&self) -> String {
-        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
-        let offset_minutes = self
-            .time_offset
-            .rem_euclid(SECONDS_PER_HOUR as i32)
-            .div_euclid(SECONDS_PER_MINUTE as i32);
+        let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
         let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
@@ -158,7 +160,7 @@ impl DateTime {
         };
 
         format!(
-            "{}, {:02} {} {:04} {:02}:{:02}:{:02} {:+03}{:02}",
+            "{}, {:02} {} {:04} {:02}:{:02}:{:02} {sign}{:02}{:02}",
             day_of_week,
             self.days,
             month_name,
@@ -172,11 +174,7 @@ impl DateTime {
     }
 
     pub fn humanise(&self) -> String {
-        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
-        let offset_minutes = self
-            .time_offset
-            .rem_euclid(SECONDS_PER_HOUR as i32)
-            .div_euclid(SECONDS_PER_MINUTE as i32);
+        let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
         let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
@@ -209,7 +207,7 @@ impl DateTime {
         };
 
         format!(
-            "{}, {} {} {} {:02}:{:02}:{:02} (UTC{:+2}:{:02})",
+            "{}, {} {} {} {:02}:{:02}:{:02} (UTC{sign}{:1}:{:02})",
             day_of_week,
             self.days,
             month_name,
@@ -223,11 +221,7 @@ impl DateTime {
     }
 
     pub fn to_zh(&self) -> String {
-        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
-        let offset_minutes = self
-            .time_offset
-            .rem_euclid(SECONDS_PER_HOUR as i32)
-            .div_euclid(SECONDS_PER_MINUTE as i32);
+        let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
         let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
@@ -244,7 +238,7 @@ impl DateTime {
         };
 
         format!(
-            "{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{:+2}:{:02})",
+            "{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{sign}{:1}:{:02})",
             self.years,
             self.months,
             self.days,
@@ -258,11 +252,7 @@ impl DateTime {
     }
 
     pub fn to_apache_log(&self) -> String {
-        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
-        let offset_minutes = self
-            .time_offset
-            .rem_euclid(SECONDS_PER_HOUR as i32)
-            .div_euclid(SECONDS_PER_MINUTE as i32);
+        let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
         let month_name = match self.months {
             1 => "Jan",
@@ -281,7 +271,7 @@ impl DateTime {
         };
 
         format!(
-            "[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {:+03}{:02}]",
+            "[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {sign}{:02}{:02}]",
             self.days,
             month_name,
             self.years,
