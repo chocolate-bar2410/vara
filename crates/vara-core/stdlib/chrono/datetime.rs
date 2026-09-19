@@ -65,13 +65,9 @@ impl DateTime {
         let era = days_since_march_epoch.div_euclid(DAYS_PER_ERA);
 
         let day_of_era = days_since_march_epoch - era * DAYS_PER_ERA;
-        let year_of_era = (day_of_era - day_of_era / (DAYS_PER_QUADRENNIA - 1)
-            + day_of_era / DAYS_PER_CENTURY
-            - day_of_era / (DAYS_PER_ERA - 1))
-            .div_euclid(DAYS_PER_YEAR);
+        let year_of_era = (day_of_era - day_of_era / (DAYS_PER_QUADRENNIA - 1) + day_of_era / DAYS_PER_CENTURY - day_of_era / (DAYS_PER_ERA - 1)).div_euclid(DAYS_PER_YEAR);
 
-        let day_of_year =
-            day_of_era - (DAYS_PER_YEAR * year_of_era + year_of_era / 4 - year_of_era / 100);
+        let day_of_year = day_of_era - (DAYS_PER_YEAR * year_of_era + year_of_era / 4 - year_of_era / 100);
 
         let march_based_month = (5 * day_of_year + 2) / 153;
 
@@ -113,18 +109,7 @@ impl DateTime {
     pub fn to_iso8601(&self) -> String {
         let (sign, offset_hours, offset_minutes) = self.get_offset_formatted();
 
-        format!(
-            "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{sign}{:02}:{:02}",
-            self.years,
-            self.months,
-            self.days,
-            self.hours,
-            self.minutes,
-            self.seconds,
-            self.milliseconds,
-            offset_hours,
-            offset_minutes
-        )
+        format!("{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{sign}{:02}:{:02}", self.years, self.months, self.days, self.hours, self.minutes, self.seconds, self.milliseconds, offset_hours, offset_minutes)
     }
 
     pub fn to_rfc2822(&self) -> String {
@@ -159,18 +144,7 @@ impl DateTime {
             _ => "Unknown",
         };
 
-        format!(
-            "{}, {:02} {} {:04} {:02}:{:02}:{:02} {sign}{:02}{:02}",
-            day_of_week,
-            self.days,
-            month_name,
-            self.years,
-            self.hours,
-            self.minutes,
-            self.seconds,
-            offset_hours,
-            offset_minutes
-        )
+        format!("{}, {:02} {} {:04} {:02}:{:02}:{:02} {sign}{:02}{:02}", day_of_week, self.days, month_name, self.years, self.hours, self.minutes, self.seconds, offset_hours, offset_minutes)
     }
 
     pub fn humanise(&self) -> String {
@@ -206,18 +180,7 @@ impl DateTime {
             _ => "Unknown",
         };
 
-        format!(
-            "{}, {} {} {} {:02}:{:02}:{:02} (UTC{sign}{:1}:{:02})",
-            day_of_week,
-            self.days,
-            month_name,
-            self.years,
-            self.hours,
-            self.minutes,
-            self.seconds,
-            offset_hours,
-            offset_minutes
-        )
+        format!("{}, {} {} {} {:02}:{:02}:{:02} (UTC{sign}{:1}:{:02})", day_of_week, self.days, month_name, self.years, self.hours, self.minutes, self.seconds, offset_hours, offset_minutes)
     }
 
     pub fn to_zh(&self) -> String {
@@ -237,18 +200,7 @@ impl DateTime {
             _ => "???",
         };
 
-        format!(
-            "{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{sign}{:1}:{:02})",
-            self.years,
-            self.months,
-            self.days,
-            day_of_week,
-            self.hours,
-            self.minutes,
-            self.seconds,
-            offset_hours,
-            offset_minutes
-        )
+        format!("{}年{}月{}日 {} {:02}时{:02}分{:02}秒 (UTC{sign}{:1}:{:02})", self.years, self.months, self.days, day_of_week, self.hours, self.minutes, self.seconds, offset_hours, offset_minutes)
     }
 
     pub fn to_apache_log(&self) -> String {
@@ -270,18 +222,7 @@ impl DateTime {
             _ => "Unknown",
         };
 
-        format!(
-            "[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {sign}{:02}{:02}]",
-            self.days,
-            month_name,
-            self.years,
-            self.hours,
-            self.minutes,
-            self.seconds,
-            self.milliseconds,
-            offset_hours,
-            offset_minutes
-        )
+        format!("[{:02}/{}/{}:{:02}:{:02}:{:02}.{:03} {sign}{:02}{:02}]", self.days, month_name, self.years, self.hours, self.minutes, self.seconds, self.milliseconds, offset_hours, offset_minutes)
     }
 }
 
@@ -305,33 +246,12 @@ impl mlua::UserData for DateTime {
         });
     }
     fn add_methods<M: mlua::prelude::LuaUserDataMethods<Self>>(methods: &mut M) {
-        methods.add_method(
-            "toISO8601",
-            |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_iso8601().into_lua(context)),
-        );
+        methods.add_method("toISO8601", |_, this, ()| Ok(this.to_iso8601()));
+        methods.add_method("toRFC2822", |_, this, ()| Ok(this.to_rfc2822()));
+        methods.add_method("humanise", |_, this, ()| Ok(this.humanise()));
+        methods.add_method("toZH", |_, this, ()| Ok(this.to_zh()));
+        methods.add_method("toApacheLog", |_, this, ()| Ok(this.to_apache_log()));
 
-        methods.add_method(
-            "toRFC2822",
-            |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_rfc2822().into_lua(context)),
-        );
-
-        methods.add_method("humanise", |context: &mlua::Lua, this: &DateTime, _: ()| {
-            Ok(this.humanise().into_lua(context))
-        });
-
-        methods.add_method("toZH", |context: &mlua::Lua, this: &DateTime, _: ()| {
-            Ok(this.to_zh().into_lua(context))
-        });
-        methods.add_method(
-            "toApacheLog",
-            |context: &mlua::Lua, this: &DateTime, _: ()| {
-                Ok(this.to_apache_log().into_lua(context))
-            },
-        );
-
-        methods.add_meta_method(
-            mlua::MetaMethod::ToString,
-            |context: &mlua::Lua, this: &DateTime, _: ()| Ok(this.to_iso8601().into_lua(context)),
-        );
+        methods.add_meta_method(mlua::MetaMethod::ToString, |_, this, ()| Ok(this.to_iso8601()));
     }
 }
