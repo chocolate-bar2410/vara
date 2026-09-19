@@ -57,7 +57,7 @@ impl DateTime {
         new_date_time
     }
 
-    pub fn from_params(params: &DateTimeParams) -> Self {
+    pub fn from_params(params: &DateTimeParams, time_offset: i32) -> Self {
         let year_corrected = (params.years - if params.months <= 2 { 1 } else { 0 }) as i64;
 
         let era = (if year_corrected >= 0 {
@@ -90,7 +90,7 @@ impl DateTime {
 
         let unix_ms = seconds_since_unix * 1000 + params.milliseconds as i64;
 
-        DateTime::new(unix_ms, 0)
+        DateTime::new(unix_ms, time_offset)
     }
 
     fn compute_date(&mut self) {

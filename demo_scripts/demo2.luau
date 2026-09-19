@@ -18,13 +18,13 @@ print(`humanised: {timestampC:humanise()}`)
 print(`中国:      {timestampC:toZH()}`)
 print(`Apache:   {timestampC:toApacheLog()}`)
 
-local timestampD = chrono.fromUniversal({
-    year = 0,
-    month = 1,
-    day = 1,
+local timestampD = chrono.fromLocal({
+    year = 2001,
+    month = 9,
+    day = 11,
 
-    hour = 0,
-    minute = 0,
+    hour = 12,
+    minute = 46,
     second = 0,
     millisecond = 0,
 })

@@ -33,7 +33,16 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("now", now)?
         .add_function("fromUnix", from_unix)?
         .add_function("fromUniversal", |_, params: DateTimeParams| {
-            Ok(DateTime::from_params(&params))
+            Ok(DateTime::from_params(&params, 0))
+        })?
+        .add_function("fromLocal", |_, params: DateTimeParams| {
+            #[cfg(target_family = "windows")]
+            let timeoffset = vara_util::win_compat::get_timezone_offset();
+
+            #[cfg(target_family = "unix")]
+            let timeoffset = 0;
+
+            Ok(DateTime::from_params(&params, timeoffset))
         })?
         .build_readonly()
 }
