@@ -58,7 +58,26 @@ impl DateTime {
     }
 
     pub fn from_params(params: &DateTimeParams, time_offset: i32) -> Self {
-        let year_corrected = (params.years - if params.months <= 2 { 1 } else { 0 }) as i64;
+        let mut new_date_time = DateTime {
+            unix_ms: 0,
+            time_offset: time_offset,
+            years: params.years as i64,
+            months: params.months as i64,
+            days: params.days as i64,
+            hours: params.hours as i64,
+            minutes: params.minutes as i64,
+            seconds: params.seconds as i64,
+            milliseconds: params.milliseconds as i64,
+        };
+
+        // precompute unix for further use
+        new_date_time.compute_unix();
+
+        new_date_time
+    }
+
+    fn compute_unix(&mut self) {
+        let year_corrected = (self.years - if self.months <= 2 { 1 } else { 0 }) as i64;
 
         let era = (if year_corrected >= 0 {
             year_corrected
@@ -68,13 +87,13 @@ impl DateTime {
             .div_euclid(YEARS_PER_ERA);
 
         let year_of_era = (year_corrected - era * YEARS_PER_ERA) as u64;
-        let march_based_month = if params.months > 2 {
-            params.months - 3
+        let march_based_month = if self.months > 2 {
+            self.months - 3
         } else {
-            params.months + 9
+            self.months + 9
         };
 
-        let day_of_year = ((153 * march_based_month + 2) / 5 + params.days - 1) as u64;
+        let day_of_year = ((153 * march_based_month + 2) / 5 + self.days - 1) as u64;
 
         let day_of_era = year_of_era * DAYS_PER_YEAR as u64 + year_of_era / 4 as u64
             - year_of_era / 100 as u64
@@ -84,13 +103,11 @@ impl DateTime {
             era as i64 * DAYS_PER_ERA + day_of_era as i64 - UNIX_EPOCH_TO_MARCH_EPOCH;
 
         let seconds_since_unix = days_since_unix * SECONDS_PER_DAY
-            + params.hours as i64 * SECONDS_PER_HOUR
-            + params.minutes as i64 * SECONDS_PER_MINUTE
-            + params.seconds as i64;
+            + self.hours as i64 * SECONDS_PER_HOUR
+            + self.minutes as i64 * SECONDS_PER_MINUTE
+            + self.seconds as i64;
 
-        let unix_ms = seconds_since_unix * 1000 + params.milliseconds as i64;
-
-        DateTime::new(unix_ms, time_offset)
+        self.unix_ms = seconds_since_unix * 1000 + self.milliseconds as i64;
     }
 
     fn compute_date(&mut self) {
