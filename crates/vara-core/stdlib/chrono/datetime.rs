@@ -19,7 +19,7 @@ pub struct DateTime {
     unix_ms: i64,
 
     // in seconds
-    timezone_offset: i32,
+    time_offset: i32,
 
     // precomputed values so i dont have to recalculate everything
     years: i64,
@@ -36,7 +36,7 @@ impl DateTime {
     pub fn new(unix_ms: i64, offset: i32) -> Self {
         let mut new_date_time = DateTime {
             unix_ms: unix_ms,
-            timezone_offset: offset,
+            time_offset: offset,
             years: 0,
             months: 0,
             days: 0,
@@ -54,7 +54,7 @@ impl DateTime {
     }
 
     fn compute_date(&mut self) {
-        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
 
         let days_since_march_epoch = days_since_unix + UNIX_EPOCH_TO_MARCH_EPOCH;
@@ -84,7 +84,7 @@ impl DateTime {
         }
     }
     fn compute_time(&mut self) {
-        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let seconds_of_day = total_seconds.rem_euclid(SECONDS_PER_DAY);
 
         self.hours = seconds_of_day.div_euclid(SECONDS_PER_HOUR);
@@ -94,14 +94,21 @@ impl DateTime {
     }
 
     pub fn to_iso8601(&self) -> String {
-        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let sign = if self.time_offset < 0 { "-" } else { "+" };
+
+        let offset_hours = self
+            .time_offset
+            .unsigned_abs()
+            .div_euclid(SECONDS_PER_HOUR as u32);
+
         let offset_minutes = self
-            .timezone_offset
-            .rem_euclid(SECONDS_PER_HOUR as i32)
-            .div_euclid(SECONDS_PER_MINUTE as i32);
+            .time_offset
+            .unsigned_abs()
+            .rem_euclid(SECONDS_PER_HOUR as u32)
+            .div_euclid(SECONDS_PER_MINUTE as u32);
 
         format!(
-            "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{:+03}:{:02}",
+            "{:04}-{:02}-{:02}T{:02}:{:02}:{:02}.{:03}{sign}{:02}:{:02}",
             self.years,
             self.months,
             self.days,
@@ -115,13 +122,13 @@ impl DateTime {
     }
 
     pub fn to_rfc2822(&self) -> String {
-        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
         let offset_minutes = self
-            .timezone_offset
+            .time_offset
             .rem_euclid(SECONDS_PER_HOUR as i32)
             .div_euclid(SECONDS_PER_MINUTE as i32);
 
-        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
         let day_of_week = match (days_since_unix + 4).rem_euclid(7) {
             0 => "Sun",
@@ -165,13 +172,13 @@ impl DateTime {
     }
 
     pub fn humanise(&self) -> String {
-        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
         let offset_minutes = self
-            .timezone_offset
+            .time_offset
             .rem_euclid(SECONDS_PER_HOUR as i32)
             .div_euclid(SECONDS_PER_MINUTE as i32);
 
-        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
 
         let day_of_week = match (days_since_unix + 4).rem_euclid(7) {
@@ -216,13 +223,13 @@ impl DateTime {
     }
 
     pub fn to_zh(&self) -> String {
-        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
         let offset_minutes = self
-            .timezone_offset
+            .time_offset
             .rem_euclid(SECONDS_PER_HOUR as i32)
             .div_euclid(SECONDS_PER_MINUTE as i32);
 
-        let total_seconds = (self.unix_ms / 1000) + self.timezone_offset as i64;
+        let total_seconds = (self.unix_ms.div_euclid(1000)) + self.time_offset as i64;
         let days_since_unix = total_seconds.div_euclid(SECONDS_PER_DAY);
 
         let day_of_week = match (days_since_unix + 4).rem_euclid(7) {
@@ -251,9 +258,9 @@ impl DateTime {
     }
 
     pub fn to_apache_log(&self) -> String {
-        let offset_hours = self.timezone_offset.div_euclid(SECONDS_PER_HOUR as i32);
+        let offset_hours = self.time_offset.div_euclid(SECONDS_PER_HOUR as i32);
         let offset_minutes = self
-            .timezone_offset
+            .time_offset
             .rem_euclid(SECONDS_PER_HOUR as i32)
             .div_euclid(SECONDS_PER_MINUTE as i32);
 
@@ -289,6 +296,24 @@ impl DateTime {
 }
 
 impl mlua::UserData for DateTime {
+    fn add_fields<F: mlua::prelude::LuaUserDataFields<Self>>(fields: &mut F) {
+        fields.add_field("timeOffset", 0);
+
+        fields.add_field_method_set("timeOffset", |_, this, value: f64| {
+            this.time_offset = (SECONDS_PER_HOUR as f64 * value) as i32;
+
+            this.compute_date();
+            this.compute_time();
+
+            Ok(())
+        });
+
+        fields.add_field_method_get("timeOffset", |context: &mlua::Lua, this| {
+            let result = this.time_offset as f64 / SECONDS_PER_HOUR as f64;
+
+            result.into_lua(context)
+        });
+    }
     fn add_methods<M: mlua::prelude::LuaUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method(
             "toISO8601",
