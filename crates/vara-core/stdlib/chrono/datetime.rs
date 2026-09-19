@@ -380,6 +380,59 @@ impl mlua::UserData for DateTime {
 
             result.into_lua(context)
         });
+
+        fields.add_field("year", 0);
+        fields.add_field("month", 0);
+        fields.add_field("day", 0);
+
+        fields.add_field("hour", 0);
+        fields.add_field("minute", 0);
+        fields.add_field("second", 0);
+        fields.add_field("millisecond", 0);
+
+        fields.add_field_method_get("year", |_, this| Ok(this.years));
+        fields.add_field_method_get("month", |_, this| Ok(this.months));
+        fields.add_field_method_get("day", |_, this| Ok(this.days));
+
+        fields.add_field_method_get("hour", |_, this| Ok(this.hours));
+        fields.add_field_method_get("minute", |_, this| Ok(this.minutes));
+        fields.add_field_method_get("second", |_, this| Ok(this.seconds));
+        fields.add_field_method_get("millisecond", |_, this| Ok(this.milliseconds));
+
+        fields.add_field_method_set("year", |_, this, value: i64| {
+            this.years = value;
+            Ok(this.compute_unix())
+        });
+
+        fields.add_field_method_set("month", |_, this, value: i64| {
+            this.months = value;
+            Ok(this.compute_unix())
+        });
+
+        fields.add_field_method_set("day", |_, this, value: i64| {
+            this.days = value;
+            Ok(this.compute_unix())
+        });
+
+        fields.add_field_method_set("hour", |_, this, value: i64| {
+            this.hours = value;
+            Ok(this.compute_unix())
+        });
+
+        fields.add_field_method_set("minute", |_, this, value: i64| {
+            this.minutes = value;
+            Ok(this.compute_unix())
+        });
+
+        fields.add_field_method_set("second", |_, this, value: i64| {
+            this.seconds = value;
+            Ok(this.compute_unix())
+        });
+
+        fields.add_field_method_set("millisecond", |_, this, value: i64| {
+            this.milliseconds = value;
+            Ok(this.compute_unix())
+        });
     }
     fn add_methods<M: mlua::prelude::LuaUserDataMethods<Self>>(methods: &mut M) {
         methods.add_method("toISO8601", |_, this, ()| Ok(this.to_iso8601()));
