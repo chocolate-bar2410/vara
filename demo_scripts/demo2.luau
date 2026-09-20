@@ -1,3 +1,4 @@
+--!strict
 local chrono = require("@vara/chrono")
 
 local current = os.time()
