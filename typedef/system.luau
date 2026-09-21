@@ -53,5 +53,15 @@ module.temp = (nil :: unknown) :: string
     The endianess of the processor being used.
 ]=]
 module.endian = (nil :: unknown) :: "big" | "little"
+--[=[
+
+]=]
+module.languagePreferences = (nil :: unknown) :: {
+    time : {string},
+    monetary : {string},
+    collation : {string},
+    message : {string},
+    numeric : {string},
+}
 
 return module
