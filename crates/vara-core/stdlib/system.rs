@@ -56,5 +56,9 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
             },
         )?
         .add_value("languagePreferences", get_language_preferences(context)?)?
+        .add_value("distro", match whoami::distro(){
+            Ok(distro) => distro,
+            _ => "unknown".to_string()
+        })?
         .build_readonly()
 }

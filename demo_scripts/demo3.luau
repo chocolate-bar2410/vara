@@ -9,4 +9,6 @@ print("cwd:",system.cwd)
 print("temp:",system.temp)
 print("endian:",system.endian)
 
-print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))
+print("distro:",system.distro)
+
+-- print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))

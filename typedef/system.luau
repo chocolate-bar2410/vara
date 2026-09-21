@@ -54,7 +54,11 @@ module.temp = (nil :: unknown) :: string
 ]=]
 module.endian = (nil :: unknown) :: "big" | "little"
 --[=[
+    @within process
+    @prop languagePreferences
+    @tag read_only
 
+    Language preferences set on the user's system.
 ]=]
 module.languagePreferences = (nil :: unknown) :: {
     time : {string},
@@ -63,5 +67,14 @@ module.languagePreferences = (nil :: unknown) :: {
     message : {string},
     numeric : {string},
 }
+
+--[=[
+    @within process
+    @prop distro
+    @tag read_only
+
+    What operating system distribution the system is using.
+]=]
+module.distro = (nil :: unknown) :: string
 
 return module
