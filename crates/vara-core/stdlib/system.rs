@@ -1,5 +1,5 @@
 use std::env::consts::{ARCH, FAMILY, OS};
-use mlua::IntoLua;
+use mlua::{ExternalError, IntoLua};
 use vara_util::table_builder::TableBuilder;
 
 use std::thread::available_parallelism as cpus_available;
@@ -46,7 +46,24 @@ fn get_language_preferences(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
 fn get_cpu_count(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::Value>{
     let count = cpus_available()?.get();
 
-    Ok(count.into_lua(&context)?)
+    Ok(count.into_lua(context)?)
+}
+
+fn get_physical_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::Value>{
+    let Some(usage) = memory_stats::memory_stats() else {
+       return Err("could not get memory usage".into_lua_err());
+    };
+
+    Ok(usage.physical_mem.into_lua(context)?)
+}
+
+
+fn get_virtual_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::Value>{
+    let Some(usage) = memory_stats::memory_stats() else {
+       return Err("could not get memory usage".into_lua_err());
+    };
+
+    Ok(usage.virtual_mem.into_lua(context)?)
 }
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
@@ -76,5 +93,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_value("processID", std::process::id())?
         .add_value("desktopEnvironment", whoami::desktop_env().map(|env| format!("{:?}",env)).unwrap_or_else(|| "Unknown".to_string()))?
         .add_function("processorCount", get_cpu_count)?
+        .add_function("physicalMemoryUsage", get_physical_memory_usage)?
+        .add_function("virtualMemoryUsage", get_virtual_memory_usage)?
         .build_readonly()
 }

@@ -15,4 +15,7 @@ print("cores:",system.processorCount())
 print("desktop:",system.desktopEnvironment)
 print("processID:",system.processID)
 
--- print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))
+print("physical memory usage:",system.physicalMemoryUsage())
+print("virtual memory usage:",system.virtualMemoryUsage())
+
+print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))

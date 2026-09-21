@@ -112,4 +112,20 @@ module.desktopEnvironment = (nil :: unknown) :: number
 ]=]
 module.processorCount = (nil :: unknown) :: () -> number
 
+--[=[
+    @within process
+    @method physicalMemoryUsage
+
+    @returns The ammount of physical memory being used up by the process.
+]=]
+module.physicalMemoryUsage = (nil :: unknown) :: () -> number
+
+--[=[
+    @within process
+    @method virtualMemoryUsage
+
+    @returns The ammount of virtual memory being used up by the process.
+]=]
+module.virtualMemoryUsage = (nil :: unknown) :: () -> number
+
 return module
