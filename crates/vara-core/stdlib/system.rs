@@ -74,6 +74,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
             _ => "unknown".to_string()
         })?
         .add_value("processID", std::process::id())?
+        .add_value("desktopEnvironment", whoami::desktop_env().map(|env| format!("{:?}",env)).unwrap_or_else(|| "Unknown".to_string()))?
         .add_function("processorCount", get_cpu_count)?
         .build_readonly()
 }

@@ -97,6 +97,15 @@ module.processID = (nil :: unknown) :: number
 
 --[=[
     @within process
+    @prop desktopEnvironment
+    @tag read_only
+
+    The desktop environment the system is using.
+]=]
+module.desktopEnvironment = (nil :: unknown) :: number
+
+--[=[
+    @within process
     @method processorCount
 
     @returns The number of logical CPUs available on the system.
