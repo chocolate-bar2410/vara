@@ -5,9 +5,11 @@ local pretty_table = require("./pretty_table")
 print("os:",system.os)
 print("arch:",system.arch)
 print("family:",system.family)
+print("endian:",system.endian)
+
 print("cwd:",system.cwd)
 print("temp:",system.temp)
-print("endian:",system.endian)
+print("home:",system.home)
 
 print("distro:",system.distro)
 print("cores:",system.processorCount())

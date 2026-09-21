@@ -66,22 +66,33 @@ fn get_virtual_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::V
     Ok(usage.virtual_mem.into_lua(context)?)
 }
 
+fn get_home_directory() -> Option<String>{
+    #[cfg(target_family = "windows")]{
+        std::env::var("USERPROFILE").ok()
+    }
+
+    #[cfg(not(target_family = "windows"))]{
+        std::env::var("HOME").ok()
+    }
+
+}
+
 pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::Table> {
     dotenvy::dotenv().map_err(|err| err.into_lua_err())?;
-    
+
     TableBuilder::new(context.clone())?
         .add_value("os", OS)?
         .add_value("arch", ARCH)?
         .add_value("family", FAMILY)?
         .add_value("cwd", std::env::current_dir()?)?
         .add_value("temp", std::env::temp_dir())?
+        .add_value("home", match get_home_directory(){
+            Some(home_dir) => home_dir,
+            None => "unknown".to_string(),
+        })?
         .add_value(
             "endian",
-            if cfg!(target_endian = "big") {
-                "big"
-            } else {
-                "little"
-            },
+            if cfg!(target_endian = "big") {"big"} else {"little"}
         )?
         .add_value("languagePreferences", get_language_preferences(context)?)?
         .add_value("distro", match whoami::distro(){

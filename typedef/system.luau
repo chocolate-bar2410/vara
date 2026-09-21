@@ -47,6 +47,14 @@ module.cwd = (nil :: unknown) :: string
 module.temp = (nil :: unknown) :: string
 --[=[
 	@within process
+	@prop home
+	@tag read_only
+
+    The home directory.
+]=]
+module.home = (nil :: unknown) :: string
+--[=[
+	@within process
 	@prop endian
 	@tag read_only
 
