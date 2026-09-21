@@ -38,12 +38,16 @@ struct CLI {
 
 #[derive(Subcommand)]
 enum Commands {
+    #[command(trailing_var_arg = true)]
     Run(RunArgs),
 }
 
-#[derive(Parser)]
+#[derive(clap::Args)]
 struct RunArgs {
     path: PathBuf,
+
+    #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
+    args: Vec<String>,
 }
 
 pub fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -51,8 +55,10 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
 
     match cli.command {
         Some(Commands::Run(args)) => {
-            let mut current = luau::Runtime::new()?;
             let path = args.path;
+            let trailing_args = args.args;
+            let mut current = luau::Runtime::new(trailing_args)?;
+            
             match current.run(&path) {
                 Ok(()) => Ok(println!("file {} ran successfully!", path.display())),
                 Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),

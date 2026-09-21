@@ -7,13 +7,14 @@ use crate::require;
 
 pub struct Runtime {
     vm: Lua,
+    args: Vec<String>
 }
 
 impl Runtime {
-    pub fn new() -> Result<Self, Box<dyn std::error::Error>> {
+    pub fn new(args: Vec<String>) -> Result<Self, Box<dyn std::error::Error>> {
         let lua = Lua::new_with(StdLib::ALL, LuaOptions::default()).unwrap();
 
-        let mut runtime = Self { vm: lua };
+        let mut runtime = Self { vm: lua,args: args };
 
         match runtime.setup_standard_library() {
             Ok(_) => Ok(runtime),
@@ -26,7 +27,7 @@ impl Runtime {
         let fs_lib = vara_stdlib::file::get_module(&self.vm)?;
         let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
         let chrono_lib = vara_stdlib::chrono::get_module(&self.vm)?;
-        let system_lib = vara_stdlib::system::get_module(&self.vm)?;
+        let system_lib = vara_stdlib::system::get_module(&self.vm,&self.args)?;
 
         self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;

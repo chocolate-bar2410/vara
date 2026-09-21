@@ -66,7 +66,7 @@ fn get_virtual_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::V
     Ok(usage.virtual_mem.into_lua(context)?)
 }
 
-pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
+pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::Table> {
     dotenvy::dotenv().map_err(|err| err.into_lua_err())?;
     
     TableBuilder::new(context.clone())?
@@ -95,6 +95,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_value("processID", std::process::id())?
         .add_value("desktopEnvironment", whoami::desktop_env().map(|env| format!("{:?}",env)).unwrap_or_else(|| "Unknown".to_string()))?
         .add_value("env", context.create_table_from(std::env::vars())?)?
+        .add_value("args", context.create_sequence_from(args.clone())?)?
         .add_function("processorCount", get_cpu_count)?
         .add_function("physicalMemoryUsage", get_physical_memory_usage)?
         .add_function("virtualMemoryUsage", get_virtual_memory_usage)?
