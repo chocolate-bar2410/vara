@@ -77,4 +77,13 @@ module.languagePreferences = (nil :: unknown) :: {
 ]=]
 module.distro = (nil :: unknown) :: string
 
+--[=[
+    @within process
+    @prop device
+    @tag read_only
+
+    The name of the device currently being used.
+]=]
+module.device = (nil :: unknown) :: string
+
 return module

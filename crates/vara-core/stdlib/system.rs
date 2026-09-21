@@ -60,5 +60,9 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
             Ok(distro) => distro,
             _ => "unknown".to_string()
         })?
+        .add_value("device",match whoami::devicename(){
+            Ok(device_name) => device_name,
+            _ => "unknown".to_string()
+        })?
         .build_readonly()
 }
