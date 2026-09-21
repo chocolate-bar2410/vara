@@ -106,6 +106,16 @@ module.desktopEnvironment = (nil :: unknown) :: number
 
 --[=[
     @within process
+    @prop env
+    @tag read_only
+
+    The environment variables declared by the system and a optional .env file.
+]=]
+module.env = (nil :: unknown) :: {[string] : string}
+
+
+--[=[
+    @within process
     @method processorCount
 
     @returns The number of logical CPUs available on the system.

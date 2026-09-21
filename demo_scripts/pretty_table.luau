@@ -1,6 +1,6 @@
 --!strict
 
-local function table_tostring(tab: { unknown }, depth: number)
+local function table_tostring<K,V>(tab: {[K] : V}, depth: number)
 	local result = "{\n"
 
 	local indent = string.rep(" ", 4 * depth)
@@ -13,7 +13,7 @@ local function table_tostring(tab: { unknown }, depth: number)
 
 			result ..= `{indent}[{i}] : {value}\n`
 		else
-			local inner = table_tostring(v :: { unknown }, depth + 1)
+			local inner = table_tostring(v :: {[K] : V}, depth + 1)
 
 			result ..= `{indent}[{i}] : {inner}\n`
 		end
@@ -22,6 +22,6 @@ local function table_tostring(tab: { unknown }, depth: number)
 	return result .. string.rep(" ", 4 * (depth - 1)) .. "}"
 end
 
-return function(tab: { unknown }) : string
+return function<K,V>(tab: {[K] : V}) : string
 	return table_tostring(tab, 1)
 end

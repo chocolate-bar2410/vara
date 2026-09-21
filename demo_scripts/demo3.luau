@@ -19,3 +19,5 @@ print("physical memory usage:",system.physicalMemoryUsage())
 print("virtual memory usage:",system.virtualMemoryUsage())
 
 print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))
+print("environment variables:",pretty_table(system.env))
+print("env TESTING:",system.env.TESTING)

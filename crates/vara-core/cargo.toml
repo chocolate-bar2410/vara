@@ -7,6 +7,7 @@ edition = "2024"
 path = "lib.rs"
 
 [dependencies]
+dotenvy = "0.15.7"
 memory-stats = "1.2.0"
 mlua = { version = "0.12.1", features = ["async", "luau-jit", "serde"] }
 serde = "1.0.229"
