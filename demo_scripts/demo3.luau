@@ -12,4 +12,6 @@ print("endian:",system.endian)
 print("distro:",system.distro)
 print("available cores:",system.processorCount())
 
+print("processID:",system.processID)
+
 -- print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))

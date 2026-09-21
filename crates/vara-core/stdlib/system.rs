@@ -73,6 +73,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
             Ok(device_name) => device_name,
             _ => "unknown".to_string()
         })?
+        .add_value("processID", std::process::id())?
         .add_function("processorCount", get_cpu_count)?
         .build_readonly()
 }

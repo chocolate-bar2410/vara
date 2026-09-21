@@ -88,6 +88,15 @@ module.device = (nil :: unknown) :: string
 
 --[=[
     @within process
+    @prop processID
+    @tag read_only
+
+    The PID of the current process.
+]=]
+module.processID = (nil :: unknown) :: number
+
+--[=[
+    @within process
     @method processorCount
 
     @returns The number of logical CPUs available on the system.
