@@ -1,0 +1,57 @@
+--[=[
+    @class process
+    Built in class for accessing system info.
+]=]
+local module = {}
+
+
+--[=[
+    @within process
+    @prop os
+    @tag read_only
+
+    The operating system being used.
+]=]
+module.os = (nil :: unknown) :: "linux" | "macos" | "windows"
+--[=[
+    @within process
+    @prop arch
+    @tag read_only
+
+    The architecture of the processor thats currently being used.
+]=]
+module.arch = (nil :: unknown) :: "x86_64" | "aarch64"
+--[=[
+    @within process
+    @prop family
+    @tag read_only
+
+    The family of operating system being used.
+]=]
+module.family = (nil :: unknown) :: "unix" | "windows"
+--[=[
+    @within process
+    @prop cwd
+    @tag read_only
+
+    The current working directory.
+]=]
+module.cwd = (nil :: unknown) :: string
+--[=[
+    @within process
+    @prop temp
+    @tag read_only
+
+    The temp directory.
+]=]
+module.temp = (nil :: unknown) :: string
+--[=[
+    @within process
+    @prop endian
+    @tag read_only
+
+    The endianess of the processor being used.
+]=]
+module.endian = (nil :: unknown) :: "big" | "little"
+
+return module
