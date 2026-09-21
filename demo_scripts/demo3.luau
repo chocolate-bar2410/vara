@@ -10,6 +10,6 @@ print("temp:",system.temp)
 print("endian:",system.endian)
 
 print("distro:",system.distro)
-print("device:",system.device)
+print("available cores:",system.processorCount())
 
 -- print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))

@@ -86,4 +86,12 @@ module.distro = (nil :: unknown) :: string
 ]=]
 module.device = (nil :: unknown) :: string
 
+--[=[
+    @within process
+    @method processorCount
+
+    @returns The number of logical CPUs available on the system.
+]=]
+module.processorCount = (nil :: unknown) :: () -> number
+
 return module

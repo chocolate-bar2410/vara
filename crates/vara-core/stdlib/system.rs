@@ -1,5 +1,8 @@
 use std::env::consts::{ARCH, FAMILY, OS};
+use mlua::IntoLua;
 use vara_util::table_builder::TableBuilder;
+
+use std::thread::available_parallelism as cpus_available;
 
 fn get_language_preferences(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     let lang_preference: whoami::LanguagePreferences = whoami::lang_prefs().unwrap_or_default();
@@ -40,6 +43,12 @@ fn get_language_preferences(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .build_readonly()
 }
 
+fn get_cpu_count(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::Value>{
+    let count = cpus_available()?.get();
+
+    Ok(count.into_lua(&context)?)
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_value("os", OS)?
@@ -64,5 +73,6 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
             Ok(device_name) => device_name,
             _ => "unknown".to_string()
         })?
+        .add_function("processorCount", get_cpu_count)?
         .build_readonly()
 }
