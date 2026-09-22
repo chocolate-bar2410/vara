@@ -30,14 +30,7 @@ impl Image {
         Ok(this)
     }
 
-    #[lua(infallible)]
-    pub fn zero_channel(&mut self, channel: usize) {
-        for pixel in self.data.chunks_exact_mut(4) {
-            pixel[channel] = 0;
-        }
-    }
-
-    pub fn flip(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
+    pub fn flop(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
 
         {
             let mut img = this.borrow_mut::<Image>()?;
@@ -55,6 +48,34 @@ impl Image {
                         None => {
                             for c in 0..4 {
                                 img.data.swap(left + c,right + c);
+                            }
+                        }
+                    }
+                }   
+            }
+        }
+
+        Ok(this)
+    }
+
+    pub fn flip(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
+
+        {
+            let mut img = this.borrow_mut::<Image>()?;
+            
+            let width = img.width as usize;
+            let height = img.height as usize;
+
+            for y in 0..height/ 2 {
+                for x in 0..width  {
+                    let top = (y * width + x) * 4;
+                    let bottom = ((width - 1 - y) * width + x) * 4;
+
+                    match colour_channel {
+                        Some(channel) => img.data.swap(top + channel as usize,bottom + channel as usize),
+                        None => {
+                            for c in 0..4 {
+                                img.data.swap(top + c,bottom + c);
                             }
                         }
                     }

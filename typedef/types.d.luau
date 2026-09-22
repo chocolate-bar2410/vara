@@ -103,9 +103,19 @@ declare extern type Image with
         @param channel Optional parameter to only flip a single colour channel.
         @return itself
 
-        Horizontally flips an image.
+        Vertically mirrors an image.
     ]=]
     function flip(self,channel: number?) : Image
+        
+     --[=[
+        @within Image
+        @method flop
+        @param channel Optional parameter to only flip a single colour channel.
+        @return itself
+
+        Horizontally mirrors an image.
+    ]=]
+    function flop(self,channel: number?) : Image
 
     function __tostring(self): string
 end
