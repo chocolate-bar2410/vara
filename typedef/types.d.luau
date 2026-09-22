@@ -126,5 +126,17 @@ declare extern type Image with
     ]=]
     function greyscale(self) : Image
 
+    --[=[
+        @within Image
+        @method convolve
+        @param width The width of the kernel.
+        @param height The height of the kernel.
+        @param kernel The kernel applied during the convolution.
+        @return itself
+
+        Performs a convolution on the image using the provided kernel.
+    ]=]
+    function convolve(self,width : number,height : number,kernel : {number}) : Image
+
     function __tostring(self): string
 end

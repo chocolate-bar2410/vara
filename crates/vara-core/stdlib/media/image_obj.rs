@@ -21,8 +21,14 @@ impl Image {
     }
 
     pub fn dimensions(this : AnyUserData,width : u32,height : u32) -> mlua::Result<AnyUserData>{
+
         {
             let mut img = this.borrow_mut::<Image>()?;
+
+            if img.data.len() as u32 != width * height {
+                return Err("image dimension does not properly match size params".into_lua_err())
+            }
+
             img.width = width;
             img.height = height;
         }
@@ -69,7 +75,7 @@ impl Image {
             for y in 0..height/ 2 {
                 for x in 0..width  {
                     let top = (y * width + x) * 4;
-                    let bottom = ((width - 1 - y) * width + x) * 4;
+                    let bottom = ((height - 1 - y) * width + x) * 4;
 
                     match colour_channel {
                         Some(channel) => img.data.swap(top + channel as usize,bottom + channel as usize),
@@ -102,6 +108,55 @@ impl Image {
         Ok(this)
     }
 
+    pub fn convolve(this : AnyUserData,width : usize,height : usize,lua_kernel : mlua::Table) -> mlua::Result<AnyUserData>{
+        if lua_kernel.len()? as usize != width * height {
+            return Err("kernel does not match kernel width/height parameters provided".into_lua_err())
+        }
+
+        let mut kernel : Vec<f64> = Vec::new();
+        for value in lua_kernel.sequence_values::<f64>(){
+            kernel.push(value?);
+        }
+
+        {
+            let mut img = this.borrow_mut::<Image>()?;
+
+            let mut result : Vec<u8> = vec![0u8;img.data.len()];
+            let half_kernel_width = (width / 2) as isize;
+            let half_kernel_height = (height / 2) as isize;
+
+            for y in 0..img.height - 1 {
+                for x in 0..img.width - 1 {
+                    let output_pixel_index = (y * img.width + x) * 4;
+
+                    for colour_channel in 0..3 {
+                        let mut weighted_sum = 0.0f64;
+
+                        for kernel_y in 0..height as isize {
+                            for kernel_x in 0..width as isize {
+
+                                let sampled_x : isize= (x as isize + kernel_x as isize - half_kernel_width).clamp(0, (img.width - 1) as isize);
+                                let sampled_y : isize = (y as isize + kernel_y as isize - half_kernel_height).clamp(0, (img.height - 1) as isize);
+
+                                let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * 4 + colour_channel;
+                                let kernel_weight = kernel[(kernel_x as usize * width) + kernel_x as usize];
+
+                                weighted_sum += img.data[input_pixel_index as usize] as f64 * kernel_weight;
+                            }
+                        }
+
+                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0f64,255.0f64) as u8;
+                    }
+
+                    result[(output_pixel_index + 3) as usize] = img.data[(output_pixel_index + 3) as usize];
+                }
+            }
+
+            img.data = result;
+        }
+
+        Ok(this)
+    }
 
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
