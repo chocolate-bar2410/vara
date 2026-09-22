@@ -146,7 +146,16 @@ declare extern type Image with
         Clones your image.
     ]=]
     function clone(self) : Image
+        
+        --[=[
+        @within Image
+        @method gradientMagnitude
+        @param other The other image.
+        @return The gradient magnitude between your two images.
 
+        Computes the gradient magnitude between your image and another image.
+    ]=]
+    function gradientMagnitude(self,other : Image) : Image
 
     function __tostring(self): string
 end

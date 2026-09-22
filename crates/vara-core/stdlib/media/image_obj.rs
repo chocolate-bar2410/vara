@@ -25,7 +25,7 @@ impl Image {
         {
             let mut img = this.borrow_mut::<Image>()?;
 
-            if img.data.len() as u32 != width * height {
+            if img.data.len() as u32 != width * height * 4 {
                 return Err("image dimension does not properly match size params".into_lua_err())
             }
 
@@ -139,7 +139,7 @@ impl Image {
                                 let sampled_y : isize = (y as isize + kernel_y as isize - half_kernel_height).clamp(0, (img.height - 1) as isize);
 
                                 let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * 4 + colour_channel;
-                                let kernel_weight = kernel[(kernel_x as usize * width) + kernel_x as usize];
+                                let kernel_weight = kernel[(kernel_y as usize * width) + kernel_x as usize];
 
                                 weighted_sum += img.data[input_pixel_index as usize] as f64 * kernel_weight;
                             }
@@ -163,6 +163,31 @@ impl Image {
         Ok(self.clone())
     }
 
+    #[lua(name="gradientMagnitude")]
+    pub fn gradient_magnitude(&self,other : &Image) -> mlua::Result<Self>{
+        let mut result = self.clone();
+
+        for y in 0..self.height - 1 {
+            for x in 0..self.width - 1 {
+
+                let index = ((y * self.width + x) * 4) as usize;
+
+                for cc in 0..3 {
+                    let value_a = self.data[index + cc] as f64;
+                    let value_b = other.data[index + cc] as f64;
+
+                    let magnitude = value_a.hypot(value_b) as u8;
+
+                    result.data[index + cc] = magnitude;
+                }
+                
+                result.data[index + 3] = 255;
+            }
+        }
+
+        Ok(result)
+    }
+
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
 
@@ -179,5 +204,11 @@ impl Image {
     #[lua(meta,infallible,name = "__tostring")]
     pub fn tostring(&self) -> mlua::Result<String>{
         Ok(format!("image {}x{}",self.width,self.height))
+    }
+
+    #[lua(getter,name = "data")]
+    pub fn get_data(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
+
+        Ok(context.create_buffer(&self.data)?)
     }
 }
