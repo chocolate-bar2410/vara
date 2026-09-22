@@ -34,11 +34,11 @@ end
 	@within fs
 	@method write
 	@param path The file being written to.
-	@return string
+	@return The contents of the file.
 
 	Reads the file contents of the file thats `path` points to.
 ]=]
-function module.read(path: string): string
+function module.read(path: string): buffer
 	return nil :: unknown
 end
 
