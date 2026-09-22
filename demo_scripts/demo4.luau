@@ -1,9 +1,7 @@
-local media = require("@vara/media")
-local fs = require("@vara/fs")
+const media = require("@vara/media")
+const fs = require("@vara/fs")
 
-local data = fs.read("./demo_scripts/images/test.ppm")
+local data: buffer = fs.read("./demo_scripts/images/basn2c16.png")
+local image: Image = media.decodeImage("PNM",data)
 
--- print(buffer.tostring(data))
-
-local image = media.decodeImage("PNM",data)
-print(image)
+fs.write("./demo_scripts/images/basn2c16.qoi",image:encode("QOI"))

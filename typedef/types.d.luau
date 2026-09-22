@@ -67,6 +67,22 @@ declare extern type DateTime with
 
 end
 
+type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "Bmp" | "ICO" | "FARBFELD" | "AVIF" | "QOI"
+
+--[=[
+	@class Image
+
+    An Object representing an image.
+]=]
 declare extern type Image with
+
+    --[=[
+        @within Image
+        @param format The image format to encode to
+
+        Encodes the image into a certain image format.
+    ]=]
+    function encode(self,format : ImageFormat) : buffer
+
     function __tostring(self): string
 end
