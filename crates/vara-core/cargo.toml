@@ -11,14 +11,10 @@ dotenvy = "0.15.7"
 image = { version = "0.25.10", default-features = false, features = [
     "png",
     "pnm",
-    "tiff",
     "jpeg",
     "bmp",
     "qoi",
     "webp",
-    "avif",
-    "ff",
-    "ico",
 ] }
 memory-stats = "1.2.0"
 mlua = { version = "0.12.1", features = [

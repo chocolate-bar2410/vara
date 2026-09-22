@@ -4,11 +4,7 @@ pub fn image_format_fromstring(value: &String) -> mlua::Result<image::ImageForma
         "JPEG" => Ok(image::ImageFormat::Jpeg),
         "WEBP" => Ok(image::ImageFormat::WebP),
         "PNM" => Ok(image::ImageFormat::Pnm),
-        "TIFF" => Ok(image::ImageFormat::Tiff),
         "BMP" => Ok(image::ImageFormat::Bmp),
-        "ICO" => Ok(image::ImageFormat::Ico),
-        "FARBFELD" => Ok(image::ImageFormat::Farbfeld),
-        "AVIF" => Ok(image::ImageFormat::Avif),
         "QOI" => Ok(image::ImageFormat::Qoi),
         _ => Err(mlua::Error::FromLuaConversionError {
             from: "String",
