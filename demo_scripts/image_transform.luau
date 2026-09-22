@@ -3,14 +3,14 @@ local media = require("@vara/media")
 
 local sobel_x_3x3 = {
     -1, 0, 1,
-    -10, 0, 10,
+    -2, 0, 2,
     -1, 0, 1
 }
 
 local sobel_y_3x3 = {
-   -1,-10,-1,
+   -1,-2,-1,
     0, 0, 0,
-    1, 10, 1,
+    1, 2, 1,
 }
 
 local gaussian = {
@@ -28,5 +28,5 @@ local result = image_x:gradientMagnitude(image_y)
 
 fs.write(
     "demo_scripts/images/monarch_edge.png", 
-    result:dimensions(768,512):encode("PNG")
+    result:encode("PNG")
 )
