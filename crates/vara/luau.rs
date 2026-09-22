@@ -28,12 +28,14 @@ impl Runtime {
         let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
         let chrono_lib = vara_stdlib::chrono::get_module(&self.vm)?;
         let system_lib = vara_stdlib::system::get_module(&self.vm,&self.args)?;
+        let media_lib = vara_stdlib::media::get_module(&self.vm)?;
 
         self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;
         self.vm.register_module("@vara/serde", serde_lib)?;
         self.vm.register_module("@vara/chrono", chrono_lib)?;
         self.vm.register_module("@vara/system", system_lib)?;
+        self.vm.register_module("@vara/media", media_lib)?;
 
         self.vm.globals().set(
             "require",
