@@ -6,6 +6,7 @@ pub fn image_format_fromstring(value: &String) -> mlua::Result<image::ImageForma
         "PNM" => Ok(image::ImageFormat::Pnm),
         "BMP" => Ok(image::ImageFormat::Bmp),
         "QOI" => Ok(image::ImageFormat::Qoi),
+        "TIFF" => Ok(image::ImageFormat::Tiff),
         _ => Err(mlua::Error::FromLuaConversionError {
             from: "String",
             to: "ImageFormat".to_string(),
