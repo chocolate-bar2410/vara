@@ -158,6 +158,11 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name = "clone")]
+    pub fn clone_fn(&self) -> mlua::Result<Self>{
+        Ok(self.clone())
+    }
+
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
 

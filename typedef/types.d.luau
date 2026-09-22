@@ -137,6 +137,16 @@ declare extern type Image with
         Performs a convolution on the image using the provided kernel.
     ]=]
     function convolve(self,width : number,height : number,kernel : {number}) : Image
+        
+    --[=[
+        @within Image
+        @method clone
+        @return A clone of your image.
+
+        Clones your image.
+    ]=]
+    function clone(self) : Image
+
 
     function __tostring(self): string
 end
