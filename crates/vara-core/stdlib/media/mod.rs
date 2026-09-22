@@ -26,7 +26,7 @@ fn image_format_fromstring(value: String) -> mlua::Result<image::ImageFormat> {
 }
 
 
-fn decode_image(context : &mlua::Lua,(format,data): (String,mlua::Value)) -> mlua::Result<image_obj::Image>{
+fn decode_image(_ : &mlua::Lua,(format,data): (String,mlua::Value)) -> mlua::Result<image_obj::Image>{
     let bytes = match data {
         mlua::Value::String(s) => s.as_bytes().to_vec(),
         mlua::Value::Buffer(b) => b.to_vec(),
