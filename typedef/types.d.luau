@@ -78,6 +78,7 @@ declare extern type Image with
 
     --[=[
         @within Image
+        @method encode
         @param format The image format to encode to
         @return the encoded image data as a buffer.
 
@@ -87,6 +88,7 @@ declare extern type Image with
 
     --[=[
         @within Image
+        @method dimensions
         @param width The image width.
         @param height The image height.
         @return itself
@@ -95,6 +97,15 @@ declare extern type Image with
     ]=]
     function dimensions(self,width: number,height: number) : Image
 
+    --[=[
+        @within Image
+        @method flip
+        @param channel Optional parameter to only flip a single colour channel.
+        @return itself
+
+        Horizontally flips an image.
+    ]=]
+    function flip(self,channel: number?) : Image
 
     function __tostring(self): string
 end

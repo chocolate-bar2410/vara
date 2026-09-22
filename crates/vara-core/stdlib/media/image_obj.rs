@@ -30,6 +30,41 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(infallible)]
+    pub fn zero_channel(&mut self, channel: usize) {
+        for pixel in self.data.chunks_exact_mut(4) {
+            pixel[channel] = 0;
+        }
+    }
+
+    pub fn flip(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
+
+        {
+            let mut img = this.borrow_mut::<Image>()?;
+            
+            let width = img.width as usize;
+            let height = img.height as usize;
+
+            for y in 0..height {
+                for x in 0..width / 2 {
+                    let left = (y * width + x) * 4;
+                    let right = (y * width + (width - 1 - x)) * 4;
+
+                    match colour_channel {
+                        Some(channel) => img.data.swap(left + channel as usize,right + channel as usize),
+                        None => {
+                            for c in 0..4 {
+                                img.data.swap(left + c,right + c);
+                            }
+                        }
+                    }
+                }   
+            }
+        }
+
+        Ok(this)
+    }
+
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
 
