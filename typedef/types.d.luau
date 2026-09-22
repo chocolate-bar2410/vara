@@ -79,10 +79,22 @@ declare extern type Image with
     --[=[
         @within Image
         @param format The image format to encode to
+        @return the encoded image data as a buffer.
 
         Encodes the image into a certain image format.
     ]=]
     function encode(self,format : ImageFormat) : buffer
+
+    --[=[
+        @within Image
+        @param width The image width.
+        @param height The image height.
+        @return itself
+
+        Sets the width and height of the image.
+    ]=]
+    function dimensions(self,width: number,height: number) : Image
+
 
     function __tostring(self): string
 end
