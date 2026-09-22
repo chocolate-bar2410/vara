@@ -86,6 +86,23 @@ impl Image {
         Ok(this)
     }
 
+    pub fn greyscale(this : AnyUserData) -> mlua::Result<AnyUserData>{
+
+        {
+            let mut img = this.borrow_mut::<Image>()?;
+            
+            for pixel in img.data.chunks_exact_mut(4) {
+                let grey = ((0.2126 * pixel[0] as f32 + 0.7152 * pixel[1] as f32 + 0.0722 * pixel[2] as f32)) as u8;
+                pixel[0] = grey;
+                pixel[1] = grey;
+                pixel[2] = grey;
+            }
+        }
+
+        Ok(this)
+    }
+
+
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
 
