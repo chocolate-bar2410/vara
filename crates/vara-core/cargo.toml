@@ -21,7 +21,12 @@ image = { version = "0.25.10", default-features = false, features = [
     "ico",
 ] }
 memory-stats = "1.2.0"
-mlua = { version = "0.12.1", features = ["async", "luau-jit", "serde"] }
+mlua = { version = "0.12.1", features = [
+    "async",
+    "luau-jit",
+    "serde",
+    "macros",
+] }
 serde = "1.0.229"
 serde-saphyr = "1.2.0"
 serde_json = { version = "1.0.151", features = ["preserve_order"] }
