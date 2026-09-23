@@ -75,7 +75,9 @@ type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "Bmp" | "ICO" | "F
     An Object representing an image.
 ]=]
 declare extern type Image with
-
+    read data: buffer
+    read width: number
+    read height: number
     --[=[
         @within Image
         @method encode
@@ -85,7 +87,6 @@ declare extern type Image with
         Encodes the image into a certain image format.
     ]=]
     function encode(self,format : ImageFormat) : buffer
-
     --[=[
         @within Image
         @method dimensions
@@ -96,7 +97,6 @@ declare extern type Image with
         Sets the width and height of the image.
     ]=]
     function dimensions(self,width: number,height: number) : Image
-
     --[=[
         @within Image
         @method flip
@@ -106,7 +106,6 @@ declare extern type Image with
         Vertically mirrors the image.
     ]=]
     function flip(self,channel: number?) : Image
-        
      --[=[
         @within Image
         @method flop
@@ -116,7 +115,6 @@ declare extern type Image with
         Horizontally mirrors the image.
     ]=]
     function flop(self,channel: number?) : Image
-
     --[=[
         @within Image
         @method greyscale
@@ -125,7 +123,6 @@ declare extern type Image with
         Converts the image into greyscale using luminance.
     ]=]
     function greyscale(self) : Image
-
     --[=[
         @within Image
         @method convolve
@@ -137,7 +134,6 @@ declare extern type Image with
         Performs a convolution on the image using the provided kernel.
     ]=]
     function convolve(self,width : number,height : number,kernel : {number}) : Image
-        
     --[=[
         @within Image
         @method clone
@@ -156,6 +152,5 @@ declare extern type Image with
         Computes the gradient magnitude between your image and another image.
     ]=]
     function gradientMagnitude(self,other : Image) : Image
-
     function __tostring(self): string
 end
