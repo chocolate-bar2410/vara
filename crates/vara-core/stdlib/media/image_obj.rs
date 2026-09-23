@@ -1,13 +1,16 @@
 use mlua::{AnyUserData, ExternalError, IntoLua};
 
-use crate::stdlib::media::image_format::image_format_fromstring;
+use crate::stdlib::media;
+use media::image_format::image_format_fromstring;
+use media::image_interpolation as interpolation;
+
 
 #[derive(Clone,mlua::UserData)]
 pub struct Image{
-    data : Vec<u8>,
-    width : u32,
-    height : u32,
-    colour_channels : u8,
+    pub data : Vec<u8>,
+    pub width : u32,
+    pub height : u32,
+    pub colour_channels : u8,
 }
 
 #[mlua::userdata_impl]
@@ -218,40 +221,8 @@ impl Image {
     pub fn resize(this : AnyUserData,width : u32,height : u32,)  -> mlua::Result<AnyUserData>{
         {
             let mut img = this.borrow_mut::<Image>()?;
-            let mut result : Vec<u8> = vec![0;(width * height * img.colour_channels as u32) as usize];
-            let channels = img.colour_channels as usize;
+            let result = interpolation::bilinear(&img, width, height)?;
             
-            for y in 0..height{
-                for x in 0..width{
-                    let source_x = x as f32 * (img.width - 1) as f32 / width.max(2).saturating_sub(1) as f32;
-                    let source_y = y as f32 * (img.height - 1) as f32 / height.max(2).saturating_sub(1) as f32;
-
-                    let x0 = source_x.floor() as usize;
-                    let y0 = source_y.floor() as usize;
-
-                    let x1 = (x0 + 1).min(img.width as usize - 1) as usize;
-                    let y1 = (y0 + 1).min(img.height as usize - 1) as usize;
-
-                    let dx = source_x - x0 as f32;
-                    let dy = source_y - y0 as f32;
-
-                    for cc in 0..channels{
-                        let p00 = img.data[(y0 * img.width as usize + x0) * channels + cc] as f32;
-                        let p10 = img.data[(y0 * img.width as usize + x1) * channels + cc] as f32;
-                        let p01 = img.data[(y1 * img.width as usize + x0) * channels + cc] as f32;
-                        let p11 = img.data[(y1 * img.width as usize + x1) * channels + cc] as f32;
-
-                        let value = 
-                        p00 * (1.0 - dx) * (1.0 - dy) +
-                        p10 * dx * (1.0 - dy) +
-                        p01 * (1.0 - dx) * dy +
-                        p11 * dx * dy;
-
-                        result[(y as usize * width as usize + x as usize) * channels + cc] = value.round() as u8;
-                    }
-                }
-            }
-
             img.data = result;
             img.width = width;
             img.height = height;

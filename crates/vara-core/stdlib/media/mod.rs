@@ -6,6 +6,7 @@ use crate::stdlib as vara_stdlib;
 
 mod image_obj;
 mod image_format;
+mod image_interpolation;
 
 fn create_image(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_obj::Image>{
     match data {
