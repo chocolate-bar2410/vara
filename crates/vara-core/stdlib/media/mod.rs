@@ -48,6 +48,23 @@ fn create_image(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_obj::Ima
     }
 }
 
+fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<()>{
+    match data {
+        mlua::Value::String(s) => {}
+        mlua::Value::Buffer(b) => {}
+        _ => {
+            return Err(mlua::Error::FromLuaConversionError {
+                from: data.type_name(),
+                to: "string or buffer".to_string(),
+                message: Some("expected string or buffer".to_string()),
+            });
+        }
+    }
+
+
+    Ok(())
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
     .add_function("image", create_image)?
