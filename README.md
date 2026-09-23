@@ -28,6 +28,8 @@ Applications target desktop and potentially mobile.
     - [x] chrono
     - [x] system
     - [ ] media
+        - [x] images
+        - [ ] audio
 - [x] require
     - [x] relative requires
     - [x] aliases
