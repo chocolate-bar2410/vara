@@ -99,6 +99,16 @@ declare extern type Image with
     function dimensions(self,width: number,height: number) : Image
     --[=[
         @within Image
+        @method resize
+        @param width The new image width.
+        @param height The new image height.
+        @return itself
+
+        Resizes the image to a new width & height.
+    ]=]
+    function resize(self,width: number,height: number) : Image
+    --[=[
+        @within Image
         @method flip
         @param channel Optional parameter to only flip a single colour channel.
         @return itself

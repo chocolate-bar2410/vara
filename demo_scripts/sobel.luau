@@ -27,6 +27,6 @@ local image_y = image:clone():convolve(3,3,sobel_y_3x3)
 local result = image_x:gradientMagnitude(image_y)
 
 fs.write(
-    "demo_scripts/images/monarch_edge.jpg", 
-    result:encode("JPEG")
+    "demo_scripts/images/monarch_edge.png", 
+    result:encode("png")
 )
