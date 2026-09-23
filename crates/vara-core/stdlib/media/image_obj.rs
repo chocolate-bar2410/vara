@@ -224,6 +224,7 @@ impl Image {
             let result = match filter{
                 Some(filter_str) => match filter_str.to_ascii_uppercase().trim(){
                     "NEAREST"      => interpolation::nearest_neighbour(&img, width, height)?,
+                    "LANCZOS3" => interpolation::lanczos3(&img, width, height)?,
                     "BILINEAR" | _ => interpolation::bilinear(&img, width, height)?,
                 },
                 None => interpolation::bilinear(&img, width, height)?,
