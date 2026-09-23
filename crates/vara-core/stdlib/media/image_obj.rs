@@ -11,7 +11,7 @@ pub struct Image{
 
 #[mlua::userdata_impl]
 impl Image {
-    #[lua(infallible)]
+    #[lua(skip)]
     pub fn new(data : Vec<u8>,width : u32,height : u32) -> Self {
         Self { 
             data: data,
