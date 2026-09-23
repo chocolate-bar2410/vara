@@ -27,7 +27,7 @@ impl Image {
         {
             let mut img = this.borrow_mut::<Image>()?;
 
-            if img.data.len() as u32 != width * height * 4 {
+            if img.data.len() as u32 != width * height * img.colour_channels as u32 {
                 return Err("image dimension does not properly match size params".into_lua_err())
             }
 
@@ -48,13 +48,13 @@ impl Image {
 
             for y in 0..height {
                 for x in 0..width / 2 {
-                    let left = (y * width + x) * 4;
-                    let right = (y * width + (width - 1 - x)) * 4;
+                    let left = (y * width + x) * img.colour_channels as usize;
+                    let right = (y * width + (width - 1 - x)) * img.colour_channels as usize;
 
                     match colour_channel {
                         Some(channel) => img.data.swap(left + channel as usize,right + channel as usize),
                         None => {
-                            for c in 0..4 {
+                            for c in 0..img.colour_channels as usize {
                                 img.data.swap(left + c,right + c);
                             }
                         }
@@ -76,13 +76,13 @@ impl Image {
 
             for y in 0..height/ 2 {
                 for x in 0..width  {
-                    let top = (y * width + x) * 4;
-                    let bottom = ((height - 1 - y) * width + x) * 4;
+                    let top = (y * width + x) * img.colour_channels as usize;
+                    let bottom = ((height - 1 - y) * width + x) * img.colour_channels as usize;
 
                     match colour_channel {
                         Some(channel) => img.data.swap(top + channel as usize,bottom + channel as usize),
                         None => {
-                            for c in 0..4 {
+                            for c in 0..img.colour_channels as usize {
                                 img.data.swap(top + c,bottom + c);
                             }
                         }
@@ -98,8 +98,9 @@ impl Image {
 
         {
             let mut img = this.borrow_mut::<Image>()?;
+            let channels = img.colour_channels as usize;
             
-            for pixel in img.data.chunks_exact_mut(4) {
+            for pixel in img.data.chunks_exact_mut(channels) {
                 let grey = ((0.2126 * pixel[0] as f32 + 0.7152 * pixel[1] as f32 + 0.0722 * pixel[2] as f32)) as u8;
                 pixel[0] = grey;
                 pixel[1] = grey;
@@ -129,7 +130,7 @@ impl Image {
 
             for y in 0..img.height - 1 {
                 for x in 0..img.width - 1 {
-                    let output_pixel_index = (y * img.width + x) * 4;
+                    let output_pixel_index = (y * img.width + x) * img.colour_channels as u32;
 
                     for colour_channel in 0..3 {
                         let mut weighted_sum = 0.0f64;
@@ -140,7 +141,7 @@ impl Image {
                                 let sampled_x : isize= (x as isize + kernel_x as isize - half_kernel_width).clamp(0, (img.width - 1) as isize);
                                 let sampled_y : isize = (y as isize + kernel_y as isize - half_kernel_height).clamp(0, (img.height - 1) as isize);
 
-                                let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * 4 + colour_channel;
+                                let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * img.colour_channels as isize + colour_channel;
                                 let kernel_weight = kernel[(kernel_y as usize * width) + kernel_x as usize];
 
                                 weighted_sum += img.data[input_pixel_index as usize] as f64 * kernel_weight;
@@ -150,6 +151,7 @@ impl Image {
                         result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0f64,255.0f64) as u8;
                     }
 
+                    if img.colour_channels != 4 {continue;}
                     result[(output_pixel_index + 3) as usize] = img.data[(output_pixel_index + 3) as usize];
                 }
             }
@@ -172,7 +174,7 @@ impl Image {
         for y in 0..self.height - 1 {
             for x in 0..self.width - 1 {
 
-                let index = ((y * self.width + x) * 4) as usize;
+                let index = ((y * self.width + x) * self.colour_channels as u32) as usize;
 
                 for cc in 0..3 {
                     let value_a = self.data[index + cc] as f64;
@@ -183,6 +185,7 @@ impl Image {
                     result.data[index + cc] = magnitude;
                 }
                 
+                if self.colour_channels != 4 {continue}
                 result.data[index + 3] = 255;
             }
         }
@@ -211,6 +214,11 @@ impl Image {
 
         Ok(this)
     }
+
+    pub fn resize(this : AnyUserData,_width : u32,_height : u32,)  -> mlua::Result<AnyUserData>{
+        Ok(this)
+    }
+
 
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
