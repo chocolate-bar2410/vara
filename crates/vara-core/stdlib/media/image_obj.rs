@@ -1,4 +1,4 @@
-use mlua::{AnyUserData, ExternalError, IntoLua};
+use mlua::{AnyUserData, ExternalError};
 
 use crate::stdlib::media;
 use media::image_format::image_format_fromstring;
@@ -7,9 +7,13 @@ use media::image_interpolation as interpolation;
 
 #[derive(Clone,mlua::UserData)]
 pub struct Image{
+    #[lua(skip)]
     pub data : Vec<u8>,
+    #[lua(get)]
     pub width : u32,
+    #[lua(get)]
     pub height : u32,
+    #[lua(get,name = "channels")]
     pub colour_channels : u8,
 }
 
@@ -268,17 +272,5 @@ impl Image {
     pub fn get_data(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
 
         Ok(context.create_buffer(&self.data)?)
-    }
-
-    #[lua(getter,name = "width")]
-    pub fn get_width(&self,context: &mlua::Lua) -> mlua::Result<mlua::Value>{
-
-        Ok(self.width.into_lua(&context)?)
-    }
-
-    #[lua(getter,name = "height")]
-    pub fn get_height(&self,context: &mlua::Lua) -> mlua::Result<mlua::Value>{
-
-        Ok(self.height.into_lua(&context)?)
     }
 }

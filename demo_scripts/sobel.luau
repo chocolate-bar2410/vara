@@ -1,3 +1,4 @@
+--!strict
 local fs = require("@vara/fs")
 local media = require("@vara/media")
 
@@ -28,5 +29,5 @@ local result = image_x:gradientMagnitude(image_y)
 
 fs.write(
     "demo_scripts/images/monarch_edge.png", 
-    result:encode("png")
+    result:encode("PNG")
 )

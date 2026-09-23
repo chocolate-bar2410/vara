@@ -80,6 +80,7 @@ declare extern type Image with
     read data: buffer
     read width: number
     read height: number
+    read channels: number
     --[=[
         @within Image
         @method encode
