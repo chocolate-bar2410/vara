@@ -7,16 +7,18 @@ pub struct Image{
     data : Vec<u8>,
     width : u32,
     height : u32,
+    colour_channels : u8,
 }
 
 #[mlua::userdata_impl]
 impl Image {
     #[lua(skip)]
-    pub fn new(data : Vec<u8>,width : u32,height : u32) -> Self {
+    pub fn new(data : Vec<u8>,width : u32,height : u32,colour_channels : u8) -> Self {
         Self { 
             data: data,
             width: width,
-            height: height ,
+            height: height,
+            colour_channels: colour_channels
         }
     }
 
@@ -188,15 +190,45 @@ impl Image {
         Ok(result)
     }
 
+    #[lua(name="removeAlpha")]
+    pub fn remove_alpha(this : AnyUserData)  -> mlua::Result<AnyUserData>{
+        {
+            let mut img = this.borrow_mut::<Image>()?;
+
+            if img.colour_channels != 4 {
+                return Ok(this);
+            }
+
+            let mut index = 0;
+            img.data.retain(|_|{
+                let keep = (index + 1) % 4 != 0;
+                index += 1;
+                keep
+            });
+
+            img.colour_channels = 3;
+        }
+
+        Ok(this)
+    }
+
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
-
-        let image_buffer = image::ImageBuffer::<image::Rgba<u8>,Vec<u8>>::from_raw(self.width,self.height,self.data.clone())
-        .expect(&format!("unable to encode to {}",format).to_string());
-
         let mut bytes = Vec::new();
 
-        image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), img_format).map_err(|err| err.into_lua_err())?;
+        if self.colour_channels == 4 {
+            let image_buffer = image::ImageBuffer::<image::Rgba<u8>,Vec<u8>>::from_raw(self.width,self.height,self.data.clone())
+            .ok_or(format!("could not encode image to {format}"))
+            .map_err(|err| err.into_lua_err())?;
+
+            image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), img_format).map_err(|err| err.into_lua_err())?;
+        } else if self.colour_channels == 3 {
+            let image_buffer = image::ImageBuffer::<image::Rgb<u8>,Vec<u8>>::from_raw(self.width,self.height,self.data.clone())
+            .ok_or(format!("could not encode image to {format}"))
+            .map_err(|err| err.into_lua_err())?;
+
+            image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), img_format).map_err(|err| err.into_lua_err())?;
+        }
 
         context.create_buffer(bytes)
     }

@@ -141,9 +141,8 @@ declare extern type Image with
 
         Clones your image.
     ]=]
-    function clone(self) : Image
-        
-        --[=[
+    function clone(self) : Image    
+    --[=[
         @within Image
         @method gradientMagnitude
         @param other The other image.
@@ -152,5 +151,14 @@ declare extern type Image with
         Computes the gradient magnitude between your image and another image.
     ]=]
     function gradientMagnitude(self,other : Image) : Image
+    --[=[
+        @within Image
+        @method removeAlpha
+        @return itself.
+
+        Removes the alpha channel of your image.
+        Treated as a no-op if the image does not have a alpha channel.
+    ]=]
+    function removeAlpha(self) : Image
     function __tostring(self): string
 end
