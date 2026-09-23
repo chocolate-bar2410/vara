@@ -37,3 +37,24 @@ pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) ->
 
     Ok(result)
 }
+
+pub fn nearest_neighbour(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<u8>>{
+    let mut result : Vec<u8> = vec![0;(width * height * img.colour_channels as u32) as usize];
+    let channels = img.colour_channels as usize;
+    
+    for y in 0..height{
+        for x in 0..width{
+            let source_x = x as f32 * (img.width - 1) as f32 / width.max(2).saturating_sub(1) as f32;
+            let source_y = y as f32 * (img.height - 1) as f32 / height.max(2).saturating_sub(1) as f32;
+
+            let closest_x = source_x.round() as usize;
+            let closest_y = source_y.round() as usize;
+
+            for cc in 0..channels{
+                result[(y as usize * width as usize + x as usize) * channels + cc] = img.data[(closest_y * img.width as usize + closest_x) * channels + cc];
+            }
+        }
+    }
+
+    Ok(result)
+}

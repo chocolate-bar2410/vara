@@ -218,11 +218,17 @@ impl Image {
         Ok(this)
     }
 
-    pub fn resize(this : AnyUserData,width : u32,height : u32,)  -> mlua::Result<AnyUserData>{
+    pub fn resize(this : AnyUserData,width : u32,height : u32,filter : Option<&str>)  -> mlua::Result<AnyUserData>{
         {
             let mut img = this.borrow_mut::<Image>()?;
-            let result = interpolation::bilinear(&img, width, height)?;
-            
+            let result = match filter{
+                Some(filter_str) => match filter_str.to_ascii_uppercase().trim(){
+                    "NEAREST"      => interpolation::nearest_neighbour(&img, width, height)?,
+                    "BILINEAR" | _ => interpolation::bilinear(&img, width, height)?,
+                },
+                None => interpolation::bilinear(&img, width, height)?,
+            };
+
             img.data = result;
             img.width = width;
             img.height = height;

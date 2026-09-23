@@ -68,6 +68,8 @@ declare extern type DateTime with
 end
 
 type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "Bmp" | "ICO" | "FARBFELD" | "AVIF" | "QOI"
+type ImageResizeFilter = "NEAREST" | "BILINEAR"
+
 
 --[=[
 	@class Image
@@ -102,11 +104,16 @@ declare extern type Image with
         @method resize
         @param width The new image width.
         @param height The new image height.
+        @param filter The interpolation filter being ran.
         @return itself
 
         Resizes the image to a new width & height.
+        Interpolation filters supported:
+
+        * NEAREST  - nearest neighbour
+        * BILINEAR - bilinear interpolation between 4 points
     ]=]
-    function resize(self,width: number,height: number) : Image
+    function resize(self,width: number,height: number,filter: ImageResizeFilter?) : Image
     --[=[
         @within Image
         @method flip
