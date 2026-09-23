@@ -46,10 +46,16 @@ impl Image {
     }
 
     pub fn flop(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
-
+        
         {
             let mut img = this.borrow_mut::<Image>()?;
-            
+
+            if let Some(channel) = colour_channel{
+                if channel > img.colour_channels{
+                    return Err("colour channel provided doesn't exist".into_lua_err());
+                }
+            }
+
             let width = img.width as usize;
             let height = img.height as usize;
 
@@ -78,6 +84,12 @@ impl Image {
         {
             let mut img = this.borrow_mut::<Image>()?;
             
+            if let Some(channel) = colour_channel{
+                if channel > img.colour_channels{
+                    return Err("colour channel provided doesn't exist".into_lua_err());
+                }
+            }
+
             let width = img.width as usize;
             let height = img.height as usize;
 
