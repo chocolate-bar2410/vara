@@ -113,6 +113,7 @@ declare extern type Image with
 
         * NEAREST  - nearest neighbour
         * BILINEAR - bilinear interpolation between 4 points
+        * LANCZOS3 - LANCZOS interpolation using 36 points
     ]=]
     function resize(self,width: number,height: number,filter: ImageResizeFilter?) : Image
     --[=[
@@ -181,12 +182,28 @@ declare extern type Image with
     function __tostring(self): string
 end
 
+type AudioFormat = "WAV"
+
+--[=[
+	@class Audio
+
+    An Object representing an audio.
+]=]
 declare extern type Audio with
     data: {buffer}
     sample_rate: number
     frames: number
     duration: number
     channels: number
+        --[=[
+        @within Audio
+        @method encode
+        @param format The audio format to encode to
+        @return the encoded audio data as a buffer.
+
+        Encodes the audio into a certain audio format.
+    ]=]
+    function encode(self,format: AudioFormat): buffer
 
     function __tostring(self): string
 end
