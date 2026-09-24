@@ -213,5 +213,14 @@ declare extern type Audio with
     ]=]
     function clone(self): Audio  
 
+    --[=[
+        @within Audio
+        @method reverse
+        @return Itself
+
+        Reverses the audio data.
+    ]=]
+    function reverse(self): Audio  
+
     function __tostring(self): string
 end

@@ -36,6 +36,17 @@ impl Audio {
         Ok(self.clone())
     }
 
+    pub fn reverse(this : mlua::AnyUserData) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut _audio = this.borrow_mut::<Audio>()?;
+
+            for channel in &mut _audio.data {
+                channel.reverse();
+            }
+        }
+        Ok(this)
+    }
+
     pub fn encode(&self,context: &mlua::Lua,format: String) -> mlua::Result<mlua::Buffer>{
         match format.to_ascii_uppercase().trim() {
             "WAV" => {
