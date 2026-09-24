@@ -143,6 +143,34 @@ impl Audio {
         Ok(this)
     }
 
+    pub fn trim(this : mlua::AnyUserData,start: f32,end: Option<f32>) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let start_frame = (start * audio.sample_rate as f32) as usize;
+
+            if let Some(_end) = end{
+                let end_frame = (_end * audio.sample_rate as f32) as usize;
+
+                for channel in &mut audio.data{
+                    channel.truncate(end_frame);
+                }
+
+                audio.frames -= audio.frames - end_frame as u64;
+            }
+
+            for channel in &mut audio.data{
+                channel.drain(0..start_frame);
+            }
+
+            audio.frames -= start_frame as u64;
+            audio.duration = audio.frames as f64 / audio.sample_rate as f64;
+    
+            audio.compute_max_amplitude();
+        }
+
+        Ok(this)
+    }
 
     #[lua(name="clone")]
     pub fn clone_fn(&self) -> mlua::Result<Self>{

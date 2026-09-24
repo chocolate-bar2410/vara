@@ -249,6 +249,16 @@ declare extern type Audio with
         Adds a linear fade out at the end of the audio that lasts for the given duration.
     ]=]
     function fadeOut(self,duration: number): Audio  
+    --[=[
+        @within Audio
+        @method trim
+        @param start The start time in seconds .
+        @param stop The stop time in seconds.
+        @return Itself
+
+        Trims down the audio to be between a start and a optional stop time.
+    ]=]
+    function trim(self,start: number,stop: number?): Audio      
 
     function __tostring(self): string
 end
