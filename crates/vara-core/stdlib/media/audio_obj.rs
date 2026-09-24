@@ -2,7 +2,7 @@ use std::io::Cursor;
 
 use mlua::ExternalError;
 
-#[derive(mlua::UserData)]
+#[derive(mlua::UserData,Clone)]
 pub struct Audio{
     #[lua(get)]
     data: Vec<Vec<f32>>,
@@ -29,6 +29,11 @@ impl Audio {
             duration : frames / sample_rate as u64,
             channels : channels,
         })
+    }
+
+    #[lua(name="clone")]
+    pub fn clone_fn(&self) -> mlua::Result<Self>{
+        Ok(self.clone())
     }
 
     pub fn encode(&self,context: &mlua::Lua,format: String) -> mlua::Result<mlua::Buffer>{

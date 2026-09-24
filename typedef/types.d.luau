@@ -195,7 +195,7 @@ declare extern type Audio with
     frames: number
     duration: number
     channels: number
-        --[=[
+    --[=[
         @within Audio
         @method encode
         @param format The audio format to encode to
@@ -204,6 +204,14 @@ declare extern type Audio with
         Encodes the audio into a certain audio format.
     ]=]
     function encode(self,format: AudioFormat): buffer
+    --[=[
+        @within Audio
+        @method clone
+        @return A clone of your audio.
+
+        Clones your audio.
+    ]=]
+    function clone(self): Audio  
 
     function __tostring(self): string
 end
