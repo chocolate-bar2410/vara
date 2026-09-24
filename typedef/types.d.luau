@@ -231,6 +231,24 @@ declare extern type Audio with
         If no target was provided then it will target 0 dbfs.
     ]=]
     function normalise(self,decibel: number?): Audio  
+    --[=[
+        @within Audio
+        @method fadeIn
+        @param duration The duration of the fade in seconds.
+        @return Itself
+
+        Adds a linear fade in that lasts for the given duration.
+    ]=]
+    function fadeIn(self,duration: number): Audio  
+    --[=[
+        @within Audio
+        @method fadeOut
+        @param duration The duration of the fade out seconds.
+        @return Itself
+
+        Adds a linear fade out at the end of the audio that lasts for the given duration.
+    ]=]
+    function fadeOut(self,duration: number): Audio  
 
     function __tostring(self): string
 end

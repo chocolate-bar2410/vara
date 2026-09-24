@@ -14,6 +14,8 @@ pub struct Audio{
     duration: u64,
     #[lua(get)]
     channels: u8,
+    #[lua(skip)]
+    max_amplitude: f32,
 }
 
 #[mlua::userdata_impl]
@@ -21,14 +23,22 @@ impl Audio {
     #[lua(skip)]
     pub fn new(data: Vec<Vec<f32>>,sample_rate: u32,frames: u64) -> mlua::Result<Self>{
         let channels = data.len() as u8;
-        
-        Ok(Self { 
+        let mut audio = Self { 
             data: data,
             sample_rate: sample_rate,
             frames: frames,
             duration : frames / sample_rate as u64,
             channels : channels,
-        })
+            max_amplitude : 0.0f32
+        };
+
+        audio.compute_max_amplitude();
+        Ok(audio)
+    }
+
+    #[lua(skip)]
+    fn compute_max_amplitude(&mut self){
+        self.max_amplitude = self.data.iter().flatten().fold(-f32::INFINITY,|max,&value| max.max(value.abs()));
     }
 
     #[lua(skip)]
@@ -38,15 +48,17 @@ impl Audio {
 
     pub fn amplify(this : mlua::AnyUserData,decibels: f32) ->mlua::Result<mlua::AnyUserData>{
         {
-            let mut _audio = this.borrow_mut::<Audio>()?;
+            let mut audio = this.borrow_mut::<Audio>()?;
 
-            let gain_pcm = _audio.dbfs_to_pcm(decibels);
+            let gain_pcm = audio.dbfs_to_pcm(decibels);
 
-            for channel in &mut _audio.data {
+            for channel in &mut audio.data {
                 for value in channel {
                     *value *= gain_pcm;
                 }
             }
+
+            audio.compute_max_amplitude();
         }
 
         Ok(this)
@@ -55,16 +67,12 @@ impl Audio {
     pub fn normalise(this : mlua::AnyUserData,decibel: Option<f32>) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
-            let max_amplitude = audio.data
-                .iter()
-                .flatten()
-                .fold(-f32::INFINITY,|max,&value| max.max(value.abs())) as f32;
 
-            if max_amplitude == 0.0 { return Ok(this) }
+            if audio.max_amplitude == 0.0 { return Ok(this) }
 
             let gain = match decibel{
-                Some(_decibel) => audio.dbfs_to_pcm(_decibel) / max_amplitude,
-                None => 1.0 / max_amplitude,
+                Some(_decibel) => audio.dbfs_to_pcm(_decibel) / audio.max_amplitude,
+                None => 1.0 / audio.max_amplitude,
             };
 
 
@@ -74,9 +82,67 @@ impl Audio {
                 }
             }
 
+            audio.compute_max_amplitude();
+
         }
         Ok(this)
     }
+    #[lua(name="fadeIn")]
+    pub fn fade_in(this : mlua::AnyUserData,duration: f32) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+            let fade_samples = ((duration * audio.sample_rate as f32) as usize).min(audio.frames as usize);
+
+            let safe_count = fade_samples.saturating_sub(1);
+            let divisor = (safe_count as f32).max(1.0);
+
+            let start = 0.0;
+            let end = 1.0;
+
+            for i in 0..fade_samples {
+                let t = i as f32 / divisor;
+                let gain = start + (end - start) * t;
+
+                for channel in &mut audio.data{
+                    channel[i] *= gain;
+                }
+            }
+
+            audio.compute_max_amplitude();
+        }
+        Ok(this)
+    }
+    #[lua(name="fadeOut")]
+    pub fn fade_out(this : mlua::AnyUserData,duration: f32) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let min_len = audio.data.iter().map(|channel| channel.len()).min().unwrap_or(0);
+            let fade_samples = ((duration * audio.sample_rate as f32) as usize).min(audio.frames as usize).min(min_len);
+
+            if fade_samples <= 1 {return Ok(this)}
+
+            let start_sample = min_len.saturating_sub(fade_samples);
+            let divisor = (fade_samples - 1) as f32;
+
+            let start = 1.0;
+            let end = 0.0;
+
+            for i in 0..fade_samples {
+                let t = i as f32 / divisor;
+                let gain = start + (end - start) * t;
+                let sample_index = start_sample + i;
+
+                for channel in &mut audio.data{
+                    channel[sample_index] *= gain;
+                }
+            }
+
+            audio.compute_max_amplitude();
+        }
+        Ok(this)
+    }
+
 
     #[lua(name="clone")]
     pub fn clone_fn(&self) -> mlua::Result<Self>{
