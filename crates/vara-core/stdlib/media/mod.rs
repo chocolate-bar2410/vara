@@ -106,6 +106,7 @@ fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Aud
 
             let track_id = track.id;
             let mut tracks : Vec<Vec<f32>> = Vec::new();
+            let mut packet_tracks : Vec<Vec<f32>> = Vec::new();
 
             loop {
                 let packet = match probed.next_packet() {
@@ -155,7 +156,15 @@ fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Aud
                 };
 
                 frames += decoded.frames();
-                decoded.copy_to_vecs_planar(&mut tracks);
+                decoded.copy_to_vecs_planar(&mut packet_tracks);
+
+                if tracks.is_empty(){
+                    tracks = vec![Vec::new();packet_tracks.len()];
+                }
+
+                for (child_index,channel_data) in packet_tracks.iter().enumerate(){
+                    tracks[child_index].extend(channel_data);
+                }
             }
         
             audio_obj::Audio::new(tracks,sample_rate,frames as u64)
