@@ -32,30 +32,51 @@ impl Audio {
     }
 
     pub fn encode(&self,context: &mlua::Lua,format: String) -> mlua::Result<mlua::Buffer>{
-        if format.to_ascii_uppercase().trim() != "WAV"{
-            return Err("encoding non .wav files is unimplemetned".into_lua_err())
-        }
+        match format.to_ascii_uppercase().trim() {
+            "WAV" => {
+                let spec = hound::WavSpec{
+                    channels : self.channels as u16,
+                    sample_rate : self.sample_rate,
+                    bits_per_sample : 32,
+                    sample_format : hound::SampleFormat::Float,
+                };
 
+                let mut cursor = Cursor::new(Vec::new());
+                let mut writer = hound::WavWriter::new(&mut cursor,spec).map_err(|err|err.into_lua_err())?;
 
-        let spec = hound::WavSpec{
-            channels : self.channels as u16,
-            sample_rate : self.sample_rate,
-            bits_per_sample : 32,
-            sample_format : hound::SampleFormat::Float,
-        };
+                for sample_index in 0..self.frames as usize{
+                    for channel in &self.data {
+                        writer.write_sample(channel[sample_index]).map_err(|err|err.into_lua_err())?;
+                    }
+                }
 
-        let mut cursor = Cursor::new(Vec::new());
-        let mut writer = hound::WavWriter::new(&mut cursor,spec).map_err(|err|err.into_lua_err())?;
+                writer.finalize().map_err(|err|err.into_lua_err())?;
 
-        for sample_index in 0..self.data[0].len() as usize{
-            for channel in &self.data {
-                writer.write_sample(channel[sample_index]).map_err(|err|err.into_lua_err())?;
+                context.create_buffer(cursor.into_inner())
+            },
+            "FLAC" => {
+                let bits_per_sample = 24;
+                let max_val = ((1u64 << (bits_per_sample - 1)) - 1) as f32;
+                let mut enc = rusty_flac::Encoder::new(self.sample_rate,self.channels.into(),bits_per_sample).map_err(|err|err.into_lua_err())?;
+
+                let mut interleaved = Vec::new();
+
+                for sample_index in 0..self.frames as usize{
+                    for channel in &self.data {
+                        interleaved.push((channel[sample_index].clamp(-1.0, 1.0) * max_val) as i32);
+                    }
+                }
+
+                enc.push_interleaved(&interleaved).map_err(|err|err.into_lua_err())?;
+
+                context.create_buffer(enc.finish())
             }
+            
+            _ =>return Err("encoding non .wav files is unimplemetned".into_lua_err())
         }
 
-        writer.finalize().map_err(|err|err.into_lua_err())?;
 
-        context.create_buffer(cursor.into_inner())
+        
     }
 
    #[lua(meta,name = "__tostring")]

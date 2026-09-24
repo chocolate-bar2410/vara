@@ -182,7 +182,7 @@ declare extern type Image with
     function __tostring(self): string
 end
 
-type AudioFormat = "WAV"
+type AudioFormat = "WAV" | "FLAC"
 
 --[=[
 	@class Audio

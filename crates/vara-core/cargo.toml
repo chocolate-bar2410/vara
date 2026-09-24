@@ -25,6 +25,7 @@ mlua = { version = "0.12.1", features = [
     "serde",
     "macros",
 ] }
+rusty_flac = "0.1.3"
 serde = "1.0.229"
 serde-saphyr = "1.2.0"
 serde_json = { version = "1.0.151", features = ["preserve_order"] }
