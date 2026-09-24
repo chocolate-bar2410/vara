@@ -14,8 +14,6 @@ pub struct Audio{
     duration: u64,
     #[lua(get)]
     channels: u8,
-    #[lua(skip)]
-    max_amplitude: f32,
 }
 
 #[mlua::userdata_impl]
@@ -23,28 +21,35 @@ impl Audio {
     #[lua(skip)]
     pub fn new(data: Vec<Vec<f32>>,sample_rate: u32,frames: u64) -> mlua::Result<Self>{
         let channels = data.len() as u8;
-
-        let mut audio = Self { 
+        
+        Ok(Self { 
             data: data,
             sample_rate: sample_rate,
             frames: frames,
             duration : frames / sample_rate as u64,
             channels : channels,
-            max_amplitude : 0.0f32
-        };
-        
-        audio.compute_max_amplitude();
-        Ok(audio)
-    }
-
-    #[lua(skip)]
-    fn compute_max_amplitude(&mut self){
-        self.max_amplitude = self.data.iter().flatten().fold(-f32::INFINITY,|max,&value| max.max(value));
+        })
     }
 
     #[lua(skip)]
     fn dbfs_to_pcm(&self,decibels: f32) -> f32 {
-        self.max_amplitude * 10.0f32.powf(decibels / 20.0f32)
+        10.0f32.powf(decibels / 20.0f32)
+    }
+
+    pub fn amplify(this : mlua::AnyUserData,decibels: f32) ->mlua::Result<mlua::AnyUserData>{
+        {
+            let mut _audio = this.borrow_mut::<Audio>()?;
+
+            let gain_pcm = _audio.dbfs_to_pcm(decibels);
+
+            for channel in &mut _audio.data {
+                for value in channel {
+                    *value *= gain_pcm;
+                }
+            }
+        }
+
+        Ok(this)
     }
 
     #[lua(name="clone")]

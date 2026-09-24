@@ -221,6 +221,15 @@ declare extern type Audio with
         Reverses the audio data.
     ]=]
     function reverse(self): Audio  
+    --[=[
+        @within Audio
+        @method amplify
+        @param decibel The ammount of gain in decibels
+        @return Itself
+
+        Increases the volume by a set gain.
+    ]=]
+    function amplify(self,decibel: number): Audio  
 
     function __tostring(self): string
 end
