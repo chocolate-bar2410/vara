@@ -17,7 +17,7 @@ impl Audio {
     #[lua(skip)]
     pub fn new(data: Vec<Vec<f32>>,sample_rate: u32,frames: u64) -> mlua::Result<Self>{
         let channels = data.len() as u8;
-        
+
         Ok(Self { 
             data: data,
             sample_rate: sample_rate,
@@ -25,5 +25,10 @@ impl Audio {
             duration : frames / sample_rate as u64,
             channels : channels,
         })
+    }
+
+   #[lua(meta,name = "__tostring")]
+    pub fn to_string(&self) -> mlua::Result<String>{
+        Ok(format!("audio {}ch {}Hz {} frames",self.channels,self.sample_rate,self.frames))
     }
 }

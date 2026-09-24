@@ -187,4 +187,6 @@ declare extern type Audio with
     frames: number
     duration: number
     channels: number
+
+    function __tostring(self): string
 end
