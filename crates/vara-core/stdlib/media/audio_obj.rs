@@ -11,7 +11,7 @@ pub struct Audio{
     #[lua(get)]
     frames: u64,
     #[lua(get)]
-    duration: u64,
+    duration: f64,
     #[lua(get)]
     channels: u8,
     #[lua(skip)]
@@ -27,7 +27,7 @@ impl Audio {
             data: data,
             sample_rate: sample_rate,
             frames: frames,
-            duration : frames / sample_rate as u64,
+            duration : frames as f64 / sample_rate as f64,
             channels : channels,
             max_amplitude : 0.0f32
         };
