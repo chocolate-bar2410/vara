@@ -180,3 +180,11 @@ declare extern type Image with
     function removeAlpha(self) : Image
     function __tostring(self): string
 end
+
+declare extern type Audio with
+    data: {buffer}
+    sample_rate: number
+    frames: number
+    duration: number
+    channels: number
+end

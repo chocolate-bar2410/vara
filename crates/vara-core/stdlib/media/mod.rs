@@ -1,5 +1,9 @@
 use std::{io::Cursor, path::PathBuf};
 use mlua::ExternalError;
+use symphonia::core::{formats::{TrackType, probe::Hint}, io::MediaSourceStream};
+
+use symphonia::core::errors::Error as symphonia_error;
+
 use vara_util::table_builder::TableBuilder;
 
 use crate::stdlib as vara_stdlib;
@@ -7,6 +11,9 @@ use crate::stdlib as vara_stdlib;
 mod image_obj;
 mod image_format;
 mod image_interpolation;
+
+mod audio_obj;
+
 
 fn create_image(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_obj::Image>{
     match data {
@@ -48,10 +55,112 @@ fn create_image(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_obj::Ima
     }
 }
 
-fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<()>{
+fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Audio>{
     match data {
-        mlua::Value::String(s) => {}
-        mlua::Value::Buffer(b) => {}
+        mlua::Value::String(s) => {
+            let path = PathBuf::from(s.to_string_lossy());
+            let bytes = vara_stdlib::file::read_file_as_binary(&path)?;
+
+
+            let mss = MediaSourceStream::new(Box::new(Cursor::new(bytes)), Default::default());
+
+            let mut hint = Hint::new();
+            if let Some(extension) = path.extension().and_then(|ext| ext.to_str()){
+                hint.with_extension(extension);    
+            }
+            
+            let mut probed = symphonia::default::get_probe()
+                .probe(&hint, mss, Default::default(), Default::default())
+                .map_err(|err| err.into_lua_err())?;
+
+            let track = probed.default_track(TrackType::Audio)
+                .ok_or("file has no tracks")
+                .map_err(|err| err.into_lua_err())?;
+
+            let codec_params = track.codec_params
+                .as_ref()
+                .ok_or("could not get codec parameters")
+                .map_err(|err| err.into_lua_err())?;
+
+            let audio_params = codec_params
+                .audio()
+                .ok_or("could not get audio parameters")
+                .map_err(|err| err.into_lua_err())?;
+
+            let sample_rate = audio_params.sample_rate
+                .ok_or("could not get sample rate")
+                .map_err(|err| err.into_lua_err())?;
+
+            let mut frames = 0;
+
+            let mut decoder = symphonia::default::get_codecs()
+            .make_audio_decoder(
+                track.codec_params
+                    .as_ref()
+                    .ok_or("codec parameters missing")
+                    .map_err(|err| err.into_lua_err())?
+                    .audio()
+                    .unwrap(),
+                &Default::default()
+            ).map_err(|err| err.into_lua_err())?;
+
+            let track_id = track.id;
+            let mut tracks : Vec<Vec<f32>> = Vec::new();
+
+            loop {
+                let packet = match probed.next_packet() {
+                    Ok(Some(packet)) => packet,
+                    Ok(None) => {
+                        break;
+                    }
+                    Err(symphonia_error::ResetRequired) => {
+                        // for chained OGG physical streams.
+                        // will implement this later
+                        unimplemented!();
+                    }
+                    Err(err) => {
+                        // A unrecoverable error occurred, halt decoding.
+                        return Err(format!("{}", err).into_lua_err());
+                    }
+                };
+
+                // Consume any new metadata that has been read since the last packet.
+                while !probed.metadata().is_latest() {
+                    // Pop the old head of the metadata queue.
+                    probed.metadata().pop();
+
+                    // Consume the new metadata at the head of the metadata queue.
+                }
+
+                // If the packet does not belong to the selected track, skip over it.
+                if packet.track_id != track_id {
+                    continue;
+                }
+
+                // Decode the packet into audio samples.
+                let decoded = match decoder.decode(&packet) {
+                    Ok(_decoded) => _decoded,
+                    Err(symphonia_error::IoError(_)) => {
+                        // The packet failed to decode due to an IO error, skip the packet.
+                        continue;
+                    }
+                    Err(symphonia_error::DecodeError(_)) => {
+                        // The packet failed to decode due to invalid data, skip the packet.
+                        continue;
+                    }
+                    Err(err) => {
+                        // An unrecoverable error occurred, halt decoding.
+                        return Err(format!("{}", err).into_lua_err());
+                    }
+                };
+
+                frames += decoded.frames();
+                decoded.copy_to_vecs_planar(&mut tracks);
+            }
+        
+            audio_obj::Audio::new(tracks,sample_rate,frames as u64)
+        }
+        //mlua::Value::Buffer(_b) => {}
         _ => {
             return Err(mlua::Error::FromLuaConversionError {
                 from: data.type_name(),
@@ -60,13 +169,11 @@ fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<()>{
             });
         }
     }
-
-
-    Ok(())
 }
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
     .add_function("image", create_image)?
+    .add_function("audio", create_audio)?
     .build_readonly()
 }

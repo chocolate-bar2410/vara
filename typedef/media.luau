@@ -18,12 +18,24 @@ local module = {}
 --[=[
     @within media
     @method image
-    @param data A pathstring or a buffer that stores RGB pixel data.
+    @param data A pathstring or a buffer that stores RGBA pixel data.
     @return A decoded image.
 
     Creates a image from a pathstring or from a buffer.
 ]=]
 module.image = function(data : buffer | string) : Image
+    return nil :: unknown
+end
+
+--[=[
+    @within media
+    @method audio
+    @param data A pathstring or a buffer that stores RGB pixel data.
+    @return A decoded audio object.
+
+    Creates a audio from a pathstring or from a buffer.
+]=]
+module.audio = function(data : buffer | string) : Audio
     return nil :: unknown
 end
 
