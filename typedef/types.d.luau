@@ -223,13 +223,14 @@ declare extern type Audio with
     function reverse(self): Audio  
     --[=[
         @within Audio
-        @method amplify
+        @method normalise
         @param decibel The ammount of gain in decibels
         @return Itself
 
-        Increases the volume by a set gain.
+        Does a peak normalisation targetting the provided decibel level.
+        If no target was provided then it will target 0 dbfs.
     ]=]
-    function amplify(self,decibel: number): Audio  
+    function normalise(self,decibel: number?): Audio  
 
     function __tostring(self): string
 end

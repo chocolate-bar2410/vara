@@ -52,6 +52,32 @@ impl Audio {
         Ok(this)
     }
 
+    pub fn normalise(this : mlua::AnyUserData,decibel: Option<f32>) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+            let max_amplitude = audio.data
+                .iter()
+                .flatten()
+                .fold(-f32::INFINITY,|max,&value| max.max(value.abs())) as f32;
+
+            if max_amplitude == 0.0 { return Ok(this) }
+
+            let gain = match decibel{
+                Some(_decibel) => audio.dbfs_to_pcm(_decibel) / max_amplitude,
+                None => 1.0 / max_amplitude,
+            };
+
+
+            for channel in audio.data.iter_mut() {
+                for value in channel.iter_mut() {
+                    *value *= gain;
+                }
+            }
+
+        }
+        Ok(this)
+    }
+
     #[lua(name="clone")]
     pub fn clone_fn(&self) -> mlua::Result<Self>{
         Ok(self.clone())
