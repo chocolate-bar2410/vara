@@ -4,4 +4,4 @@ local media = require("@vara/media")
 
 local audio = media.audio("demo_scripts/audio/Pink_noise.ogg")
 
-fs.write("demo_scripts/audio/test.wav", audio:notch(500):fadeIn(2):fadeOut(2):encode("WAV"))
+fs.write("demo_scripts/audio/test_16khz.wav", audio:resample(16000):notch(500):fadeIn(2):fadeOut(2):encode("WAV"))

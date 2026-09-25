@@ -18,6 +18,16 @@ pub struct Audio{
     max_amplitude: f32,
 }
 
+fn hermite_interpolation(t : f32,y0 : f32,y1 : f32,y2 : f32, y3 : f32) -> f32{
+    let c0 = y1;
+    let c1 = 0.5 * (y2 - y0);
+    let c2 = y0 - 2.5 * y1 + 2.0 * y2 - 0.5 * y3;
+    let c3 = 0.5 * (y3 - y0) + 1.5 * (y1 - y2);
+
+    // horners method for polynomial evaluation
+    ((c3 * t + c2) * t + c1) * t + c0
+}
+
 #[mlua::userdata_impl]
 impl Audio {
     #[lua(skip)]
@@ -262,6 +272,41 @@ impl Audio {
                 *sample = y0;
             }
         }
+    }
+
+    pub fn resample(this : mlua::AnyUserData,sample_rate : u32)  -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            if audio.sample_rate == sample_rate {return Ok(this)}
+            let ratio = audio.sample_rate as f32 / sample_rate as f32;
+            let new_frames = (audio.frames as f32 / ratio).round() as usize;
+
+            for channel in &mut audio.data {
+                let mut new_channel = vec![0.0f32;new_frames];
+
+                for i in 0..new_frames {
+                    let exact_position = i as f32 * ratio;
+                    let index = exact_position.floor() as usize;
+                    let t = exact_position - index as f32;
+
+                    let y0 = channel.get(index.saturating_sub(1)).copied().unwrap_or(0.0);
+                    let y1 = channel.get(index).copied().unwrap_or(0.0);
+                    let y2 = channel.get(index + 1).copied().unwrap_or(0.0);
+                    let y3 = channel.get(index + 2).copied().unwrap_or(0.0);
+
+                    new_channel[i] = hermite_interpolation(t, y0, y1, y2, y3);
+                }
+
+                *channel = new_channel;
+            }
+
+            audio.sample_rate = sample_rate;
+            audio.frames = new_frames as u64;
+            audio.duration = new_frames as f64 / sample_rate as f64;
+        }
+
+        Ok(this)
     }
 
     #[lua(name="clone")]

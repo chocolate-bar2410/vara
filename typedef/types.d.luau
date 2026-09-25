@@ -191,7 +191,7 @@ type AudioFormat = "WAV" | "FLAC"
 ]=]
 declare extern type Audio with
     data: {buffer}
-    sample_rate: number
+    sampleRate: number
     frames: number
     duration: number
     channels: number
@@ -289,7 +289,15 @@ declare extern type Audio with
         Applies a notch filter over the audio.
     ]=]
     function notch(self,center_hz: number,q: number?): Audio      
+    --[=[
+        @within Audio
+        @method resample
+        @param sample_rate The new sample count of the audio.
+        @return Itself
 
-
+        Resamples the audio to the provided sample rate;
+    ]=]
+    function resample(self,sample_rate: number): Audio      
+        
     function __tostring(self): string
 end
