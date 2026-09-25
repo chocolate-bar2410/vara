@@ -1,4 +1,4 @@
-use std::io::Cursor;
+use std::{io::Cursor, ops::Div};
 
 use mlua::ExternalError;
 
@@ -169,6 +169,50 @@ impl Audio {
             audio.compute_max_amplitude();
         }
 
+        Ok(this)
+    }
+
+    pub fn lowpass(this : mlua::AnyUserData,cutoff_hz : f32,q_factor : Option<f32>)  -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let q_factor = match q_factor {
+                Some(q) => q,
+                None => std::f32::consts::FRAC_1_SQRT_2,
+            };
+
+            let omega = 2.0 * (std::f32::consts::TAU * cutoff_hz) / audio.sample_rate as f32;
+            let intermediate = omega.div(2.0).tan();
+
+            let norm_factor = 1.0/(1.0 + (intermediate / q_factor) + intermediate.powf(2.0));
+
+            let a0 = intermediate.powf(2.0) * norm_factor;
+            let a1 = 2.0 * a0;
+            let a2 = a0;
+            
+            let b0 = 2.0 * (intermediate.powf(2.0) - 1.0) * norm_factor;
+            let b1 = (1.0 - (intermediate / q_factor) + intermediate.powf(2.0)) * norm_factor;
+
+            let total_frames = audio.frames;
+
+            for channel_index in 0..audio.data.len(){
+                let channel = &mut audio.data[channel_index];
+                let mut result = vec![0.0f32;channel.len()];
+                for index in 0..total_frames as usize{
+                    let x0 = channel[index];
+                    let x1 = if index < 1 {0.0f32} else {channel[index - 1]};
+                    let x2 = if index < 2 {0.0f32} else {channel[index - 2]};
+
+                    let y1 = if index < 1 {0.0f32} else {result[index - 1]};
+                    let y2 = if index < 2 {0.0f32} else {result[index - 2]};
+
+                    result[index] = a0 * x0 + a1 * x1 + a2 * x2 - b0 * y1 - b1 * y2;
+                }
+
+                audio.data[channel_index] = result;
+                
+            }
+        }
         Ok(this)
     }
 

@@ -259,6 +259,16 @@ declare extern type Audio with
         Trims down the audio to be between a start and a optional stop time.
     ]=]
     function trim(self,start: number,stop: number?): Audio      
+    --[=[
+        @within Audio
+        @method lowpass
+        @param frequency the cutoff frequency of the filter.
+        @param q the Q factor (or 'resonance') that controls the pointiness of the cutoff frequency being boosted.
+        @return Itself
+
+        Applies a lowpass filter over the audio.
+    ]=]
+    function lowpass(self,frequency: number,q: number?): Audio      
 
     function __tostring(self): string
 end
