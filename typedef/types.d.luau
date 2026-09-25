@@ -183,7 +183,7 @@ declare extern type Image with
 end
 
 type AudioFormat = "WAV" | "FLAC"
-type AudioResampleFilter = "HERMITE" | "LINEAR"
+type AudioResampleFilter = "HERMITE" | "LINEAR" | "LANCZOS3"
 
 --[=[
 	@class Audio
@@ -302,6 +302,7 @@ declare extern type Audio with
 
         * HERMITE  - interpolates from 4 points and their gradients.
         * LINEAR   - linear interpolation between 2 points
+        * LANCZOS3 - interpolation using 6 points
     ]=]
     function resample(self,sample_rate: number,filter: AudioResampleFilter): Audio      
         

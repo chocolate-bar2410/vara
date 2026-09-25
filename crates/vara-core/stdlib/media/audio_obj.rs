@@ -279,6 +279,7 @@ impl Audio {
             match filter {
                 Some(filter_str) => match filter_str.to_ascii_uppercase().trim() {
                     "LINEAR"      => audio_interpolation::linear_interpolation(&mut audio, new_frames, ratio),
+                    "LANCZOS3"    => audio_interpolation::lanczos3_interpolation(&mut audio, new_frames, ratio),
                     "HERMITE" | _ => audio_interpolation::hermite_interpolation(&mut audio, new_frames, ratio),
                 }
                 | None => audio_interpolation::hermite_interpolation(&mut audio, new_frames, ratio),
