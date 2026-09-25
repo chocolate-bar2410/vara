@@ -2,31 +2,24 @@ use std::{io::Cursor, ops::Div};
 
 use mlua::ExternalError;
 
+use crate::stdlib::media::audio_interpolation;
+
 #[derive(mlua::UserData,Clone)]
 pub struct Audio{
     #[lua(get)]
-    data: Vec<Vec<f32>>,
+    pub data: Vec<Vec<f32>>,
     #[lua(get,name="sampleRate")]
-    sample_rate: u32,
+    pub sample_rate: u32,
     #[lua(get)]
-    frames: u64,
+    pub frames: u64,
     #[lua(get)]
-    duration: f64,
+    pub duration: f64,
     #[lua(get)]
-    channels: u8,
+    pub channels: u8,
     #[lua(skip)]
     max_amplitude: f32,
 }
 
-fn hermite_interpolation(t : f32,y0 : f32,y1 : f32,y2 : f32, y3 : f32) -> f32{
-    let c0 = y1;
-    let c1 = 0.5 * (y2 - y0);
-    let c2 = y0 - 2.5 * y1 + 2.0 * y2 - 0.5 * y3;
-    let c3 = 0.5 * (y3 - y0) + 1.5 * (y1 - y2);
-
-    // horners method for polynomial evaluation
-    ((c3 * t + c2) * t + c1) * t + c0
-}
 
 #[mlua::userdata_impl]
 impl Audio {
@@ -274,31 +267,21 @@ impl Audio {
         }
     }
 
-    pub fn resample(this : mlua::AnyUserData,sample_rate : u32)  -> mlua::Result<mlua::AnyUserData>{
+    pub fn resample(this : mlua::AnyUserData,sample_rate : u32,filter : Option<&str>)  -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
 
             if audio.sample_rate == sample_rate {return Ok(this)}
+
             let ratio = audio.sample_rate as f32 / sample_rate as f32;
             let new_frames = (audio.frames as f32 / ratio).round() as usize;
 
-            for channel in &mut audio.data {
-                let mut new_channel = vec![0.0f32;new_frames];
-
-                for i in 0..new_frames {
-                    let exact_position = i as f32 * ratio;
-                    let index = exact_position.floor() as usize;
-                    let t = exact_position - index as f32;
-
-                    let y0 = channel.get(index.saturating_sub(1)).copied().unwrap_or(0.0);
-                    let y1 = channel.get(index).copied().unwrap_or(0.0);
-                    let y2 = channel.get(index + 1).copied().unwrap_or(0.0);
-                    let y3 = channel.get(index + 2).copied().unwrap_or(0.0);
-
-                    new_channel[i] = hermite_interpolation(t, y0, y1, y2, y3);
+            match filter {
+                Some(filter_str) => match filter_str.to_ascii_uppercase().trim() {
+                    "LINEAR"      => audio_interpolation::linear_interpolation(&mut audio, new_frames, ratio),
+                    "HERMITE" | _ => audio_interpolation::hermite_interpolation(&mut audio, new_frames, ratio),
                 }
-
-                *channel = new_channel;
+                | None => audio_interpolation::hermite_interpolation(&mut audio, new_frames, ratio),
             }
 
             audio.sample_rate = sample_rate;
