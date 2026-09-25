@@ -269,6 +269,16 @@ declare extern type Audio with
         Applies a lowpass filter over the audio.
     ]=]
     function lowpass(self,frequency: number,q: number?): Audio      
+    --[=[
+        @within Audio
+        @method highpass
+        @param frequency the cutoff frequency of the filter.
+        @param q the Q factor (or 'resonance') that controls the pointiness of the cutoff frequency being boosted.
+        @return Itself
+
+        Applies a highpass filter over the audio.
+    ]=]
+    function highpass(self,frequency: number,q: number?): Audio      
 
     function __tostring(self): string
 end

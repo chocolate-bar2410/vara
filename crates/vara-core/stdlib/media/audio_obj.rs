@@ -148,22 +148,14 @@ impl Audio {
             let mut audio = this.borrow_mut::<Audio>()?;
 
             let start_frame = (start * audio.sample_rate as f32) as usize;
-
-            if let Some(_end) = end{
-                let end_frame = (_end * audio.sample_rate as f32) as usize;
-
-                for channel in &mut audio.data{
-                    channel.truncate(end_frame);
-                }
-
-                audio.frames -= audio.frames - end_frame as u64;
-            }
+            let end_frame = end.map(|e| (e * audio.sample_rate as f32) as usize).unwrap_or(audio.frames as usize);
 
             for channel in &mut audio.data{
-                channel.drain(0..start_frame);
+                channel.truncate(end_frame.min(channel.len()));
+                channel.drain(0..start_frame.min(channel.len()));
             }
 
-            audio.frames -= start_frame as u64;
+            audio.frames = audio.data[0].len() as u64;
             audio.duration = audio.frames as f64 / audio.sample_rate as f64;
     
             audio.compute_max_amplitude();
@@ -193,27 +185,58 @@ impl Audio {
             let b0 = 2.0 * (intermediate.powf(2.0) - 1.0) * norm_factor;
             let b1 = (1.0 - (intermediate / q_factor) + intermediate.powf(2.0)) * norm_factor;
 
-            let total_frames = audio.frames;
-
-            for channel_index in 0..audio.data.len(){
-                let channel = &mut audio.data[channel_index];
-                let mut result = vec![0.0f32;channel.len()];
-                for index in 0..total_frames as usize{
-                    let x0 = channel[index];
-                    let x1 = if index < 1 {0.0f32} else {channel[index - 1]};
-                    let x2 = if index < 2 {0.0f32} else {channel[index - 2]};
-
-                    let y1 = if index < 1 {0.0f32} else {result[index - 1]};
-                    let y2 = if index < 2 {0.0f32} else {result[index - 2]};
-
-                    result[index] = a0 * x0 + a1 * x1 + a2 * x2 - b0 * y1 - b1 * y2;
-                }
-
-                audio.data[channel_index] = result;
-                
-            }
+            audio.biquad_filter(a0,a1,a2,b0,b1);
         }
         Ok(this)
+    }
+
+    pub fn highpass(this : mlua::AnyUserData,cutoff_hz : f32,q_factor : Option<f32>)  -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let q_factor = match q_factor {
+                Some(q) => q,
+                None => std::f32::consts::FRAC_1_SQRT_2,
+            };
+
+            let omega = (std::f32::consts::TAU * cutoff_hz) / audio.sample_rate as f32;
+            let alpha = omega.sin().div(2.0 * q_factor);
+
+
+            let a0 = 1.0 + alpha;
+            let a1 = (-2.0 * omega.cos()).div(a0);
+            let a2 = (1.0 - alpha).div(a0);
+            
+            let b0 = (1.0 + omega.cos()).div(2.0).div(a0);
+            let b1 = -(1.0 + omega.cos()).div(a0);
+            let b2 = b0;
+
+            audio.biquad_filter(b0,b1,b2,a1,a2);
+        }
+        Ok(this)
+    }
+
+    #[lua(skip)]
+    pub fn biquad_filter(&mut self,a0: f32,a1: f32,a2: f32,b0: f32,b1: f32){
+
+        for channel_index in 0..self.data.len(){
+            let channel = &mut self.data[channel_index];
+
+            let (mut x1, mut x2, mut y1, mut y2) = (0.0f32,0.0f32,0.0f32,0.0f32);
+
+            for sample in channel.iter_mut(){
+                let x0 = *sample;
+                let y0 = a0 * x0 + a1 * x1 + a2 * x2 - b0 * y1 - b1 * y2;
+
+                x2 = x1;
+                x1 = x0;
+
+                y2 = y1;
+                y1 = y0;
+
+                *sample = y0;
+            }
+        }
     }
 
     #[lua(name="clone")]
