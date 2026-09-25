@@ -216,6 +216,31 @@ impl Audio {
         Ok(this)
     }
 
+    pub fn notch(this : mlua::AnyUserData,center_hz : f32,q_factor : Option<f32>)  -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let q_factor = match q_factor {
+                Some(q) => q,
+                None => std::f32::consts::FRAC_1_SQRT_2,
+            };
+
+            let omega = (std::f32::consts::TAU * center_hz) / audio.sample_rate as f32;
+            let alpha = omega.sin().div(2.0 * q_factor);
+
+            let a0 = 1.0 + alpha;
+            let a1 = (-2.0 * omega.cos()).div(a0);
+            let a2 = (1.0 - alpha).div(a0);
+
+            let b0 = 1.0 / a0;
+            let b1 = (-2.0 * omega.cos()).div(a0);
+            let b2 = 1.0 / a0;
+
+            audio.biquad_filter(b0,b1,b2,a1,a2);
+        }
+        Ok(this)
+    }
+
     #[lua(skip)]
     pub fn biquad_filter(&mut self,a0: f32,a1: f32,a2: f32,b0: f32,b1: f32){
 

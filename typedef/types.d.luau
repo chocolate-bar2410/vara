@@ -279,6 +279,17 @@ declare extern type Audio with
         Applies a highpass filter over the audio.
     ]=]
     function highpass(self,frequency: number,q: number?): Audio      
+    --[=[
+        @within Audio
+        @method notch
+        @param frequency the center frequency of the filter.
+        @param q the Q factor (or 'resonance') that controls the pointiness of the rejection band around the center frequency.
+        @return Itself
+
+        Applies a notch filter over the audio.
+    ]=]
+    function notch(self,center_hz: number,q: number?): Audio      
+
 
     function __tostring(self): string
 end
