@@ -265,6 +265,8 @@ impl Audio {
                 *sample = y0;
             }
         }
+
+        self.compute_max_amplitude();
     }
 
     pub fn resample(this : mlua::AnyUserData,sample_rate : u32,filter : Option<&str>)  -> mlua::Result<mlua::AnyUserData>{
@@ -288,6 +290,8 @@ impl Audio {
             audio.sample_rate = sample_rate;
             audio.frames = new_frames as u64;
             audio.duration = new_frames as f64 / sample_rate as f64;
+
+            audio.compute_max_amplitude();
         }
 
         Ok(this)
@@ -308,6 +312,44 @@ impl Audio {
         }
         Ok(this)
     }
+
+    pub fn append(this : mlua::AnyUserData,other : mlua::AnyUserData,start : Option<f32>,stop : Option<f32>) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let other_audio = {
+                let other_ref = other.borrow::<Audio>()?;
+
+                other_ref.clone()
+            };
+            let mut audio = this.borrow_mut::<Audio>()?;
+            
+
+            if audio.sample_rate != other_audio.sample_rate {
+                return Err("cannot append audio with an audio of a different sample rate".into_lua_err())
+            }
+
+            if audio.channels != other_audio.channels {
+                return Err("cannot append audio with an audio with a different ammount of channels".into_lua_err())
+            }
+
+            let start_frame = start.map(|e| (e * other_audio.sample_rate as f32) as usize).unwrap_or(0 as usize);
+            let stop_frame = stop.map(|e| (e * other_audio.sample_rate as f32) as usize).unwrap_or(other_audio.frames as usize);
+
+            for channel_index in 0..audio.channels as usize {
+                let channel = &mut audio.data[channel_index];
+                for index in start_frame..stop_frame{
+                    channel.push(other_audio.data[channel_index][index]);
+                }
+            }
+            
+            audio.frames = audio.data[0].len() as u64;
+            audio.duration = audio.frames as f64 / audio.sample_rate as f64;
+
+            audio.compute_max_amplitude();
+        }
+
+        Ok(this)
+    }
+
 
     pub fn encode(&self,context: &mlua::Lua,format: String) -> mlua::Result<mlua::Buffer>{
         match format.to_ascii_uppercase().trim() {

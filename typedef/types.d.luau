@@ -305,6 +305,16 @@ declare extern type Audio with
         * LANCZOS3 - interpolation using 6 points
     ]=]
     function resample(self,sample_rate: number,filter: AudioResampleFilter): Audio      
-        
+    --[=[
+        @within Audio
+        @method append
+        @param other The audio file being appended.
+        @param start Optional start time (in seconds) to begin slicing the other audio file.
+        @param stop Optional stop time (in seconds) to stop slicing the other audio file.
+        @return Itself
+
+        Appends another audio file to the end of this audio file.
+    ]=]
+    function append(self,other: Audio,start: number?,stop: number?): Audio 
     function __tostring(self): string
 end

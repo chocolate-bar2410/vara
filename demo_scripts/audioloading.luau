@@ -2,6 +2,14 @@
 local fs = require("@vara/fs")
 local media = require("@vara/media")
 
-local audio = media.audio("demo_scripts/audio/01 - blocksize 4096.flac")
-print(audio.sampleRate)
-fs.write("demo_scripts/audio/test_16khz.wav", audio:resample(16000,"LANCZOS3"):fadeIn(2):fadeOut(2):encode("WAV"))
+local audioA = media.audio("demo_scripts/audio/Pink_noise.ogg")
+local audioB = media.audio("demo_scripts/audio/sample-3s-16khz.wav")
+
+fs.write("demo_scripts/audio/test_16khz.wav", 
+    audioA:resample(audioB.sampleRate,"LANCZOS3")
+          :trim(0,2)
+          :append(audioB,0.5)
+          :fadeIn(2)
+          :fadeOut(2)
+          :encode("WAV")
+)
