@@ -353,6 +353,55 @@ impl Audio {
         Ok(this)
     }
 
+    pub fn overlay(this : mlua::AnyUserData,other : mlua::AnyUserData,position : Option<f32>,repeat : Option<bool>) -> mlua::Result<mlua::AnyUserData>{
+            {
+                let other_audio = {
+                    let other_ref = other.borrow::<Audio>()?;
+
+                    other_ref.clone()
+                };
+
+                let mut audio = this.borrow_mut::<Audio>()?;
+
+                if audio.sample_rate != other_audio.sample_rate {
+                    return Err("cannot overlay audio with an audio of a different sample rate".into_lua_err())
+                }
+
+                if audio.channels != other_audio.channels {
+                    return Err("cannot overlay audio with an audio with a different ammount of channels".into_lua_err())
+                }
+
+                let start_frame = position.map(|seconds| seconds * audio.sample_rate as f32).unwrap_or(0.0) as usize;
+
+                let should_repeat = repeat.unwrap_or(false);
+
+                for channel_index in 0..audio.channels as usize {
+                    let channel = &mut audio.data[channel_index];
+                    let other_channel = &other_audio.data[channel_index];
+
+                    let available = channel.len().saturating_sub(start_frame);
+
+                    if should_repeat {
+                        for index in 0..available{
+                            channel[start_frame + index] += other_channel[index % other_channel.len()];
+                        }
+                    } else {
+                        let count = other_channel.len().min(available);
+
+                        for index in 0..count{
+                            channel[start_frame + index] += other_channel[index];
+                        }
+                    }
+
+                    
+                }
+
+                audio.compute_max_amplitude();
+            }
+
+            Ok(this)
+        }
+
     // misc.
 
     pub fn resample(this : mlua::AnyUserData,sample_rate : u32,filter : Option<&str>)  -> mlua::Result<mlua::AnyUserData>{

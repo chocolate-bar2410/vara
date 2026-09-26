@@ -311,11 +311,22 @@ declare extern type Audio with
         @param other The audio file being appended.
         @param start Start time (in seconds) to begin slicing the other audio file.
         @param stop  Stop time (in seconds) to stop slicing the other audio file.
-        @param cross How long should the audios overlap.
+        @param crossfade How long should the audios overlap.
         @return Itself
 
         Appends another audio file to the end of this audio file.
     ]=]
     function append(self,other: Audio,start: number?,stop: number?,crossfade: number?): Audio 
+    --[=[
+        @within Audio
+        @method overlay
+        @param other The audio file being overlayed.
+        @param position Offset to where the other audio is placed.
+        @param loop Determines if the other audio should be looped if it stops before the base audio ends.
+        @return Itself
+
+        overlays two audio files together.
+    ]=]
+    function overlay(self,other: Audio,position: number?,loop : boolean?): Audio 
     function __tostring(self): string
 end
