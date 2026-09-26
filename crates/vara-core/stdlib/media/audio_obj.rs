@@ -237,6 +237,30 @@ impl Audio {
         Ok(this)
     }
 
+    pub fn saturate(this : mlua::AnyUserData,drive_db : f32,mode : Option<&str>) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let drive = audio.dbfs_to_pcm(drive_db);
+            let norm = std::f32::consts::FRAC_PI_2 * drive.atan();
+
+            for channel in &mut audio.data {
+                for sample in channel.iter_mut() {
+                    let x = *sample * drive;
+
+                    *sample = match mode { 
+                        Some(mode_string) => match mode_string{
+                            "ARCTAN"   => (std::f32::consts::FRAC_PI_2 * x.atan()) / norm,
+                            "TANH" | _ => x.tanh() / drive.tanh(),
+                        },
+                        None => x.tanh() / drive.tanh(),
+                    };
+                }
+            }
+        }
+        Ok(this)
+    }
+
     // fades
 
     #[lua(name="fadeIn")]

@@ -184,6 +184,7 @@ end
 
 type AudioFormat = "WAV" | "FLAC"
 type AudioResampleFilter = "HERMITE" | "LINEAR" | "LANCZOS3"
+type AudioSaturationMode = "TANH" | "ARCTAN"
 
 --[=[
 	@class Audio
@@ -234,7 +235,7 @@ declare extern type Audio with
     --[=[
         @within Audio
         @method normalise
-        @param decibel The ammount of gain in decibels
+        @param decibel The target dBFS of the normalisation.
         @return Itself
 
         Does a peak normalisation targetting the provided decibel level.
@@ -355,5 +356,19 @@ declare extern type Audio with
         Clamps the audio to below the threshold while preserving peaks.
     ]=]
     function softClip(self,threshold: number): Audio 
+    --[=[
+        @within Audio
+        @method saturate
+        @param drive The ammount of gain in decibels applied before softclipping. 
+        @param mode The curve of the softclipper.
+        @return Itself
+
+        Saturates the audio using a drive parameter.
+        modes supported:
+
+        * TANH   - warmer and smoother saturations.
+        * ARCTAN - more aggressive saturations.
+    ]=]
+    function saturate(self,drive: number,mode : AudioSaturationMode?): Audio 
     function __tostring(self): string
 end
