@@ -196,6 +196,23 @@ impl Audio {
         Ok(this)
     }
     
+    #[lua(name="hardClip")]
+    pub fn hard_limit(this : mlua::AnyUserData,threshold : f32) -> mlua::Result<mlua::AnyUserData>{
+         {
+            let mut audio = this.borrow_mut::<Audio>()?;
+            let threshold_pcm = audio.dbfs_to_pcm(threshold);
+
+            for channel in &mut audio.data {
+                for i in 0..channel.len() as usize {
+                    channel[i] = channel[i].clamp(-threshold_pcm, threshold_pcm);
+                }
+            }
+
+            audio.compute_max_amplitude();
+         }
+        Ok(this)
+    }
+
     // fades
 
     #[lua(name="fadeIn")]

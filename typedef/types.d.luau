@@ -224,12 +224,21 @@ declare extern type Audio with
     function reverse(self): Audio  
     --[=[
         @within Audio
+        @method amplify
+        @param decibel The ammount of gain in decibels
+        @return Itself
+
+        Increases the volume by a set gain.
+    ]=]
+    function amplify(self,decibel: number): Audio  
+    --[=[
+        @within Audio
         @method normalise
         @param decibel The ammount of gain in decibels
         @return Itself
 
         Does a peak normalisation targetting the provided decibel level.
-        If no target was provided then it will target 0 dbfs.
+        If no target was provided then it will target 0 dBFS.
     ]=]
     function normalise(self,decibel: number?): Audio  
     --[=[
@@ -328,5 +337,14 @@ declare extern type Audio with
         overlays two audio files together.
     ]=]
     function overlay(self,other: Audio,position: number?,loop : boolean?): Audio 
+    --[=[
+        @within Audio
+        @method hardClip
+        @param threshold The max dBFS threshold.
+        @return Itself
+
+        Strictly clamps the audio to below the threshold.
+    ]=]
+    function hardClip(self,threshold: number): Audio 
     function __tostring(self): string
 end
