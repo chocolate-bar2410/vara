@@ -213,6 +213,30 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="softClip")]
+    pub fn soft_limit(this : mlua::AnyUserData,threshold : f32) -> mlua::Result<mlua::AnyUserData>{
+         {
+            let mut audio = this.borrow_mut::<Audio>()?;
+            let threshold_pcm = audio.dbfs_to_pcm(threshold).abs();
+
+            for channel in &mut audio.data {
+                for sample in channel.iter_mut() {
+                    let magnitude = sample.abs();
+
+                    if magnitude <= threshold_pcm {continue;}
+
+                    let u = ((magnitude - threshold_pcm) / (1.0 - threshold_pcm)).min(1.0);
+                    let smooth = u * u * u * (u * (u * 6.0 - 15.0) + 10.0);
+
+                    *sample = (threshold_pcm + (1.0 - threshold_pcm) * smooth).copysign(*sample);
+                }
+            }
+
+            audio.compute_max_amplitude();
+         }
+        Ok(this)
+    }
+
     // fades
 
     #[lua(name="fadeIn")]

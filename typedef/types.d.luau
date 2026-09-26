@@ -346,5 +346,14 @@ declare extern type Audio with
         Strictly clamps the audio to below the threshold.
     ]=]
     function hardClip(self,threshold: number): Audio 
+    --[=[
+        @within Audio
+        @method softClip
+        @param threshold The max dBFS threshold.
+        @return Itself
+
+        Clamps the audio to below the threshold while preserving peaks.
+    ]=]
+    function softClip(self,threshold: number): Audio 
     function __tostring(self): string
 end
