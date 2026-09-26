@@ -313,7 +313,13 @@ impl Audio {
         Ok(this)
     }
 
-    pub fn append(this : mlua::AnyUserData,other : mlua::AnyUserData,start : Option<f32>,stop : Option<f32>) -> mlua::Result<mlua::AnyUserData>{
+    pub fn append(
+        this : mlua::AnyUserData,
+        other : mlua::AnyUserData,
+        start : Option<f32>,
+        stop : Option<f32>,
+        crossfade : Option<f32>
+    ) -> mlua::Result<mlua::AnyUserData>{
         {
             let other_audio = {
                 let other_ref = other.borrow::<Audio>()?;
@@ -322,7 +328,6 @@ impl Audio {
             };
             let mut audio = this.borrow_mut::<Audio>()?;
             
-
             if audio.sample_rate != other_audio.sample_rate {
                 return Err("cannot append audio with an audio of a different sample rate".into_lua_err())
             }
@@ -331,16 +336,51 @@ impl Audio {
                 return Err("cannot append audio with an audio with a different ammount of channels".into_lua_err())
             }
 
-            let start_frame = start.map(|e| (e * other_audio.sample_rate as f32) as usize).unwrap_or(0 as usize);
-            let stop_frame = stop.map(|e| (e * other_audio.sample_rate as f32) as usize).unwrap_or(other_audio.frames as usize);
+            let mut start_frame = start.map(|seconds| (seconds * other_audio.sample_rate as f32) as usize).unwrap_or(0 as usize);
+            let mut stop_frame = stop.map(|seconds| (seconds * other_audio.sample_rate as f32) as usize).unwrap_or(other_audio.frames as usize);
 
-            for channel_index in 0..audio.channels as usize {
-                let channel = &mut audio.data[channel_index];
-                for index in start_frame..stop_frame{
-                    channel.push(other_audio.data[channel_index][index]);
+            start_frame = start_frame.clamp(0, stop_frame);
+            stop_frame = stop_frame.clamp(start_frame, other_audio.frames as usize);
+
+            
+
+            if let Some(crossfade_seconds) = crossfade && crossfade_seconds > 0.0 {
+                let append_length = stop_frame.saturating_sub(start_frame);
+
+                let crossfade_frames = ((crossfade_seconds * other_audio.sample_rate as f32) as usize)
+                    .min(audio.frames as usize)
+                    .min(append_length);
+
+                for channel_index in 0..audio.channels as usize {
+
+                    let channel = &mut audio.data[channel_index];
+                    let other_channel = &other_audio.data[channel_index];
+
+                    let crossfade_start = channel.len() - crossfade_frames;
+
+                    for i in 0..crossfade_frames{
+                        let t = i as f32 / crossfade_frames.saturating_sub(1).max(1) as f32;
+
+                        let this_sample = channel[crossfade_start + i];
+                        let other_sample = other_channel[start_frame + i];
+                        channel[crossfade_start + i] = this_sample * (1.0 - t).sqrt() + other_sample * t.sqrt();
+                    }
+
+                    for index in (start_frame + crossfade_frames)..stop_frame{
+                        channel.push(other_channel[index]);
+                    }
+                }
+
+            } else {
+                 for channel_index in 0..audio.channels as usize {
+                    let channel = &mut audio.data[channel_index];
+
+                    for index in start_frame..stop_frame{
+                        channel.push(other_audio.data[channel_index][index]);
+                    }
                 }
             }
-            
+
             audio.frames = audio.data[0].len() as u64;
             audio.duration = audio.frames as f64 / audio.sample_rate as f64;
 

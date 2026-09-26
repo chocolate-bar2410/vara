@@ -309,12 +309,13 @@ declare extern type Audio with
         @within Audio
         @method append
         @param other The audio file being appended.
-        @param start Optional start time (in seconds) to begin slicing the other audio file.
-        @param stop Optional stop time (in seconds) to stop slicing the other audio file.
+        @param start Start time (in seconds) to begin slicing the other audio file.
+        @param stop  Stop time (in seconds) to stop slicing the other audio file.
+        @param cross How long should the audios overlap.
         @return Itself
 
         Appends another audio file to the end of this audio file.
     ]=]
-    function append(self,other: Audio,start: number?,stop: number?): Audio 
+    function append(self,other: Audio,start: number?,stop: number?,crossfade: number?): Audio 
     function __tostring(self): string
 end
