@@ -1,3 +1,9 @@
+export type AudioConfigTable = {
+    tracks: {buffer},
+    sampleRate: number,
+    frames: number,
+}
+
 --[=[
     @class media
     Built in library for processing media files.
@@ -30,12 +36,12 @@ end
 --[=[
     @within media
     @method audio
-    @param data A pathstring or a buffer that stores RGB pixel data.
+    @param data A pathstring or a AudioConfigTable that holds audio data.
     @return A decoded audio object.
 
-    Creates a audio from a pathstring or from a buffer.
+    Creates a audio from a pathstring or from a audio config table.
 ]=]
-module.audio = function(data : buffer | string) : Audio
+module.audio = function(data : AudioConfigTable | string) : Audio
     return nil :: unknown
 end
 

@@ -169,7 +169,24 @@ fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Aud
         
             audio_obj::Audio::new(tracks,sample_rate,frames as u64)
         }
-        //mlua::Value::Buffer(_b) => {}
+        mlua::Value::Table(tab) => {
+            let track_table : mlua::Table = tab.get::<mlua::Table>("tracks")?;
+            let sample_rate : u32 = tab.get::<u32>("sampleRate")?;
+            let frames : u64 = tab.get::<u64>("frames")?;
+
+            let mut tracks : Vec<Vec<f32>> = Vec::new();
+
+            for value in track_table.sequence_values::<mlua::Buffer>(){
+                let track_buffer = value?;
+                let bytes : Vec<u8> = track_buffer.to_vec();
+
+                let float_bytes : Vec<f32> = bytes.chunks_exact(4).map(|chunk| f32::from_ne_bytes(chunk.try_into().unwrap())).collect();
+
+                tracks.push(float_bytes);
+            }
+
+            audio_obj::Audio::new(tracks,sample_rate,frames)
+        },
         _ => {
             return Err(mlua::Error::FromLuaConversionError {
                 from: data.type_name(),
