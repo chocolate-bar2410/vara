@@ -1,6 +1,8 @@
 use std::{io::Cursor, ops::Div};
-
 use mlua::ExternalError;
+use mlua::LuaSerdeExt;
+
+use serde::Deserialize;
 
 use crate::stdlib::media::audio_interpolation;
 
@@ -20,6 +22,16 @@ pub struct Audio{
     max_amplitude: f32,
 }
 
+#[derive(Deserialize,Debug,PartialEq)]
+struct CompressionConfig{
+    input_gain : f32,
+    output_gain : f32,
+    threshold : f32,
+    ratio : f32,
+    attack : f32,
+    release : f32,
+    knee : f32,
+}
 
 #[mlua::userdata_impl]
 impl Audio {
@@ -261,6 +273,67 @@ impl Audio {
         Ok(this)
     }
 
+    pub fn compress(this : mlua::AnyUserData,context : &mlua::Lua,config_table : mlua::Value) -> mlua::Result<mlua::AnyUserData>{
+        
+        let config : CompressionConfig = context.from_value(config_table)?;
+
+        let threshold = config.threshold;
+        let knee = config.knee;
+        let ratio = config.ratio;
+
+        {
+            let mut audio = this.borrow_mut::<Audio>()?;
+
+            let attack_coeff = (-1.0 / (config.attack * audio.sample_rate as f32)).exp();
+            let release_coeff = (-1.0 / (config.release * audio.sample_rate as f32)).exp();
+
+            let input_pcm = audio.dbfs_to_pcm(config.input_gain);
+            let output_pcm = audio.dbfs_to_pcm(config.output_gain);
+
+            let mut envelope = 0.0f32;
+
+            for channel in &mut audio.data {
+                for sample in channel {
+                    let x = *sample * input_pcm;
+                    let level = x.abs();
+
+                    if level > envelope {
+                        envelope += (level - envelope) * (1.0 - attack_coeff);
+                    } else {
+                        envelope += (level - envelope) * (1.0 - release_coeff);
+                    }
+
+                    // compressor algorithm works better with decibels for some reason
+                    let envelope_db = 20.0 * envelope.max(1e-20).log10();
+
+                    let reduction_db = if knee <= 0.0 {
+                        if envelope_db <= threshold {0.0} else {threshold + ((envelope_db - threshold) / ratio) - envelope_db}
+                    } else {
+                        let lower = threshold - knee * 0.5;
+                        let upper = threshold + knee * 0.5;
+
+                        if envelope_db < lower {
+                            0.0
+                        } else if envelope_db > upper {
+                            (threshold + (envelope_db - threshold) / ratio) - envelope_db
+                        } else {
+                            let x = envelope_db - lower;
+                            let compressed = x * x / (2.0 * knee);
+
+                            -(1.0 - 1.0 / ratio) * compressed
+                        }
+                    };
+
+                    let gain = 10.0f32.powf(reduction_db / 20.0);
+
+                    *sample = x * gain * output_pcm;
+                }
+            }
+
+        }
+
+        Ok(this)
+    }
     // fades
 
     #[lua(name="fadeIn")]

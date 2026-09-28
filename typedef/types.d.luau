@@ -186,6 +186,23 @@ type AudioFormat = "WAV" | "FLAC"
 type AudioResampleFilter = "HERMITE" | "LINEAR" | "LANCZOS3"
 type AudioSaturationMode = "TANH" | "ARCTAN"
 
+type AudioCompressConfig = {
+    -- Ammount of gain to add before compressing.
+    input : number,
+    -- Ammount of gain to add after compressing.
+    output : number,
+    -- Volume level (in decibels) to start compressing.
+    threshold : number,
+    -- Ammount to compress by as a ratio.
+    ratio : number,
+    -- How long it takes for the compressor to react.
+    attack : number,
+    -- How long it takes for the compressor to decompress.
+    release : number,
+    -- Softens the transition between uncompressed and compressed.
+    knee : number
+}
+
 --[=[
 	@class Audio
 
@@ -370,5 +387,13 @@ declare extern type Audio with
         * ARCTAN - more aggressive saturations.
     ]=]
     function saturate(self,drive: number,mode : AudioSaturationMode?): Audio 
+    --[=[
+        @within Audio
+        @method compress
+        @param config The configuration for the compressor.
+
+        Compresses the dynamic range of the audio, making quiet sounds louder and loud sounds quieter.
+    ]=]
+    function compress(self,config: AudioCompressConfig): Audio 
     function __tostring(self): string
 end
