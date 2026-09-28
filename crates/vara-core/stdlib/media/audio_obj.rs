@@ -24,12 +24,19 @@ pub struct Audio{
 
 #[derive(Deserialize,Debug,PartialEq)]
 struct CompressionConfig{
+    #[serde(default,rename = "input")]
     input_gain : f32,
+    #[serde(default,rename = "output")]
     output_gain : f32,
+    #[serde(default)]
     threshold : f32,
+    #[serde(default)]
     ratio : f32,
+    #[serde(default)]
     attack : f32,
+    #[serde(default)]
     release : f32,
+    #[serde(default)]
     knee : f32,
 }
 
@@ -273,7 +280,7 @@ impl Audio {
         Ok(this)
     }
 
-    pub fn compress(this : mlua::AnyUserData,context : &mlua::Lua,config_table : mlua::Value) -> mlua::Result<mlua::AnyUserData>{
+    pub fn compress(context : &mlua::Lua,this : mlua::AnyUserData,config_table : mlua::Value) -> mlua::Result<mlua::AnyUserData>{
         
         let config : CompressionConfig = context.from_value(config_table)?;
 
@@ -292,44 +299,48 @@ impl Audio {
 
             let mut envelope = 0.0f32;
 
-            for channel in &mut audio.data {
-                for sample in channel {
-                    let x = *sample * input_pcm;
-                    let level = x.abs();
+            for frame in 0..audio.frames as usize {
+                let level = audio.data
+                    .iter()
+                    .map(|channel| (channel[frame] * input_pcm).abs())
+                    .fold(0.0,f32::max);
 
-                    if level > envelope {
-                        envelope += (level - envelope) * (1.0 - attack_coeff);
+                if level > envelope {
+                    envelope += (level - envelope) * (1.0 - attack_coeff);
+                } else {
+                    envelope += (level - envelope) * (1.0 - release_coeff);
+                }
+
+                // compressor algorithm works better with decibels for some reason
+                let envelope_db = 20.0 * envelope.max(1e-20).log10();
+
+                let reduction_db = if knee <= 0.0 {
+                    if envelope_db <= threshold {0.0} else {threshold + ((envelope_db - threshold) / ratio) - envelope_db}
+                } else {
+                    let lower = threshold - knee * 0.5;
+                    let upper = threshold + knee * 0.5;
+
+                    if envelope_db < lower {
+                        0.0
+                    } else if envelope_db > upper {
+                        (threshold + (envelope_db - threshold) / ratio) - envelope_db
                     } else {
-                        envelope += (level - envelope) * (1.0 - release_coeff);
+                        let x = envelope_db - lower;
+                        let compressed = x * x / (2.0 * knee);
+
+                        -(1.0 - 1.0 / ratio) * compressed
                     }
+                };
 
-                    // compressor algorithm works better with decibels for some reason
-                    let envelope_db = 20.0 * envelope.max(1e-20).log10();
+                let gain = 10.0f32.powf(reduction_db / 20.0);
 
-                    let reduction_db = if knee <= 0.0 {
-                        if envelope_db <= threshold {0.0} else {threshold + ((envelope_db - threshold) / ratio) - envelope_db}
-                    } else {
-                        let lower = threshold - knee * 0.5;
-                        let upper = threshold + knee * 0.5;
-
-                        if envelope_db < lower {
-                            0.0
-                        } else if envelope_db > upper {
-                            (threshold + (envelope_db - threshold) / ratio) - envelope_db
-                        } else {
-                            let x = envelope_db - lower;
-                            let compressed = x * x / (2.0 * knee);
-
-                            -(1.0 - 1.0 / ratio) * compressed
-                        }
-                    };
-
-                    let gain = 10.0f32.powf(reduction_db / 20.0);
-
-                    *sample = x * gain * output_pcm;
+                for channel in &mut audio.data {
+                    let sample = channel[frame] * input_pcm;
+                    channel[frame] = sample * gain * output_pcm;
                 }
             }
 
+            audio.compute_max_amplitude();
         }
 
         Ok(this)

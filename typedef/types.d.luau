@@ -188,19 +188,19 @@ type AudioSaturationMode = "TANH" | "ARCTAN"
 
 type AudioCompressConfig = {
     -- Ammount of gain to add before compressing.
-    input : number,
+    input : number?,
     -- Ammount of gain to add after compressing.
-    output : number,
+    output : number?,
     -- Volume level (in decibels) to start compressing.
-    threshold : number,
+    threshold : number?,
     -- Ammount to compress by as a ratio.
-    ratio : number,
+    ratio : number?,
     -- How long it takes for the compressor to react.
-    attack : number,
+    attack : number?,
     -- How long it takes for the compressor to decompress.
-    release : number,
+    release : number?,
     -- Softens the transition between uncompressed and compressed.
-    knee : number
+    knee : number?
 }
 
 --[=[
