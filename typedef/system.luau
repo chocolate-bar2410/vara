@@ -1,12 +1,12 @@
 --[=[
-	@class process
+	@class system
     Built in class for accessing system info.
 ]=]
 local module = {}
 
 
 --[=[
-	@within process
+	@within system
 	@prop os
 	@tag read_only
 
@@ -14,7 +14,7 @@ local module = {}
 ]=]
 module.os = (nil :: unknown) :: "linux" | "macos" | "windows"
 --[=[
-	@within process
+	@within system
 	@prop arch
 	@tag read_only
 
@@ -22,7 +22,7 @@ module.os = (nil :: unknown) :: "linux" | "macos" | "windows"
 ]=]
 module.arch = (nil :: unknown) :: "x86_64" | "aarch64"
 --[=[
-	@within process
+	@within system
 	@prop family
 	@tag read_only
 
@@ -30,7 +30,7 @@ module.arch = (nil :: unknown) :: "x86_64" | "aarch64"
 ]=]
 module.family = (nil :: unknown) :: "unix" | "windows"
 --[=[
-	@within process
+	@within system
 	@prop cwd
 	@tag read_only
 
@@ -38,7 +38,7 @@ module.family = (nil :: unknown) :: "unix" | "windows"
 ]=]
 module.cwd = (nil :: unknown) :: string
 --[=[
-	@within process
+	@within system
 	@prop temp
 	@tag read_only
 
@@ -46,7 +46,7 @@ module.cwd = (nil :: unknown) :: string
 ]=]
 module.temp = (nil :: unknown) :: string
 --[=[
-	@within process
+	@within system
 	@prop home
 	@tag read_only
 
@@ -54,7 +54,7 @@ module.temp = (nil :: unknown) :: string
 ]=]
 module.home = (nil :: unknown) :: string
 --[=[
-	@within process
+	@within system
 	@prop endian
 	@tag read_only
 
@@ -62,7 +62,7 @@ module.home = (nil :: unknown) :: string
 ]=]
 module.endian = (nil :: unknown) :: "big" | "little"
 --[=[
-	@within process
+	@within system
 	@prop languagePreferences
 	@tag read_only
 
@@ -77,7 +77,7 @@ module.languagePreferences = (nil :: unknown) :: {
 }
 
 --[=[
-	@within process
+	@within system
 	@prop distro
 	@tag read_only
 
@@ -86,7 +86,7 @@ module.languagePreferences = (nil :: unknown) :: {
 module.distro = (nil :: unknown) :: string
 
 --[=[
-	@within process
+	@within system
 	@prop device
 	@tag read_only
 
@@ -95,7 +95,7 @@ module.distro = (nil :: unknown) :: string
 module.device = (nil :: unknown) :: string
 
 --[=[
-	@within process
+	@within system
 	@prop processID
 	@tag read_only
 
@@ -104,7 +104,7 @@ module.device = (nil :: unknown) :: string
 module.processID = (nil :: unknown) :: number
 
 --[=[
-	@within process
+	@within system
 	@prop desktopEnvironment
 	@tag read_only
 
@@ -113,7 +113,7 @@ module.processID = (nil :: unknown) :: number
 module.desktopEnvironment = (nil :: unknown) :: number
 
 --[=[
-	@within process
+	@within system
 	@prop env
 	@tag read_only
 
@@ -122,7 +122,7 @@ module.desktopEnvironment = (nil :: unknown) :: number
 module.env = (nil :: unknown) :: {[string] : string}
 
 --[=[
-	@within process
+	@within system
 	@prop args
 	@tag read_only
 
@@ -131,7 +131,7 @@ module.env = (nil :: unknown) :: {[string] : string}
 module.args = (nil :: unknown) :: {[string] : string}
 
 --[=[
-	@within process
+	@within system
 	@method processorCount
 
 	@return The number of logical CPUs available on the system.
@@ -141,7 +141,7 @@ function module.processorCount() : number
 end
 
 --[=[
-	@within process
+	@within system
 	@method physicalMemoryUsage
 
 	@return The ammount of physical memory being used up by the process.
@@ -151,7 +151,7 @@ function module.physicalMemoryUsage() : number
 end
 
 --[=[
-	@within process
+	@within system
 	@method virtualMemoryUsage
 
 	@return The ammount of virtual memory being used up by the process.
