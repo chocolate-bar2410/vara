@@ -429,8 +429,16 @@ declare extern type File with
         @param contents The contents of the file.
 
         Appends the given contents onto the end of a file.
+        If the file does not exist it will instead create a new file to append to.
     ]=]
     function append(self,contents : buffer)
+    --[=[
+        @within File
+        @method delete
+
+        Deletes the file.
+    ]=]
+    function delete(self)
 
     function __tostring(self): string
 end

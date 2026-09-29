@@ -37,7 +37,8 @@ impl File {
     }
 
     fn read(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
-        let mut file = std::fs::File::open(&self.path).map_err(|err| format!("Could not read file at {}: {}", self.path.display(),err).into_lua_err())?;
+        let mut file = std::fs::File::open(&self.path)
+            .map_err(|err| format!("Could not read file at {}: {}", self.path.display(),err).into_lua_err())?;
         let mut contents: Vec<u8> = Vec::new();
 
         file.read_to_end(&mut contents)?;
@@ -46,7 +47,6 @@ impl File {
     }
 
     fn write(&mut self,contents : mlua::Buffer) -> mlua::Result<()>{
-
         let bytes = contents.to_vec();
         let file = std::fs::File::create(&self.path)?;
         let mut writer = BufWriter::new(file);
@@ -64,14 +64,27 @@ impl File {
         let file = std::fs::File::options()
             .append(true)
             .create(true)
-            .open(&self.path)?;
+            .open(&self.path)
+            .map_err(|err| format!("Could not append file at {}: {}", self.path.display(),err).into_lua_err())?;
 
         let mut file_writer = BufWriter::new(file);
-
         file_writer.write_all(&bytes)?;
+
+        let metadata = std::fs::symlink_metadata(&self.path)?;
+        self.size = metadata.len();
+
 
         Ok(())
     }
+
+    fn delete(&mut self) -> mlua::Result<()>{
+        std::fs::remove_file(&self.path)
+            .map_err(|err| format!("Could not delete file at {}: {}", self.path.display(),err).into_lua_err())?;
+        self.size = 0;
+
+        Ok(())
+    }
+
 
     #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {
