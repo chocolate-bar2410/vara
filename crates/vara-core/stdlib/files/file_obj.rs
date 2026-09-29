@@ -8,7 +8,9 @@ use mlua::ExternalError;
 
 #[derive(mlua::UserData)]
 pub struct File{
+    #[lua(get)]
     path: PathBuf,
+    #[lua(get)]
     size: u64,
 }
 
@@ -17,10 +19,12 @@ impl File {
     #[lua(skip)]
     pub fn new(pathbuffer: &PathBuf) -> mlua::Result<Self> {
         
-        let mut size = 0;
-        let path = pathbuffer.as_path();
+        let absolute_path = std::path::absolute(pathbuffer)?;
 
-        if std::fs::exists(pathbuffer)?{
+        let mut size = 0;
+        let path = absolute_path.as_path();
+
+        if std::fs::exists(&absolute_path)?{
             let metadata = std::fs::symlink_metadata(path)?;
 
             if !metadata.is_file() {
@@ -31,7 +35,7 @@ impl File {
         }
 
         Ok(Self {
-            path: pathbuffer.to_path_buf(),
+            path: absolute_path.to_path_buf(),
             size : size
         })
     }
@@ -59,7 +63,7 @@ impl File {
             let metadata = std::fs::symlink_metadata(&file_obj.path)?;
             file_obj.size = metadata.len();
         }
-        
+
         Ok(this)
     }
 
@@ -105,7 +109,7 @@ impl File {
                     err
                 ).into_lua_err())?;
                 
-            file_obj.path = new_path;
+            file_obj.path = std::fs::canonicalize(new_path)?;
         }
 
         Ok(this)
