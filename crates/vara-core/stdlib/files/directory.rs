@@ -60,6 +60,12 @@ impl Directory{
         Ok(this)
     }
 
+    fn delete(&mut self) -> mlua::Result<()>{
+        std::fs::remove_dir_all(&self.path)
+            .map_err(|err| format!("Could not delete directory at {}: {}", self.path.display(),err).into_lua_err())?;
+
+        Ok(())
+    }
 
      #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {

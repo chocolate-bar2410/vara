@@ -496,6 +496,13 @@ declare extern type Directory with
         Moves the directory to a different location.
     ]=]
     function move(self,path: string) : File
+    --[=[
+        @within Directory
+        @method delete
+
+        Deletes the file directory and all files inside it.
+    ]=]
+    function delete(self)
 
     function __tostring(self): string
 end
