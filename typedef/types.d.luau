@@ -410,6 +410,8 @@ declare extern type File with
     read created: DateTime
     read accessed: DateTime
     read modified: DateTime
+    read exists: boolean
+    read extension: boolean
     --[=[
         @within File
         @method read

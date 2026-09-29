@@ -1,10 +1,11 @@
 --!strict
-local chrono = require("@vara/chrono")
 local fs = require("@vara/fs")
 local image_file = fs.file("./demo_scripts/images/monarch.png")
 
 local log_file = fs.file("./demo_scripts/log.txt")
 local modified_time = log_file.modified
+
+print(image_file.extension)
 
 log_file:append(buffer.fromstring(`\z
     PATH: {image_file.path} \n\z

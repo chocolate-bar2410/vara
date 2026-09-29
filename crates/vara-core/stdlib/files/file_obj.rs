@@ -5,6 +5,7 @@ use std::io::Read;
 use std::time::UNIX_EPOCH;
 
 use mlua::ExternalError;
+use mlua::IntoLua;
 
 use crate::stdlib::chrono::datetime::DateTime as vara_datetime;
 
@@ -157,7 +158,6 @@ impl File {
     
         Ok(created)
     }
-
     #[lua(getter,name="accessed")]
     fn get_accessed_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
@@ -200,4 +200,16 @@ impl File {
     
         Ok(created)
     }
+    #[lua(getter,name="exists")]
+    fn does_exist(&self) -> mlua::Result<bool> {
+        Ok(self.path.exists())
+    }
+    #[lua(getter,name="extension")]
+    fn get_extension(&self,context : &mlua::Lua) -> mlua::Result<mlua::LuaString> {
+        match self.path.extension() {
+            Some(ext) => context.create_string(&ext.as_encoded_bytes()),
+            None => context.create_string("")
+        }
+    }
+
 }
