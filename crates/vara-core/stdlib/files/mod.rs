@@ -7,6 +7,7 @@ use std::path::PathBuf;
 use vara_util::table_builder::TableBuilder;
 
 mod file_obj;
+mod directory;
 
 pub fn read_file(path: &PathBuf) -> io::Result<String> {
     let mut file = fs::File::open(path)
@@ -58,16 +59,11 @@ fn write_file_fn(_: &mlua::Lua,(path_string, data): (mlua::LuaString, mlua::Valu
     Ok(())
 }
 
-fn create_file( _: &mlua::Lua, path_string: mlua::LuaString,) -> mlua::Result<file_obj::File> {
-    let path = PathBuf::from(path_string.to_str()?.to_string());
-
-    file_obj::File::new(&path)
-}
-
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_function("read", read_file_fn)?
         .add_function("write", write_file_fn)?
-        .add_function("file", create_file)?
+        .add_function("file", |_: &mlua::Lua, path: PathBuf| file_obj::File::new(&path))?
+        .add_function("directory", |_: &mlua::Lua, path: PathBuf| directory::Directory::new(&path))?
         .build_readonly()
 }
