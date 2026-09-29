@@ -1,4 +1,7 @@
-use std::{ path::PathBuf};
+use std::path::PathBuf;
+use std::io::Write;
+use std::io::BufWriter;
+use std::io::Read;
 
 use mlua::ExternalError;
 
@@ -21,7 +24,7 @@ impl File {
             let metadata = std::fs::symlink_metadata(path)?;
 
             if !metadata.is_file() {
-                return Err(format!("path @ {} does not lead to a file",path.display()).into_lua_err());
+                return Err(format!("path {} does not lead to a file",path.display()).into_lua_err());
             }
 
             size = metadata.len();
@@ -31,6 +34,15 @@ impl File {
             path: pathbuffer.to_path_buf(),
             size : size
         })
+    }
+
+    fn read(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
+        let mut file = std::fs::File::open(&self.path).map_err(|err| format!("Could not read file at {}: {}", self.path.display(),err).into_lua_err())?;
+        let mut contents: Vec<u8> = Vec::new();
+
+        file.read_to_end(&mut contents)?;
+
+       context.create_buffer(contents)
     }
 
     #[lua(meta,name="__tostring")]

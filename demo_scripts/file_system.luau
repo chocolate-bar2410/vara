@@ -1,6 +1,8 @@
 --!strict
 local fs = require("@vara/fs")
-local image = fs.file("./demo_scripts/images/monarch.png")
+local image_file = fs.file("./demo_scripts/images/monarch.png")
 
-print(image.path)
-print(image.size)
+print(image_file.path)
+print(image_file.size)
+
+print(image_file:read())

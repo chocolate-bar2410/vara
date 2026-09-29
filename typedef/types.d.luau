@@ -407,5 +407,13 @@ end
 declare extern type File with
     path: string
     size: number
+    --[=[
+        @within File
+        @returns Contents of the file.
+
+        Reads the contents of a file as returns it as a buffer.
+    ]=]
+    function read(self): buffer
+
     function __tostring(self): string
 end
