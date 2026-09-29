@@ -42,7 +42,21 @@ impl File {
 
         file.read_to_end(&mut contents)?;
 
-       context.create_buffer(contents)
+        context.create_buffer(contents)
+    }
+
+    fn write(&mut self,contents : mlua::Buffer) -> mlua::Result<()>{
+
+        let bytes = contents.to_vec();
+        let file = std::fs::File::create(&self.path)?;
+        let mut writer = BufWriter::new(file);
+
+        writer.write_all(&bytes)?;
+
+        let metadata = std::fs::symlink_metadata(&self.path)?;
+        self.size = metadata.len();
+        
+        Ok(())
     }
 
     #[lua(meta,name="__tostring")]

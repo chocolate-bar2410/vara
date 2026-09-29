@@ -409,11 +409,20 @@ declare extern type File with
     size: number
     --[=[
         @within File
+        @method read
         @returns Contents of the file.
 
         Reads the contents of a file as returns it as a buffer.
     ]=]
     function read(self): buffer
+    --[=[
+        @within File
+        @method write
+        @param contents The contents of the file.
+
+        Writes the given contents into a file.
+    ]=]
+    function write(self,contents : buffer)
 
     function __tostring(self): string
 end

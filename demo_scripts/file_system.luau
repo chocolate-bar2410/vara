@@ -1,8 +1,13 @@
 --!strict
+local chrono = require("@vara/chrono")
 local fs = require("@vara/fs")
 local image_file = fs.file("./demo_scripts/images/monarch.png")
 
-print(image_file.path)
-print(image_file.size)
+local access_time = chrono.now()
+local log_file = fs.file("./demo_scripts/log.txt")
 
-print(image_file:read())
+log_file:write(buffer.fromstring(`\z
+    PATH: {image_file.path} \n\z
+    SIZE: {image_file.size} BYTES \n\z
+    TIME: {access_time:humanise()} \n\z
+`))
