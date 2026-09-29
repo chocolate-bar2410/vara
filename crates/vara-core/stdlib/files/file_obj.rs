@@ -5,7 +5,6 @@ use std::io::Read;
 use std::time::UNIX_EPOCH;
 
 use mlua::ExternalError;
-use mlua::IntoLua;
 
 use crate::stdlib::chrono::datetime::DateTime as vara_datetime;
 
@@ -117,6 +116,15 @@ impl File {
 
         Ok(this)
     }
+
+    #[lua(name = "copy")]
+    fn copy_file(&self,new_path : PathBuf) -> mlua::Result<Self>{
+        let new_file = File::new(&new_path)?;
+
+        std::fs::copy(&self.path, &new_file.path)?;
+
+        Ok(new_file) 
+    }  
 
     #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {

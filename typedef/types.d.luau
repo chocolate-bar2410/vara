@@ -449,12 +449,21 @@ declare extern type File with
     --[=[
         @within File
         @method move
-        @param newPath The path to move to.
+        @param path The path to move to.
         @return Itself
         
         Moves the file to a different location.
     ]=]
-    function move(self,newPath: string) : File
+    function move(self,path: string) : File
+    --[=[
+        @within File
+        @method move
+        @param newPath The path to copy to.
+        @return The copy
+        
+        Copies the file to a new location.
+    ]=]
+    function copy(self,path: string) : File
 
     function __tostring(self): string
 end
