@@ -409,6 +409,7 @@ declare extern type File with
     read size: number
     read created: DateTime
     read accessed: DateTime
+    read modified: DateTime
     --[=[
         @within File
         @method read

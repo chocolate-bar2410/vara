@@ -4,9 +4,9 @@ local fs = require("@vara/fs")
 local image_file = fs.file("./demo_scripts/images/monarch.png")
 
 local log_file = fs.file("./demo_scripts/log.txt")
-local access_time = log_file.accessed
+local modified_time = log_file.modified
 
 log_file:append(buffer.fromstring(`\z
     PATH: {image_file.path} \n\z
-    ACCESSED AT: {access_time:humanise()} \n\z
+    MODIFIED AT: {modified_time:humanise()} \n\z
 `))

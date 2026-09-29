@@ -179,4 +179,25 @@ impl File {
     
         Ok(created)
     }
+    #[lua(getter,name="modified")]
+    fn get_modified_date(&self) -> mlua::Result<vara_datetime> {
+        if !std::fs::exists(&self.path)?{
+            return Ok(vara_datetime::new(0,0));
+        }
+
+        let metadata = std::fs::symlink_metadata(&self.path)?;
+
+        #[cfg(target_family = "windows")]
+        let timeoffset = vara_util::win_compat::get_timezone_offset();
+
+        #[cfg(target_family = "unix")]
+        let timeoffset = 0;
+
+        let created = vara_datetime::new(metadata.modified()?
+            .duration_since(UNIX_EPOCH)
+            .map_err(|err| err.into_lua_err())?
+            .as_millis() as i64, timeoffset);
+    
+        Ok(created)
+    }
 }
