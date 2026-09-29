@@ -54,4 +54,16 @@ function module.file(path: string): File
 	return nil :: unknown
 end
 
+--[=[
+	@within fs
+	@method directory
+	@param path The path to a file directory.
+	@return A directory object.
+
+	Creates a directory object from a path string.
+]=]
+function module.directory(path: string): Directory
+	return nil :: unknown
+end
+
 return module

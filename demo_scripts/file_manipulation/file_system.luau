@@ -10,4 +10,4 @@ log_file:append(buffer.fromstring(`\z
     MODIFIED AT: {modified_time:humanise()} \n\z
 `))
 
-local backup = log_file:copy("./demo_scripts/backup.txt")
+log_file:copy("./demo_scripts/backup.txt")

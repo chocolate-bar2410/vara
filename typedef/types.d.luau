@@ -402,7 +402,7 @@ end
 --[=[
 	@class File
 
-    An Object representing an File.
+    An Object representing a file.
 ]=]
 declare extern type File with
     read path: string
@@ -466,4 +466,17 @@ declare extern type File with
     function copy(self,path: string) : File
 
     function __tostring(self): string
+end
+
+--[=[
+	@class Directory
+
+    An Object representing a file directory.
+]=]
+declare extern type Directory with 
+    read path: string
+    read created: DateTime
+    read accessed: DateTime
+    read modified: DateTime
+    read exists: boolean
 end
