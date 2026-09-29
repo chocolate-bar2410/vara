@@ -1,4 +1,4 @@
-mod datetime;
+pub mod datetime;
 mod param_values;
 use std::time::{SystemTime, UNIX_EPOCH};
 

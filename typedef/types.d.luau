@@ -209,11 +209,11 @@ type AudioCompressConfig = {
     An Object representing an audio.
 ]=]
 declare extern type Audio with
-    data: {buffer}
-    sampleRate: number
-    frames: number
-    duration: number
-    channels: number
+    read data: {buffer}
+    read sampleRate: number
+    read frames: number
+    read duration: number
+    read channels: number
     --[=[
         @within Audio
         @method encode
@@ -405,8 +405,10 @@ end
     An Object representing an File.
 ]=]
 declare extern type File with
-    path: string
-    size: number
+    read path: string
+    read size: number
+    read created: DateTime
+    read accessed: DateTime
     --[=[
         @within File
         @method read

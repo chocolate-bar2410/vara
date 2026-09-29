@@ -2,9 +2,11 @@ use std::path::PathBuf;
 use std::io::Write;
 use std::io::BufWriter;
 use std::io::Read;
+use std::time::UNIX_EPOCH;
 
 use mlua::ExternalError;
 
+use crate::stdlib::chrono::datetime::DateTime as vara_datetime;
 
 #[derive(mlua::UserData)]
 pub struct File{
@@ -30,13 +32,13 @@ impl File {
             if !metadata.is_file() {
                 return Err(format!("path {} does not lead to a file",path.display()).into_lua_err());
             }
-
+            
             size = metadata.len();
         }
 
         Ok(Self {
             path: absolute_path.to_path_buf(),
-            size : size
+            size : size,
         })
     }
 
@@ -115,7 +117,6 @@ impl File {
         Ok(this)
     }
 
-
     #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {
 
@@ -135,4 +136,47 @@ impl File {
         Ok(format!("file {} {}",size_string,self.path.display()))
     }
 
+    #[lua(getter,name="created")]
+    fn get_creation_date(&self) -> mlua::Result<vara_datetime> {
+        if !std::fs::exists(&self.path)?{
+            return Ok(vara_datetime::new(0,0));
+        }
+
+        let metadata = std::fs::symlink_metadata(&self.path)?;
+
+        #[cfg(target_family = "windows")]
+        let timeoffset = vara_util::win_compat::get_timezone_offset();
+
+        #[cfg(target_family = "unix")]
+        let timeoffset = 0;
+
+        let created = vara_datetime::new(metadata.created()?
+            .duration_since(UNIX_EPOCH)
+            .map_err(|err| err.into_lua_err())?
+            .as_millis() as i64, timeoffset);
+    
+        Ok(created)
+    }
+
+    #[lua(getter,name="accessed")]
+    fn get_accessed_date(&self) -> mlua::Result<vara_datetime> {
+        if !std::fs::exists(&self.path)?{
+            return Ok(vara_datetime::new(0,0));
+        }
+
+        let metadata = std::fs::symlink_metadata(&self.path)?;
+
+        #[cfg(target_family = "windows")]
+        let timeoffset = vara_util::win_compat::get_timezone_offset();
+
+        #[cfg(target_family = "unix")]
+        let timeoffset = 0;
+
+        let created = vara_datetime::new(metadata.accessed()?
+            .duration_since(UNIX_EPOCH)
+            .map_err(|err| err.into_lua_err())?
+            .as_millis() as i64, timeoffset);
+    
+        Ok(created)
+    }
 }
