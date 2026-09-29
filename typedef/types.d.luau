@@ -487,6 +487,15 @@ declare extern type Directory with
         Creates a file directory where the directory object's path is located.
     ]=]
     function make(self) : File
+    --[=[
+        @within Directory
+        @method move
+        @param path The path to move to.
+        @return Itself
+        
+        Moves the directory to a different location.
+    ]=]
+    function move(self,path: string) : File
 
     function __tostring(self): string
 end

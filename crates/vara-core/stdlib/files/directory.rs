@@ -41,6 +41,26 @@ impl Directory{
         Ok(this)
     }
 
+    #[lua(name = "move")]
+    fn move_dir(this : mlua::AnyUserData,new_path : PathBuf) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut directory = this.borrow_mut::<Directory>()?;
+
+            std::fs::rename(&directory.path, &new_path)
+                .map_err(|err| format!(
+                    "Could not move directory at {} to {}: {}", 
+                    directory.path.display(),
+                    new_path.display(),
+                    err
+                ).into_lua_err())?;
+                
+            directory.path = std::fs::canonicalize(new_path)?;
+        }
+
+        Ok(this)
+    }
+
+
      #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {
 
