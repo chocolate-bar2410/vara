@@ -423,6 +423,14 @@ declare extern type File with
         Writes the given contents into a file.
     ]=]
     function write(self,contents : buffer)
+    --[=[
+        @within File
+        @method append
+        @param contents The contents of the file.
+
+        Appends the given contents onto the end of a file.
+    ]=]
+    function append(self,contents : buffer)
 
     function __tostring(self): string
 end

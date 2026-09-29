@@ -55,7 +55,21 @@ impl File {
 
         let metadata = std::fs::symlink_metadata(&self.path)?;
         self.size = metadata.len();
-        
+
+        Ok(())
+    }
+
+    fn append(&mut self,contents : mlua::Buffer) -> mlua::Result<()>{
+        let bytes = contents.to_vec();
+        let file = std::fs::File::options()
+            .append(true)
+            .create(true)
+            .open(&self.path)?;
+
+        let mut file_writer = BufWriter::new(file);
+
+        file_writer.write_all(&bytes)?;
+
         Ok(())
     }
 
