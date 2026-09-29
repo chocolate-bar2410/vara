@@ -1,6 +1,6 @@
 --!strict
 local fs = require("@vara/fs")
 
-local image_folder = fs.directory("demo_scripts/images")
+local test_folder = fs.directory("demo_scripts/test")
 
-print(image_folder)
+print(test_folder:make())

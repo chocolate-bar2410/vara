@@ -479,4 +479,14 @@ declare extern type Directory with
     read accessed: DateTime
     read modified: DateTime
     read exists: boolean
+    --[=[
+        @within Directory
+        @method make
+        @return Itself
+        
+        Creates a file directory where the directory object's path is located.
+    ]=]
+    function make(self) : File
+
+    function __tostring(self): string
 end

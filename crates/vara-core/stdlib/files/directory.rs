@@ -31,6 +31,16 @@ impl Directory{
         })
     }
 
+    fn make(this: mlua::AnyUserData) -> mlua::Result<mlua::AnyUserData>{
+
+        {
+            let directory = this.borrow_mut::<Directory>()?;
+            std::fs::create_dir(&directory.path)?;
+        }
+
+        Ok(this)
+    }
+
      #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {
 
