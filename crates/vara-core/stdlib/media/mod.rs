@@ -18,7 +18,7 @@ mod audio_interpolation;
 fn create_image(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_obj::Image>{
     match data {
         mlua::Value::String(s) => {
-            let bytes = vara_stdlib::file::read_file_as_binary(&PathBuf::from(s.to_string_lossy()))?;
+            let bytes = vara_stdlib::files::read_file_as_binary(&PathBuf::from(s.to_string_lossy()))?;
 
             let reader = image::ImageReader::new(Cursor::new(bytes))
                 .with_guessed_format()?;
@@ -59,7 +59,7 @@ fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Aud
     match data {
         mlua::Value::String(s) => {
             let path = PathBuf::from(s.to_string_lossy());
-            let bytes = vara_stdlib::file::read_file_as_binary(&path)?;
+            let bytes = vara_stdlib::files::read_file_as_binary(&path)?;
 
 
             let mss = MediaSourceStream::new(Box::new(Cursor::new(bytes)), Default::default());

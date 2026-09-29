@@ -6,6 +6,8 @@ use std::path::PathBuf;
 
 use vara_util::table_builder::TableBuilder;
 
+mod file_obj;
+
 pub fn read_file(path: &PathBuf) -> io::Result<String> {
     let mut file = fs::File::open(path)
         .expect(format!("Could not find file at path {}", path.display()).as_str());

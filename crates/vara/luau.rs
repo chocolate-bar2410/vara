@@ -24,7 +24,7 @@ impl Runtime {
 
     fn setup_standard_library(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let io_lib = vara_stdlib::stdio::get_module(&self.vm)?;
-        let fs_lib = vara_stdlib::file::get_module(&self.vm)?;
+        let fs_lib = vara_stdlib::files::get_module(&self.vm)?;
         let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
         let chrono_lib = vara_stdlib::chrono::get_module(&self.vm)?;
         let system_lib = vara_stdlib::system::get_module(&self.vm,&self.args)?;
@@ -48,7 +48,7 @@ impl Runtime {
     }
 
     pub fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-        let file_contents = vara_stdlib::file::read_file(file_path)?;
+        let file_contents = vara_stdlib::files::read_file(file_path)?;
 
         let module_path =
             vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))
