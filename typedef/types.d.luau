@@ -439,6 +439,14 @@ declare extern type File with
         Deletes the file.
     ]=]
     function delete(self)
+    --[=[
+        @within File
+        @method move
+        @param newPath The path to move to.
+        
+        Moves the file to a different location.
+    ]=]
+    function move(self,newPath: string)
 
     function __tostring(self): string
 end

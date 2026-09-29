@@ -10,3 +10,5 @@ log_file:append(buffer.fromstring(`\z
     PATH: {image_file.path} \n\z
     ACCESSED AT: {access_time:humanise()} \n\z
 `))
+
+log_file:move("./demo_scripts/images/log.txt")

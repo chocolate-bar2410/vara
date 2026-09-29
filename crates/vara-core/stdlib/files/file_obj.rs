@@ -85,6 +85,21 @@ impl File {
         Ok(())
     }
 
+    #[lua(name = "move")]
+    fn move_file(&mut self,new_path : PathBuf) -> mlua::Result<()>{
+        std::fs::rename(&self.path, &new_path)
+            .map_err(|err| format!(
+                "Could not move file at {} to {}: {}", 
+                self.path.display(),
+                new_path.display(),
+                err
+            ).into_lua_err())?;
+            
+        self.path = new_path;
+
+        Ok(())
+    }
+
 
     #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {
