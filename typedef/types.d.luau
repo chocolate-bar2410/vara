@@ -397,3 +397,15 @@ declare extern type Audio with
     function compress(self,config: AudioCompressConfig): Audio 
     function __tostring(self): string
 end
+
+
+--[=[
+	@class File
+
+    An Object representing an File.
+]=]
+declare extern type File with
+    path: string
+    size: number
+    function __tostring(self): string
+end

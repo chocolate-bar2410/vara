@@ -42,4 +42,16 @@ function module.read(path: string): buffer
 	return nil :: unknown
 end
 
+--[=[
+	@within fs
+	@method file
+	@param path The path to a file.
+	@return A file object.
+
+	Creates a file object from a path string.
+]=]
+function module.file(path: string): File
+	return nil :: unknown
+end
+
 return module

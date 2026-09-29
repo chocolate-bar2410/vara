@@ -28,10 +28,7 @@ pub fn read_file_as_binary(path: &PathBuf) -> io::Result<Vec<u8>> {
     Ok(contents)
 }
 
-fn read_file_fn(
-    context: &mlua::Lua,
-    arg: mlua::LuaString,
-) -> Result<mlua::Buffer, mlua::error::Error> {
+fn read_file_fn(context: &mlua::Lua,arg: mlua::LuaString) -> Result<mlua::Buffer, mlua::error::Error> {
     let path = PathBuf::from(arg.to_str()?.to_string());
 
     let contents = read_file_as_binary(&path)?;
@@ -39,10 +36,7 @@ fn read_file_fn(
     context.create_buffer(contents)
 }
 
-fn write_file_fn(
-    _: &mlua::Lua,
-    (path_string, data): (mlua::LuaString, mlua::Value),
-) -> Result<(), mlua::error::Error> {
+fn write_file_fn(_: &mlua::Lua,(path_string, data): (mlua::LuaString, mlua::Value)) -> Result<(), mlua::error::Error> {
     let bytes: Vec<u8> = match data {
         mlua::Value::String(s) => s.as_bytes().to_vec(),
         mlua::Value::Buffer(b) => b.to_vec(),
@@ -64,9 +58,16 @@ fn write_file_fn(
     Ok(())
 }
 
+fn create_file( _: &mlua::Lua, path_string: mlua::LuaString,) -> mlua::Result<file_obj::File> {
+    let path = PathBuf::from(path_string.to_str()?.to_string());
+
+    file_obj::File::new(&path)
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_function("read", read_file_fn)?
         .add_function("write", write_file_fn)?
+        .add_function("file", create_file)?
         .build_readonly()
 }
