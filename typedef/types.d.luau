@@ -419,19 +419,21 @@ declare extern type File with
         @within File
         @method write
         @param contents The contents of the file.
+        @return Itself
 
         Writes the given contents into a file.
     ]=]
-    function write(self,contents : buffer)
+    function write(self,contents : buffer) : File
     --[=[
         @within File
         @method append
         @param contents The contents of the file.
+        @return Itself
 
         Appends the given contents onto the end of a file.
         If the file does not exist it will instead create a new file to append to.
     ]=]
-    function append(self,contents : buffer)
+    function append(self,contents : buffer) : File
     --[=[
         @within File
         @method delete
@@ -443,10 +445,11 @@ declare extern type File with
         @within File
         @method move
         @param newPath The path to move to.
+        @return Itself
         
         Moves the file to a different location.
     ]=]
-    function move(self,newPath: string)
+    function move(self,newPath: string) : File
 
     function __tostring(self): string
 end

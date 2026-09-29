@@ -46,35 +46,42 @@ impl File {
         context.create_buffer(contents)
     }
 
-    fn write(&mut self,contents : mlua::Buffer) -> mlua::Result<()>{
-        let bytes = contents.to_vec();
-        let file = std::fs::File::create(&self.path)?;
-        let mut writer = BufWriter::new(file);
+    fn write(this : mlua::AnyUserData,contents : mlua::Buffer) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut file_obj = this.borrow_mut::<File>()?;
 
-        writer.write_all(&bytes)?;
+            let bytes = contents.to_vec();
+            let file = std::fs::File::create(&file_obj.path)?;
+            let mut writer = BufWriter::new(file);
 
-        let metadata = std::fs::symlink_metadata(&self.path)?;
-        self.size = metadata.len();
+            writer.write_all(&bytes)?;
 
-        Ok(())
+            let metadata = std::fs::symlink_metadata(&file_obj.path)?;
+            file_obj.size = metadata.len();
+        }
+        
+        Ok(this)
     }
 
-    fn append(&mut self,contents : mlua::Buffer) -> mlua::Result<()>{
-        let bytes = contents.to_vec();
-        let file = std::fs::File::options()
-            .append(true)
-            .create(true)
-            .open(&self.path)
-            .map_err(|err| format!("Could not append file at {}: {}", self.path.display(),err).into_lua_err())?;
+    fn append(this : mlua::AnyUserData,contents : mlua::Buffer) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut file_obj = this.borrow_mut::<File>()?;
 
-        let mut file_writer = BufWriter::new(file);
-        file_writer.write_all(&bytes)?;
+            let bytes = contents.to_vec();
+            let file = std::fs::File::options()
+                .append(true)
+                .create(true)
+                .open(&file_obj.path)
+                .map_err(|err| format!("Could not append file at {}: {}", file_obj.path.display(),err).into_lua_err())?;
 
-        let metadata = std::fs::symlink_metadata(&self.path)?;
-        self.size = metadata.len();
+            let mut file_writer = BufWriter::new(file);
+            file_writer.write_all(&bytes)?;
 
+            let metadata = std::fs::symlink_metadata(&file_obj.path)?;
+            file_obj.size = metadata.len();
+        }
 
-        Ok(())
+        Ok(this)
     }
 
     fn delete(&mut self) -> mlua::Result<()>{
@@ -86,18 +93,22 @@ impl File {
     }
 
     #[lua(name = "move")]
-    fn move_file(&mut self,new_path : PathBuf) -> mlua::Result<()>{
-        std::fs::rename(&self.path, &new_path)
-            .map_err(|err| format!(
-                "Could not move file at {} to {}: {}", 
-                self.path.display(),
-                new_path.display(),
-                err
-            ).into_lua_err())?;
-            
-        self.path = new_path;
+    fn move_file(this : mlua::AnyUserData,new_path : PathBuf) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut file_obj = this.borrow_mut::<File>()?;
 
-        Ok(())
+            std::fs::rename(&file_obj.path, &new_path)
+                .map_err(|err| format!(
+                    "Could not move file at {} to {}: {}", 
+                    file_obj.path.display(),
+                    new_path.display(),
+                    err
+                ).into_lua_err())?;
+                
+            file_obj.path = new_path;
+        }
+
+        Ok(this)
     }
 
 
