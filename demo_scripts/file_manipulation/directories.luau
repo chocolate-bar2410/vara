@@ -1,16 +1,20 @@
 --!strict
 local fs = require("@vara/fs")
 local io = require("@vara/io")
+local system = require("@vara/system")
 
 const BLUE = "\x1b[34m"
+const GREY = "\x1b[90m"
+
 const BOLD = "\x1b[1m"
+const DIM = "\x1b[2m"
 const RESET = "\x1b[0m"
 
 --// use a nerd font like JetBrainsMono Nerd Font
 const FOLDER_ICON = "\u{f114}"
 const IMAGE_ICON = "\u{f03e}"
 
-io.write("\x1b[2J\x1b[H\n")
+io.write("\x1b[2J\n")
 
 local function printFolderTree(folder: Directory,prefix: string?)
     if prefix == nil then
@@ -36,16 +40,17 @@ local function printFolderTree(folder: Directory,prefix: string?)
         local relative = file.path:match("[^\\]+$") or file.path
 
         if typeof(file) == "File" then
-            print(`{prefix}{branch} {IMAGE_ICON}  {relative}`)
+            print(`{GREY}{DIM}{prefix}{branch}{RESET} {IMAGE_ICON}  {relative}`)
         else
-            print(`{prefix}{branch} {FOLDER_ICON}  {BLUE}{BOLD}{relative}{RESET}`)
+            print(`{GREY}{DIM}{prefix}{branch}{RESET} {FOLDER_ICON}  {BLUE}{BOLD}{relative}{RESET}`)
             printFolderTree(file,child_prefix)
         end
         
     end
 end
 
-local test_folder = fs.directory("demo_scripts/images")
+local test_folder = fs.directory(system.home)
 
 printFolderTree(test_folder)
 io.readline()
+io.write("\x1b[2J\n")
