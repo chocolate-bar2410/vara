@@ -1,7 +1,6 @@
 --!strict
 local fs = require("@vara/fs")
 local io = require("@vara/io")
-local system = require("@vara/system")
 
 const BLUE = "\x1b[34m"
 const GREY = "\x1b[90m"
@@ -49,7 +48,7 @@ local function printFolderTree(folder: Directory,prefix: string?)
     end
 end
 
-local test_folder = fs.directory(system.home)
+local test_folder = fs.directory("demo_scripts/images")
 
 printFolderTree(test_folder)
 io.readline()
