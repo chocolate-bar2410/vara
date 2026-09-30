@@ -3,7 +3,13 @@ use std::time::UNIX_EPOCH;
 
 use mlua::ExternalError;
 
-use crate::stdlib::chrono::datetime::DateTime as vara_datetime;
+use crate::stdlib as vara_stdlib;
+
+use vara_stdlib::chrono::datetime::DateTime as vara_datetime;
+use vara_stdlib::files::file_obj::File as vara_file;
+
+use std::rc::Rc;
+use std::cell::RefCell;
 
 #[derive(mlua::UserData)]
 pub struct Directory{
@@ -67,6 +73,32 @@ impl Directory{
         Ok(())
     }
 
+    fn walk(&self,context : &mlua::Lua) -> mlua::Result<mlua::Function>{
+        let iter = Rc::new(RefCell::new(std::fs::read_dir(&self.path)?));
+
+        context.create_function(move |context : &mlua::Lua,()|{
+            let mut borrowed = iter.borrow_mut();
+
+            match borrowed.next(){
+                Some(Ok(entry)) => {
+                    let path = entry.path();
+                   
+                    if path.is_file() {
+                        let file = vara_file::new(&path)?;
+                        Ok(Some(context.create_userdata(file)?))
+                    } else if path.is_dir() {
+                        let directory = Directory::new(&path)?;
+                        Ok(Some(context.create_userdata(directory)?))
+                    } else {
+                        Ok(None)
+                    }
+                }
+                Some(Err(err)) => Err(mlua::Error::RuntimeError(err.to_string())),
+                None => Ok(None),
+            }
+        })
+    }
+    
      #[lua(meta,name="__tostring")]
     fn to_string(&self) -> mlua::Result<String> {
 

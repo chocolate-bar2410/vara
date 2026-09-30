@@ -503,6 +503,14 @@ declare extern type Directory with
         Deletes the file directory and all files inside it.
     ]=]
     function delete(self)
+    --[=[
+        @within Directory
+        @method walk
+        @return iterator
+
+        Returns an non recursive iterator that walks through every file and directory in that directory.
+    ]=]
+    function walk(self) : () -> File | Directory
 
     function __tostring(self): string
 end
