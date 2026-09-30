@@ -60,7 +60,7 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             let mut current = luau::Runtime::new(trailing_args)?;
             
             match current.run(&path) {
-                Ok(()) => Ok(println!("file {} ran successfully!", path.display())),
+                Ok(()) => Ok(()),
                 Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
             }
         }
