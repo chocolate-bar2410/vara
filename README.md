@@ -36,7 +36,7 @@ Intentionally out of scope for vara
 - [ ] standard library
     - [x] io
     - [x] file system
-        - [ ] directories
+        - [x] directories
     - [x] serde
     - [x] chrono
     - [x] system
