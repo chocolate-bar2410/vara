@@ -39,3 +39,13 @@ local D_encoded = '{"A":123,"B":[1,2,3]}'
 
 assert(serde.encode("JSON", D_decoded) == D_encoded,"Failed to encode mixed table")
 assert(table_eq(serde.decode("JSON", D_encoded) :: {string},D_decoded) == true,"Failed to encode mixed object")
+
+assert(pcall(serde.encode,"json",{A = 123}) == true)
+assert(pcall(serde.encode,"toml",{A = 123}) == true)
+assert(pcall(serde.encode,"yaml",{A = 123}) == true)
+assert(pcall(serde.encode,"idk lmao",{A = 123}) == false)
+
+assert(pcall(serde.decode,"json",'{"A": 123}') == true)
+assert(pcall(serde.decode,"toml","A = 123") == true)
+assert(pcall(serde.decode,"yaml","A: 123\n") == true)
+assert(pcall(serde.decode,"idk lmao","{A = 123}") == false)
