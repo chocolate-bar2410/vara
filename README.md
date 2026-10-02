@@ -32,7 +32,6 @@ Intentionally out of scope for vara
 - [x] CLI
     - [x] run
     - [ ] build
-    - [ ] test
 - [ ] standard library
     - [x] io
     - [x] file system
@@ -46,10 +45,10 @@ Intentionally out of scope for vara
 - [x] require
     - [x] relative requires
     - [x] aliases
-- [ ] debugging
-    - [ ] test
 
 ### v0.2.0
+- [ ] CLI
+    - [ ] test
 - [ ] standard library
     - [ ] networking
     - [ ] task
@@ -63,3 +62,4 @@ Intentionally out of scope for vara
         - [ ] buffers
     - [ ] custom errors
     - [ ] custom warns
+    - [ ] test
