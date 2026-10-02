@@ -1,7 +1,7 @@
 local fs = require("@vara/fs")
 local serde = require("@vara/serde")
 
-local load = require("@config")
+local load = require("./democonfig")
 local message = serde.encode("YAML", load)
 print(message)
 
