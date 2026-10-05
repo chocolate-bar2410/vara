@@ -364,9 +364,9 @@ impl Ord for DateTime {
 
 impl mlua::UserData for DateTime {
     fn add_fields<F: mlua::prelude::LuaUserDataFields<Self>>(fields: &mut F) {
-        fields.add_field("timeOffset", 0);
+        fields.add_field("TimeOffset", 0);
 
-        fields.add_field_method_set("timeOffset", |_, this, value: f64| {
+        fields.add_field_method_set("TimeOffset", |_, this, value: f64| {
             this.time_offset = (SECONDS_PER_HOUR as f64 * value) as i32;
 
             this.compute_date();
@@ -375,46 +375,46 @@ impl mlua::UserData for DateTime {
             Ok(())
         });
 
-        fields.add_field_method_get("timeOffset", |context: &mlua::Lua, this| {
+        fields.add_field_method_get("TimeOffset", |context: &mlua::Lua, this| {
             let result = this.time_offset as f64 / SECONDS_PER_HOUR as f64;
 
             result.into_lua(context)
         });
 
-        fields.add_field("year", 0);
-        fields.add_field("month", 0);
-        fields.add_field("day", 0);
+        fields.add_field("Year", 0);
+        fields.add_field("Month", 0);
+        fields.add_field("Day", 0);
 
-        fields.add_field("hour", 0);
-        fields.add_field("minute", 0);
-        fields.add_field("second", 0);
-        fields.add_field("millisecond", 0);
+        fields.add_field("Hour", 0);
+        fields.add_field("Minute", 0);
+        fields.add_field("Second", 0);
+        fields.add_field("Millisecond", 0);
 
-        fields.add_field_method_get("year", |_, this| Ok(this.years));
-        fields.add_field_method_get("month", |_, this| Ok(this.months));
-        fields.add_field_method_get("day", |_, this| Ok(this.days));
+        fields.add_field_method_get("Year", |_, this| Ok(this.years));
+        fields.add_field_method_get("Month", |_, this| Ok(this.months));
+        fields.add_field_method_get("Day", |_, this| Ok(this.days));
 
-        fields.add_field_method_get("hour", |_, this| Ok(this.hours));
+        fields.add_field_method_get("Hour", |_, this| Ok(this.hours));
         fields.add_field_method_get("minute", |_, this| Ok(this.minutes));
-        fields.add_field_method_get("second", |_, this| Ok(this.seconds));
-        fields.add_field_method_get("millisecond", |_, this| Ok(this.milliseconds));
+        fields.add_field_method_get("Second", |_, this| Ok(this.seconds));
+        fields.add_field_method_get("Millisecond", |_, this| Ok(this.milliseconds));
 
-        fields.add_field_method_set("year", |_, this, value: i64| {
+        fields.add_field_method_set("Year", |_, this, value: i64| {
             this.years = value;
             Ok(this.compute_unix())
         });
 
-        fields.add_field_method_set("month", |_, this, value: i64| {
+        fields.add_field_method_set("Month", |_, this, value: i64| {
             this.months = value;
             Ok(this.compute_unix())
         });
 
-        fields.add_field_method_set("day", |_, this, value: i64| {
+        fields.add_field_method_set("Day", |_, this, value: i64| {
             this.days = value;
             Ok(this.compute_unix())
         });
 
-        fields.add_field_method_set("hour", |_, this, value: i64| {
+        fields.add_field_method_set("Hour", |_, this, value: i64| {
             this.hours = value;
             Ok(this.compute_unix())
         });
@@ -424,23 +424,23 @@ impl mlua::UserData for DateTime {
             Ok(this.compute_unix())
         });
 
-        fields.add_field_method_set("second", |_, this, value: i64| {
+        fields.add_field_method_set("Second", |_, this, value: i64| {
             this.seconds = value;
             Ok(this.compute_unix())
         });
 
-        fields.add_field_method_set("millisecond", |_, this, value: i64| {
+        fields.add_field_method_set("Millisecond", |_, this, value: i64| {
             this.milliseconds = value;
             Ok(this.compute_unix())
         });
     }
     fn add_methods<M: mlua::prelude::LuaUserDataMethods<Self>>(methods: &mut M) {
-        methods.add_method("toISO8601", |_, this, ()| Ok(this.to_iso8601()));
-        methods.add_method("toRFC2822", |_, this, ()| Ok(this.to_rfc2822()));
+        methods.add_method("ToISO8601", |_, this, ()| Ok(this.to_iso8601()));
+        methods.add_method("ToRFC2822", |_, this, ()| Ok(this.to_rfc2822()));
 
-        methods.add_method("humanise", |_, this, ()| Ok(this.humanise()));
-        methods.add_method("toZH", |_, this, ()| Ok(this.to_zh()));
-        methods.add_method("toApacheLog", |_, this, ()| Ok(this.to_apache_log()));
+        methods.add_method("Humanise", |_, this, ()| Ok(this.humanise()));
+        methods.add_method("ToZH", |_, this, ()| Ok(this.to_zh()));
+        methods.add_method("ToApacheLog", |_, this, ()| Ok(this.to_apache_log()));
 
         methods.add_meta_method(mlua::MetaMethod::ToString, |_, this, ()| {
             Ok(this.to_iso8601())

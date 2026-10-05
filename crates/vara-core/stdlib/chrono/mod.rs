@@ -41,17 +41,17 @@ fn from_unix(_: &mlua::Lua, unix_time: i64) -> mlua::Result<DateTime> {
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
-        .add_function("now", now)?
-        .add_function("fromUnix", from_unix)?
-        .add_function("fromUniversal", |_, params: DateTimeParams| {
+        .add_function("Now", now)?
+        .add_function("FromUnix", from_unix)?
+        .add_function("FromUniversal", |_, params: DateTimeParams| {
             Ok(DateTime::from_params(&params, 0))
         })?
-        .add_function("fromLocal", |_, params: DateTimeParams| {
+        .add_function("FromLocal", |_, params: DateTimeParams| {
             let timeoffset = get_timezone_offset();
 
             Ok(DateTime::from_params(&params, timeoffset))
         })?
-        .add_function("timezoneOffset", |_, ()| {
+        .add_function("TimezoneOffset", |_, ()| {
             let timeoffset = get_timezone_offset() / SECONDS_PER_HOUR as i32;
 
             Ok(timeoffset)

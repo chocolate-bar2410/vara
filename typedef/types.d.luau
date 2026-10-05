@@ -7,14 +7,14 @@
     local chrono = require("@vara/chrono")
 
     local timestamp = chrono.fromUniversal({
-        year = 2025,
-        month = 9,
-        day = 10,
+        Year = 2025,
+        Month = 9,
+        Day = 10,
 
-        hour = 18,
-        minute = 20,
-        second = 0,
-        millisecond = 0,
+        Hour = 18,
+        Minute = 20,
+        Second = 0,
+        Millisecond = 0,
     })
 
     print(timestamp)
@@ -22,44 +22,44 @@
 ]=]
 declare extern type DateTime with 
     --- The UTC offset in hours.
-    timeOffset: number
-    year: number
-    month: number
-    day: number
-    hour: number
-    minute: number
-    second: number
-    millisecond: number
+    TimeOffset: number
+    Year: number
+    Month: number
+    Day: number
+    Hour: number
+    Minute: number
+    Second: number
+    Millisecond: number
     --[=[
 		@within DateTime
-		@method toISO8601
+		@method ToISO8601
         Formats the datetime according to the ISO8601 standard.
     ]=]
-    function toISO8601(self): string
+    function ToISO8601(self): string
     --[=[
 		@within DateTime
-		@method toRFC2822
+		@method ToRFC2822
         Formats the datetime according to the RFC2822 standard.
     ]=]
-    function toRFC2822(self): string
+    function ToRFC2822(self): string
     --[=[
 		@within DateTime
-		@method humanise
+		@method Humanise
         Formats the datetime so thats its human readable.
     ]=]
-    function humanise(self): string
+    function Humanise(self): string
     --[=[
 		@within DateTime
-		@method toZH
+		@method ToZH
         Formats the datetime so that its human readable in mandarin.
     ]=]
-    function toZH(self): string
+    function ToZH(self): string
     --[=[
 		@within DateTime
 		@method toApacheLog
         Formats the datetime so as an Apache Log timestamp.
     ]=]
-    function toApacheLog(self): string
+    function ToApacheLog(self): string
     function __tostring(self): string
     function __eq(self,other : DateTime): boolean
     function __le(self,other : DateTime): boolean

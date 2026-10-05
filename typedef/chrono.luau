@@ -7,84 +7,84 @@
 	```luau
 	local chrono = require("@vara/chrono")
 
-    local timestampC = chrono.now()
+    local timestamp = chrono.Now()
 
-    print(`ISO8601:   {timestampC:toISO8601()}`)
-    print(`RFC2822:   {timestampC:toRFC2822()}`)
-    print(`humanised: {timestampC:humanise()}`)
-    print(`中国:      {timestampC:toZH()}`)
-    print(`Apache:   {timestampC:toApacheLog()}`)
+    print(`ISO8601:   {timestamp:ToISO8601()}`)
+    print(`RFC2822:   {timestamp:ToRFC2822()}`)
+    print(`humanised: {timestamp:Humanise()}`)
+    print(`中国:      {timestamp:ToZH()}`)
+    print(`Apache:   {timestamp:ToApacheLog()}`)
 	```
 ]=]
 const module = {}
 
 type DateTimeParameters = {
-    year : number,
-    month : number,
-    day : number,
+    Year : number,
+    Month : number,
+    Day : number,
 
-    hour : number,
-    minute : number,
-    second : number,
-    millisecond : number?,
+    Hour : number,
+    Minute : number,
+    Second : number,
+    Millisecond : number?,
 }
 
 --[=[
 	@within chrono
-	@method now
+	@method Now
 	@return DateTime
 
 	Gets the current date and time according adjusted to the local timezone.
 ]=]
-function module.now() : DateTime
+function module.Now() : DateTime
     return nil :: unknown
 end
 
 --[=[
 	@within chrono
-	@method fromUnix
+	@method FromUnix
 	@param unixTime The ammount of seconds since january 1st 1970 at UTC+00.
 	@return DateTime
 
 	Converts a unix timestamp into a DateTime.
 ]=]
-function module.fromUnix(unixTime : number) : DateTime
+function module.FromUnix(unixTime : number) : DateTime
     return nil :: unknown
 end
 
 --[=[
 	@within chrono
-	@method fromUniversal
+	@method FromUniversal
 	@param params The specified date and time as table parameters.
 	@return DateTime
 
 	Constructs a DateTime using a table of parameters at UTC+00.
 ]=]
-function module.fromUniversal(params : DateTimeParameters) : DateTime
+function module.FromUniversal(params : DateTimeParameters) : DateTime
     return nil :: unknown
 end
 
 
 --[=[
 	@within chrono
-	@method fromLocal
+	@method FromLocal
 	@param params The specified date and time as table parameters.
 	@return DateTime
 
 	Constructs a DateTime using a table of parameters in the local timezone.
 ]=]
-function module.fromLocal(params : DateTimeParameters) : DateTime
+function module.FromLocal(params : DateTimeParameters) : DateTime
     return nil :: unknown
 end
 
 --[=[
 	@within chrono
-	@method timezoneOffset
+	@method TimezoneOffset
 	@return DateTime
 
 	returns the current timezone offset in hours.
 ]=]
-function module.timezoneOffset() : number
+function module.TimezoneOffset() : number
     return nil :: unknown
 end
 

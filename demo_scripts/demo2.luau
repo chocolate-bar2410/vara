@@ -2,33 +2,33 @@
 local chrono = require("@vara/chrono")
 
 local current = os.time()
-local timestampA = chrono.fromUnix(current)
-local timestampB = chrono.fromUnix(current)
+local timestampA = chrono.FromUnix(current)
+local timestampB = chrono.FromUnix(current)
 
-timestampA.timeOffset = 10
+timestampA.TimeOffset = 10
 
 print(`A = B:     {timestampA == timestampB}`)
 print(`A < B:     {timestampA < timestampB}`)
 print(`A ≤ B:     {timestampA <= timestampB}`)
 
-local timestampC = chrono.now()
+local timestampC = chrono.Now()
 
-print(`ISO8601:   {timestampC:toISO8601()}`)
-print(`RFC2822:   {timestampC:toRFC2822()}`)
-print(`humanised: {timestampC:humanise()}`)
-print(`中国:      {timestampC:toZH()}`)
-print(`Apache:   {timestampC:toApacheLog()}`)
+print(`ISO8601:   {timestampC:ToISO8601()}`)
+print(`RFC2822:   {timestampC:ToRFC2822()}`)
+print(`humanised: {timestampC:Humanise()}`)
+print(`中国:      {timestampC:ToZH()}`)
+print(`Apache:   {timestampC:ToApacheLog()}`)
 
-local timestampD = chrono.fromUniversal({
-    year = 2025,
-    month = 9,
-    day = 10,
+local timestampD = chrono.FromUniversal({
+    Year = 2025,
+    Month = 9,
+    Day = 10,
 
-    hour = 18,
-    minute = 20,
-    second = 0,
-    millisecond = 0,
+    Hour = 18,
+    Minute = 20,
+    Second = 0,
+    Millisecond = 0,
 })
 
-timestampD.timeOffset = 10
-print(timestampD:humanise())
+timestampD.TimeOffset = 10
+print(timestampD:Humanise())

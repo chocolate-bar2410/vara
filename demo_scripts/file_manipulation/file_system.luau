@@ -7,7 +7,7 @@ local modified_time = log_file.Modified
 
 log_file:Append(buffer.fromstring(`\z
     PATH: {image_file.Path} \n\z
-    MODIFIED AT: {modified_time:humanise()} \n\z
+    MODIFIED AT: {modified_time:Humanise()} \n\z
 `))
 
 log_file:Copy("./demo_scripts/backup.txt")
