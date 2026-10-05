@@ -2,26 +2,26 @@
 local system = require("@vara/system")
 local pretty_table = require("./pretty_table")
 
-print("os:",system.os)
-print("arch:",system.arch)
-print("family:",system.family)
-print("endian:",system.endian)
+print("os:",system.Os)
+print("arch:",system.Arch)
+print("family:",system.Family)
+print("endian:",system.Endian)
 
-print("cwd:",system.cwd)
-print("temp:",system.temp)
-print("home:",system.home)
+print("cwd:",system.Cwd)
+print("temp:",system.Temp)
+print("home:",system.Home)
 
-print("distro:",system.distro)
-print("cores:",system.processorCount())
+print("distro:",system.Distro)
+print("cores:",system.ProcessorCount())
 
-print("desktop:",system.desktopEnvironment)
-print("processID:",system.processID)
+print("desktop:",system.DesktopEnvironment)
+print("processID:",system.ProcessID)
 
-print("physical memory usage:",system.physicalMemoryUsage())
-print("virtual memory usage:",system.virtualMemoryUsage())
+print("physical memory usage:",system.PhysicalMemoryUsage())
+print("virtual memory usage:",system.VirtualMemoryUsage())
 
-print("language preferences:",pretty_table(system.languagePreferences :: {unknown}))
-print("environment variables:",pretty_table(system.env))
-print("env TESTING:",system.env.TESTING)
+print("language preferences:",pretty_table(system.LanguagePreferences :: {unknown}))
+print("environment variables:",pretty_table(system.Env))
+print("env TESTING:",system.Env.TESTING)
 
-print("args:",pretty_table(system.args))
+print("args:",pretty_table(system.Args))

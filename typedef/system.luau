@@ -7,68 +7,68 @@ local module = {}
 
 --[=[
 	@within system
-	@prop os
+	@prop Os
 	@tag read_only
 
     The operating system being used.
 ]=]
-module.os = (nil :: unknown) :: "linux" | "macos" | "windows"
+module.Os = (nil :: unknown) :: "linux" | "macos" | "windows"
 --[=[
 	@within system
-	@prop arch
+	@prop Arch
 	@tag read_only
 
     The architecture of the processor thats currently being used.
 ]=]
-module.arch = (nil :: unknown) :: "x86_64" | "aarch64"
+module.Arch = (nil :: unknown) :: "x86_64" | "aarch64"
 --[=[
 	@within system
-	@prop family
+	@prop Family
 	@tag read_only
 
     The family of operating system being used.
 ]=]
-module.family = (nil :: unknown) :: "unix" | "windows"
+module.Family = (nil :: unknown) :: "unix" | "windows"
 --[=[
 	@within system
-	@prop cwd
+	@prop Cwd
 	@tag read_only
 
     The current working directory.
 ]=]
-module.cwd = (nil :: unknown) :: string
+module.Cwd = (nil :: unknown) :: string
 --[=[
 	@within system
-	@prop temp
+	@prop Temp
 	@tag read_only
 
     The temp directory.
 ]=]
-module.temp = (nil :: unknown) :: string
+module.Temp = (nil :: unknown) :: string
 --[=[
 	@within system
-	@prop home
+	@prop Home
 	@tag read_only
 
     The home directory.
 ]=]
-module.home = (nil :: unknown) :: string
+module.Home = (nil :: unknown) :: string
 --[=[
 	@within system
-	@prop endian
+	@prop Endian
 	@tag read_only
 
     The endianess of the processor being used.
 ]=]
-module.endian = (nil :: unknown) :: "big" | "little"
+module.Endian = (nil :: unknown) :: "big" | "little"
 --[=[
 	@within system
-	@prop languagePreferences
+	@prop LanguagePreferences
 	@tag read_only
 
     Language preferences set on the user's system.
 ]=]
-module.languagePreferences = (nil :: unknown) :: {
+module.LanguagePreferences = (nil :: unknown) :: {
     time : {string},
     monetary : {string},
     collation : {string},
@@ -78,85 +78,85 @@ module.languagePreferences = (nil :: unknown) :: {
 
 --[=[
 	@within system
-	@prop distro
+	@prop Distro
 	@tag read_only
 
     What operating system distribution the system is using.
 ]=]
-module.distro = (nil :: unknown) :: string
+module.Distro = (nil :: unknown) :: string
 
 --[=[
 	@within system
-	@prop device
+	@prop Device
 	@tag read_only
 
     The name of the device currently being used.
 ]=]
-module.device = (nil :: unknown) :: string
+module.Device = (nil :: unknown) :: string
 
 --[=[
 	@within system
-	@prop processID
+	@prop ProcessID
 	@tag read_only
 
     The PID of the current process.
 ]=]
-module.processID = (nil :: unknown) :: number
+module.ProcessID = (nil :: unknown) :: number
 
 --[=[
 	@within system
-	@prop desktopEnvironment
+	@prop DesktopEnvironment
 	@tag read_only
 
     The desktop environment the system is using.
 ]=]
-module.desktopEnvironment = (nil :: unknown) :: number
+module.DesktopEnvironment = (nil :: unknown) :: number
 
 --[=[
 	@within system
-	@prop env
+	@prop Env
 	@tag read_only
 
     The environment variables declared by the system and a optional .env file.
 ]=]
-module.env = (nil :: unknown) :: {[string] : string}
+module.Env = (nil :: unknown) :: {[string] : string}
 
 --[=[
 	@within system
-	@prop args
+	@prop Args
 	@tag read_only
 
     Command line arguments passed into the program.
 ]=]
-module.args = (nil :: unknown) :: {[string] : string}
+module.Args = (nil :: unknown) :: {[string] : string}
 
 --[=[
 	@within system
-	@method processorCount
+	@method ProcessorCount
 
 	@return The number of logical CPUs available on the system.
 ]=]
-function module.processorCount() : number
+function module.ProcessorCount() : number
     return nil :: unknown
 end
 
 --[=[
 	@within system
-	@method physicalMemoryUsage
+	@method PhysicalMemoryUsage
 
 	@return The ammount of physical memory being used up by the process.
 ]=]
-function module.physicalMemoryUsage() : number
+function module.PhysicalMemoryUsage() : number
     return nil :: unknown
 end
 
 --[=[
 	@within system
-	@method virtualMemoryUsage
+	@method VirtualMemoryUsage
 
 	@return The ammount of virtual memory being used up by the process.
 ]=]
-function module.virtualMemoryUsage() : number
+function module.VirtualMemoryUsage() : number
     return nil :: unknown
 end
 

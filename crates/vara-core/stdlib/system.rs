@@ -81,34 +81,34 @@ pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::
     dotenvy::dotenv().map_err(|err| err.into_lua_err())?;
 
     TableBuilder::new(context.clone())?
-        .add_value("os", OS)?
-        .add_value("arch", ARCH)?
-        .add_value("family", FAMILY)?
-        .add_value("cwd", std::env::current_dir()?)?
-        .add_value("temp", std::env::temp_dir())?
-        .add_value("home", match get_home_directory(){
+        .add_value("Os", OS)?
+        .add_value("Arch", ARCH)?
+        .add_value("Family", FAMILY)?
+        .add_value("Cwd", std::env::current_dir()?)?
+        .add_value("Temp", std::env::temp_dir())?
+        .add_value("Home", match get_home_directory(){
             Some(home_dir) => home_dir,
             None => "unknown".to_string(),
         })?
         .add_value(
-            "endian",
+            "Endian",
             if cfg!(target_endian = "big") {"big"} else {"little"}
         )?
-        .add_value("languagePreferences", get_language_preferences(context)?)?
-        .add_value("distro", match whoami::distro(){
+        .add_value("LanguagePreferences", get_language_preferences(context)?)?
+        .add_value("Distro", match whoami::distro(){
             Ok(distro) => distro,
             _ => "unknown".to_string()
         })?
-        .add_value("device",match whoami::devicename(){
+        .add_value("Device",match whoami::devicename(){
             Ok(device_name) => device_name,
             _ => "unknown".to_string()
         })?
-        .add_value("processID", std::process::id())?
-        .add_value("desktopEnvironment", whoami::desktop_env().map(|env| format!("{:?}",env)).unwrap_or_else(|| "Unknown".to_string()))?
-        .add_value("env", context.create_table_from(std::env::vars())?)?
-        .add_value("args", context.create_sequence_from(args.clone())?)?
-        .add_function("processorCount", get_cpu_count)?
-        .add_function("physicalMemoryUsage", get_physical_memory_usage)?
-        .add_function("virtualMemoryUsage", get_virtual_memory_usage)?
+        .add_value("ProcessID", std::process::id())?
+        .add_value("DesktopEnvironment", whoami::desktop_env().map(|env| format!("{:?}",env)).unwrap_or_else(|| "Unknown".to_string()))?
+        .add_value("Env", context.create_table_from(std::env::vars())?)?
+        .add_value("Args", context.create_sequence_from(args.clone())?)?
+        .add_function("ProcessorCount", get_cpu_count)?
+        .add_function("PhysicalMemoryUsage", get_physical_memory_usage)?
+        .add_function("VirtualMemoryUsage", get_virtual_memory_usage)?
         .build_readonly()
 }
