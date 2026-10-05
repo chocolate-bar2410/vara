@@ -14,7 +14,7 @@ use vara_chrono::datetime::DateTime as vara_datetime;
 #[derive(mlua::UserData)]
 pub struct File{
     #[lua(get)]
-    path: PathBuf,
+    pub path: PathBuf,
     #[lua(get)]
     size: u64,
 }

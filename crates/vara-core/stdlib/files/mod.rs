@@ -6,7 +6,7 @@ use std::path::PathBuf;
 
 use vara_util::table_builder::TableBuilder;
 
-mod file_obj;
+pub mod file_obj;
 mod directory;
 
 pub fn read_file(path: &PathBuf) -> io::Result<String> {
