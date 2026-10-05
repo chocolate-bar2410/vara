@@ -29,7 +29,7 @@ local module = {}
 
     Creates a image from a pathstring or from a buffer.
 ]=]
-module.image = function(data : buffer | string) : Image
+module.image = function(data : buffer | string | File) : Image
     return nil :: unknown
 end
 
@@ -41,7 +41,7 @@ end
 
     Creates a audio from a pathstring or from a audio config table.
 ]=]
-module.audio = function(data : AudioConfigTable | string) : Audio
+module.audio = function(data : AudioConfigTable | string | File) : Audio
     return nil :: unknown
 end
 

@@ -1,3 +1,4 @@
+--!strict
 local fs = require("@vara/fs")
 local media = require("@vara/media")
 
