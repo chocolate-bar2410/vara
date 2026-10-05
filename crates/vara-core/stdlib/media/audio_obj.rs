@@ -8,15 +8,15 @@ use crate::stdlib::media::audio_interpolation;
 
 #[derive(mlua::UserData,Clone)]
 pub struct Audio{
-    #[lua(get)]
+    #[lua(get,name="Data")]
     pub data: Vec<Vec<f32>>,
-    #[lua(get,name="sampleRate")]
+    #[lua(get,name="SampleRate")]
     pub sample_rate: u32,
-    #[lua(get)]
+    #[lua(get,name="Frames")]
     pub frames: u64,
-    #[lua(get)]
+    #[lua(get,name="Duration")]
     pub duration: f64,
-    #[lua(get)]
+    #[lua(get,name="Channels")]
     pub channels: u8,
     #[lua(skip)]
     max_amplitude: f32,
@@ -24,19 +24,19 @@ pub struct Audio{
 
 #[derive(Deserialize,Debug,PartialEq)]
 struct CompressionConfig{
-    #[serde(default,rename = "input")]
+    #[serde(default,rename = "Input")]
     input_gain : f32,
-    #[serde(default,rename = "output")]
+    #[serde(default,rename = "Output")]
     output_gain : f32,
-    #[serde(default)]
+    #[serde(default,rename = "Threshold")]
     threshold : f32,
-    #[serde(default)]
+    #[serde(default,rename = "Ratio")]
     ratio : f32,
-    #[serde(default)]
+    #[serde(default,rename = "Attack")]
     attack : f32,
-    #[serde(default)]
+    #[serde(default,rename = "Release")]
     release : f32,
-    #[serde(default)]
+    #[serde(default,rename = "Knee")]
     knee : f32,
 }
 
@@ -71,6 +71,7 @@ impl Audio {
 
     // mixing methods
 
+    #[lua(name="Amplify")]
     pub fn amplify(this : mlua::AnyUserData,decibels: f32) ->mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -89,6 +90,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Lowpass")]
     pub fn lowpass(this : mlua::AnyUserData,cutoff_hz : f32,q_factor : Option<f32>)  -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -115,6 +117,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Highpass")]
     pub fn highpass(this : mlua::AnyUserData,cutoff_hz : f32,q_factor : Option<f32>)  -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -141,6 +144,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Notch")]
     pub fn notch(this : mlua::AnyUserData,center_hz : f32,q_factor : Option<f32>)  -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -191,6 +195,7 @@ impl Audio {
         self.compute_max_amplitude();
     }
 
+    #[lua(name="Normalise")]
     pub fn normalise(this : mlua::AnyUserData,decibel: Option<f32>) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -215,7 +220,7 @@ impl Audio {
         Ok(this)
     }
     
-    #[lua(name="hardClip")]
+    #[lua(name="HardClip")]
     pub fn hard_limit(this : mlua::AnyUserData,threshold : f32) -> mlua::Result<mlua::AnyUserData>{
          {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -232,7 +237,7 @@ impl Audio {
         Ok(this)
     }
 
-    #[lua(name="softClip")]
+    #[lua(name="SoftClip")]
     pub fn soft_limit(this : mlua::AnyUserData,threshold : f32) -> mlua::Result<mlua::AnyUserData>{
          {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -256,6 +261,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Saturate")]
     pub fn saturate(this : mlua::AnyUserData,drive_db : f32,mode : Option<&str>) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -280,6 +286,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Compress")]
     pub fn compress(context : &mlua::Lua,this : mlua::AnyUserData,config_table : mlua::Value) -> mlua::Result<mlua::AnyUserData>{
         
         let config : CompressionConfig = context.from_value(config_table)?;
@@ -347,7 +354,7 @@ impl Audio {
     }
     // fades
 
-    #[lua(name="fadeIn")]
+    #[lua(name="FadeIn")]
     pub fn fade_in(this : mlua::AnyUserData,duration: f32) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -372,7 +379,8 @@ impl Audio {
         }
         Ok(this)
     }
-    #[lua(name="fadeOut")]
+    
+    #[lua(name="FadeOut")]
     pub fn fade_out(this : mlua::AnyUserData,duration: f32) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -403,6 +411,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Trim")]
     pub fn trim(this : mlua::AnyUserData,start: f32,end: Option<f32>) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -426,6 +435,7 @@ impl Audio {
 
     // multi audio methods
 
+    #[lua(name="Append")]
     pub fn append(this : mlua::AnyUserData,
         other : mlua::AnyUserData,
         start : Option<f32>,
@@ -502,6 +512,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Overlay")]
     pub fn overlay(this : mlua::AnyUserData,other : mlua::AnyUserData,position : Option<f32>,repeat : Option<bool>) -> mlua::Result<mlua::AnyUserData>{
             {
                 let other_audio = {
@@ -553,6 +564,7 @@ impl Audio {
 
     // misc.
 
+    #[lua(name="Resample")]
     pub fn resample(this : mlua::AnyUserData,sample_rate : u32,filter : Option<&str>)  -> mlua::Result<mlua::AnyUserData>{
         {
             let mut audio = this.borrow_mut::<Audio>()?;
@@ -581,11 +593,12 @@ impl Audio {
         Ok(this)
     }
 
-    #[lua(name="clone")]
+    #[lua(name="Clone")]
     pub fn clone_fn(&self) -> mlua::Result<Self>{
         Ok(self.clone())
     }
 
+    #[lua(name="Reverse")]
     pub fn reverse(this : mlua::AnyUserData) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut _audio = this.borrow_mut::<Audio>()?;
@@ -597,6 +610,7 @@ impl Audio {
         Ok(this)
     }
 
+    #[lua(name="Encode")]
     pub fn encode(&self,context: &mlua::Lua,format: String) -> mlua::Result<mlua::Buffer>{
         match format.to_ascii_uppercase().trim() {
             "WAV" => {

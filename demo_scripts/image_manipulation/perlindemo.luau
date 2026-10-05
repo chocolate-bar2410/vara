@@ -48,7 +48,7 @@ for y = 0,height - 1 do
 end
 
 fs.Write("./demo_scripts/images/basn2c16.qoi",
-    media.image(data)
-        :dimensions(width,height)
-        :encode("QOI")
+    media.Image(data)
+        :Dimensions(width,height)
+        :Encode("QOI")
 )

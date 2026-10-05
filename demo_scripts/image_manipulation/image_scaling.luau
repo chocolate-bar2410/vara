@@ -9,19 +9,19 @@ local nearest = fs.File("demo_scripts/images/resizing_demo/cameraman_nearest.png
 local lanczos3 = fs.File("demo_scripts/images/resizing_demo/cameraman_lanczos3.png")
 
 bilinear:Write(
-    media.image(input_file)
-        :resize(512,512,"BILINEAR")
-        :encode("PNG")
+    media.Image(input_file)
+        :Resize(512,512,"BILINEAR")
+        :Encode("PNG")
 )
 
 nearest:Write(
-    media.image(input_file)
-        :resize(512,512,"NEAREST")
-        :encode("PNG")
+    media.Image(input_file)
+        :Resize(512,512,"NEAREST")
+        :Encode("PNG")
 )
 
 lanczos3:Write(
-    media.image(input_file)
-        :resize(512,512,"LANCZOS3")
-        :encode("PNG")
+    media.Image(input_file)
+        :Resize(512,512,"LANCZOS3")
+        :Encode("PNG")
 )

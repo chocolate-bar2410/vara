@@ -7,13 +7,13 @@ use media::image_interpolation as interpolation;
 
 #[derive(Clone,mlua::UserData)]
 pub struct Image{
-    #[lua(skip)]
+    #[lua(get,name = "Data")]
     pub data : Vec<u8>,
-    #[lua(get)]
+    #[lua(get,name = "Width")]
     pub width : u32,
-    #[lua(get)]
+    #[lua(get,name = "Height")]
     pub height : u32,
-    #[lua(get,name = "channels")]
+    #[lua(get,name = "Channels")]
     pub colour_channels : u8,
 }
 
@@ -29,6 +29,7 @@ impl Image {
         }
     }
 
+    #[lua(name = "Dimensions")]
     pub fn dimensions(this : AnyUserData,width : u32,height : u32) -> mlua::Result<AnyUserData>{
 
         {
@@ -45,6 +46,7 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name = "Flop")]
     pub fn flop(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
         
         {
@@ -79,6 +81,7 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name = "Flip")]
     pub fn flip(this : AnyUserData,colour_channel : Option<u8>) -> mlua::Result<AnyUserData>{
 
         {
@@ -113,6 +116,7 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name = "Greyscale")]
     pub fn greyscale(this : AnyUserData) -> mlua::Result<AnyUserData>{
 
         {
@@ -130,6 +134,7 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name = "Convolve")]
     pub fn convolve(this : AnyUserData,width : usize,height : usize,lua_kernel : mlua::Table) -> mlua::Result<AnyUserData>{
         if lua_kernel.len()? as usize != width * height {
             return Err("kernel does not match kernel width/height parameters provided".into_lua_err())
@@ -181,12 +186,12 @@ impl Image {
         Ok(this)
     }
 
-    #[lua(name = "clone")]
+    #[lua(name = "Clone")]
     pub fn clone_fn(&self) -> mlua::Result<Self>{
         Ok(self.clone())
     }
 
-    #[lua(name="gradientMagnitude")]
+    #[lua(name="GradientMagnitude")]
     pub fn gradient_magnitude(&self,other : &Image) -> mlua::Result<Self>{
         let mut result = self.clone();
 
@@ -212,7 +217,7 @@ impl Image {
         Ok(result)
     }
 
-    #[lua(name="removeAlpha")]
+    #[lua(name="RemoveAlpha")]
     pub fn remove_alpha(this : AnyUserData)  -> mlua::Result<AnyUserData>{
         {
             let mut img = this.borrow_mut::<Image>()?;
@@ -234,6 +239,7 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name="Resize")]
     pub fn resize(this : AnyUserData,width : u32,height : u32,filter : Option<&str>)  -> mlua::Result<AnyUserData>{
         {
             let mut img = this.borrow_mut::<Image>()?;
@@ -253,7 +259,7 @@ impl Image {
         Ok(this)
     }
 
-
+    #[lua(name="Encode")]
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
         let img_format = image_format_fromstring(&format)?;
         let mut bytes = Vec::new();
@@ -280,7 +286,7 @@ impl Image {
         Ok(format!("image {}x{}",self.width,self.height))
     }
 
-    #[lua(getter,name = "data")]
+    #[lua(getter,name = "Data")]
     pub fn get_data(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
 
         Ok(context.create_buffer(&self.data)?)

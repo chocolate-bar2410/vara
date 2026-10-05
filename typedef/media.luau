@@ -1,7 +1,7 @@
 export type AudioConfigTable = {
-    tracks: {buffer},
-    sampleRate: number,
-    frames: number,
+    Tracks: {buffer},
+    SampleRate: number,
+    Frames: number,
 }
 
 --[=[
@@ -29,7 +29,7 @@ local module = {}
 
     Creates a image from a pathstring or from a buffer.
 ]=]
-module.image = function(data : buffer | string | File) : Image
+module.Image = function(data : buffer | string | File) : Image
     return nil :: unknown
 end
 
@@ -41,7 +41,7 @@ end
 
     Creates a audio from a pathstring or from a audio config table.
 ]=]
-module.audio = function(data : AudioConfigTable | string | File) : Audio
+module.Audio = function(data : AudioConfigTable | string | File) : Audio
     return nil :: unknown
 end
 

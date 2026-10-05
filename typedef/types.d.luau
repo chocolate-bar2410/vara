@@ -77,32 +77,32 @@ type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
     An Object representing an image.
 ]=]
 declare extern type Image with
-    read data: buffer
-    read width: number
-    read height: number
-    read channels: number
+    read Data: buffer
+    read Width: number
+    read Height: number
+    read Channels: number
     --[=[
         @within Image
-        @method encode
+        @method Encode
         @param format The image format to encode to
         @return the encoded image data as a buffer.
 
         Encodes the image into a certain image format.
     ]=]
-    function encode(self,format : ImageFormat) : buffer
+    function Encode(self,format : ImageFormat) : buffer
     --[=[
         @within Image
-        @method dimensions
+        @method Dimensions
         @param width The image width.
         @param height The image height.
         @return itself
 
         Sets the width and height of the image.
     ]=]
-    function dimensions(self,width: number,height: number) : Image
+    function Dimensions(self,width: number,height: number) : Image
     --[=[
         @within Image
-        @method resize
+        @method Resize
         @param width The new image width.
         @param height The new image height.
         @param filter The interpolation filter being ran.
@@ -115,36 +115,36 @@ declare extern type Image with
         * BILINEAR - bilinear interpolation between 4 points
         * LANCZOS3 - LANCZOS interpolation using 36 points
     ]=]
-    function resize(self,width: number,height: number,filter: ImageResizeFilter?) : Image
+    function Resize(self,width: number,height: number,filter: ImageResizeFilter?) : Image
     --[=[
         @within Image
-        @method flip
+        @method Flip
         @param channel Optional parameter to only flip a single colour channel.
         @return itself
 
         Vertically mirrors the image.
     ]=]
-    function flip(self,channel: number?) : Image
+    function Flip(self,channel: number?) : Image
      --[=[
         @within Image
-        @method flop
+        @method Flop
         @param channel Optional parameter to only flip a single colour channel.
         @return itself
 
         Horizontally mirrors the image.
     ]=]
-    function flop(self,channel: number?) : Image
+    function Flop(self,channel: number?) : Image
     --[=[
         @within Image
-        @method greyscale
+        @method Greyscale
         @return itself
 
         Converts the image into greyscale using luminance.
     ]=]
-    function greyscale(self) : Image
+    function Greyscale(self) : Image
     --[=[
         @within Image
-        @method convolve
+        @method Convolve
         @param width The width of the kernel.
         @param height The height of the kernel.
         @param kernel The kernel applied during the convolution.
@@ -152,33 +152,33 @@ declare extern type Image with
 
         Performs a convolution on the image using the provided kernel.
     ]=]
-    function convolve(self,width : number,height : number,kernel : {number}) : Image
+    function Convolve(self,width : number,height : number,kernel : {number}) : Image
     --[=[
         @within Image
-        @method clone
+        @method Clone
         @return A clone of your image.
 
         Clones your image.
     ]=]
-    function clone(self) : Image    
+    function Clone(self) : Image    
     --[=[
         @within Image
-        @method gradientMagnitude
+        @method GradientMagnitude
         @param other The other image.
         @return The gradient magnitude between your two images.
 
         Computes the gradient magnitude between your image and another image.
     ]=]
-    function gradientMagnitude(self,other : Image) : Image
+    function GradientMagnitude(self,other : Image) : Image
     --[=[
         @within Image
-        @method removeAlpha
+        @method RemoveAlpha
         @return itself.
 
         Removes the alpha channel of your image.
         Treated as a no-op if the image does not have a alpha channel.
     ]=]
-    function removeAlpha(self) : Image
+    function RemoveAlpha(self) : Image
     function __tostring(self): string
 end
 
@@ -188,19 +188,19 @@ type AudioSaturationMode = "TANH" | "ARCTAN"
 
 type AudioCompressConfig = {
     -- Ammount of gain to add before compressing.
-    input : number?,
+    Input : number?,
     -- Ammount of gain to add after compressing.
-    output : number?,
+    Output : number?,
     -- Volume level (in decibels) to start compressing.
-    threshold : number?,
+    Threshold : number?,
     -- Ammount to compress by as a ratio.
-    ratio : number?,
+    Ratio : number?,
     -- How long it takes for the compressor to react.
-    attack : number?,
+    Attack : number?,
     -- How long it takes for the compressor to decompress.
-    release : number?,
+    Release : number?,
     -- Softens the transition between uncompressed and compressed.
-    knee : number?
+    Knee : number?
 }
 
 --[=[
@@ -209,74 +209,74 @@ type AudioCompressConfig = {
     An Object representing an audio.
 ]=]
 declare extern type Audio with
-    read data: {buffer}
-    read sampleRate: number
-    read frames: number
-    read duration: number
-    read channels: number
+    read Data: {buffer}
+    read SampleRate: number
+    read Frames: number
+    read Duration: number
+    read Channels: number
     --[=[
         @within Audio
-        @method encode
+        @method Encode
         @param format The audio format to encode to
         @return the encoded audio data as a buffer.
 
         Encodes the audio into a certain audio format.
     ]=]
-    function encode(self,format: AudioFormat): buffer
+    function Encode(self,format: AudioFormat): buffer
     --[=[
         @within Audio
-        @method clone
+        @method Clone
         @return A clone of your audio.
 
         Clones your audio.
     ]=]
-    function clone(self): Audio  
+    function Clone(self): Audio  
 
     --[=[
         @within Audio
-        @method reverse
+        @method Reverse
         @return Itself
 
         Reverses the audio data.
     ]=]
-    function reverse(self): Audio  
+    function Reverse(self): Audio  
     --[=[
         @within Audio
-        @method amplify
+        @method Amplify
         @param decibel The ammount of gain in decibels
         @return Itself
 
         Increases the volume by a set gain.
     ]=]
-    function amplify(self,decibel: number): Audio  
+    function Amplify(self,decibel: number): Audio  
     --[=[
         @within Audio
-        @method normalise
+        @method Normalise
         @param decibel The target dBFS of the normalisation.
         @return Itself
 
         Does a peak normalisation targetting the provided decibel level.
         If no target was provided then it will target 0 dBFS.
     ]=]
-    function normalise(self,decibel: number?): Audio  
+    function Normalise(self,decibel: number?): Audio  
     --[=[
         @within Audio
-        @method fadeIn
+        @method FadeIn
         @param duration The duration of the fade in seconds.
         @return Itself
 
         Adds a linear fade in that lasts for the given duration.
     ]=]
-    function fadeIn(self,duration: number): Audio  
+    function FadeIn(self,duration: number): Audio  
     --[=[
         @within Audio
-        @method fadeOut
+        @method FadeOut
         @param duration The duration of the fade out seconds.
         @return Itself
 
         Adds a linear fade out at the end of the audio that lasts for the given duration.
     ]=]
-    function fadeOut(self,duration: number): Audio  
+    function FadeOut(self,duration: number): Audio  
     --[=[
         @within Audio
         @method trim
@@ -286,7 +286,7 @@ declare extern type Audio with
 
         Trims down the audio to be between a start and a optional stop time.
     ]=]
-    function trim(self,start: number,stop: number?): Audio      
+    function Trim(self,start: number,stop: number?): Audio      
     --[=[
         @within Audio
         @method lowpass
@@ -296,30 +296,30 @@ declare extern type Audio with
 
         Applies a lowpass filter over the audio.
     ]=]
-    function lowpass(self,frequency: number,q: number?): Audio      
+    function Lowpass(self,frequency: number,q: number?): Audio      
     --[=[
         @within Audio
-        @method highpass
+        @method Highpass
         @param frequency the cutoff frequency of the filter.
         @param q the Q factor (or 'resonance') that controls the pointiness of the cutoff frequency being boosted.
         @return Itself
 
         Applies a highpass filter over the audio.
     ]=]
-    function highpass(self,frequency: number,q: number?): Audio      
+    function Highpass(self,frequency: number,q: number?): Audio      
     --[=[
         @within Audio
-        @method notch
+        @method Notch
         @param frequency the center frequency of the filter.
         @param q the Q factor (or 'resonance') that controls the pointiness of the rejection band around the center frequency.
         @return Itself
 
         Applies a notch filter over the audio.
     ]=]
-    function notch(self,center_hz: number,q: number?): Audio      
+    function Notch(self,center_hz: number,q: number?): Audio      
     --[=[
         @within Audio
-        @method resample
+        @method Resample
         @param sample_rate The new sample count of the audio.
         @param filter The The interpolation filter used when resampling.
         @return Itself
@@ -331,10 +331,10 @@ declare extern type Audio with
         * LINEAR   - linear interpolation between 2 points
         * LANCZOS3 - interpolation using 6 points
     ]=]
-    function resample(self,sample_rate: number,filter: AudioResampleFilter): Audio      
+    function Resample(self,sample_rate: number,filter: AudioResampleFilter): Audio      
     --[=[
         @within Audio
-        @method append
+        @method Append
         @param other The audio file being appended.
         @param start Start time (in seconds) to begin slicing the other audio file.
         @param stop  Stop time (in seconds) to stop slicing the other audio file.
@@ -343,10 +343,10 @@ declare extern type Audio with
 
         Appends another audio file to the end of this audio file.
     ]=]
-    function append(self,other: Audio,start: number?,stop: number?,crossfade: number?): Audio 
+    function Append(self,other: Audio,start: number?,stop: number?,crossfade: number?): Audio 
     --[=[
         @within Audio
-        @method overlay
+        @method Overlay
         @param other The audio file being overlayed.
         @param position Offset to where the other audio is placed.
         @param loop Determines if the other audio should be looped if it stops before the base audio ends.
@@ -354,28 +354,28 @@ declare extern type Audio with
 
         overlays two audio files together.
     ]=]
-    function overlay(self,other: Audio,position: number?,loop : boolean?): Audio 
+    function Overlay(self,other: Audio,position: number?,loop : boolean?): Audio 
     --[=[
         @within Audio
-        @method hardClip
+        @method HardClip
         @param threshold The max dBFS threshold.
         @return Itself
 
         Strictly clamps the audio to below the threshold.
     ]=]
-    function hardClip(self,threshold: number): Audio 
+    function HardClip(self,threshold: number): Audio 
     --[=[
         @within Audio
-        @method softClip
+        @method SoftClip
         @param threshold The max dBFS threshold.
         @return Itself
 
         Clamps the audio to below the threshold while preserving peaks.
     ]=]
-    function softClip(self,threshold: number): Audio 
+    function SoftClip(self,threshold: number): Audio 
     --[=[
         @within Audio
-        @method saturate
+        @method Saturate
         @param drive The ammount of gain in decibels applied before softclipping. 
         @param mode The curve of the softclipper.
         @return Itself
@@ -386,15 +386,15 @@ declare extern type Audio with
         * TANH   - warmer and smoother saturations.
         * ARCTAN - more aggressive saturations.
     ]=]
-    function saturate(self,drive: number,mode : AudioSaturationMode?): Audio 
+    function Saturate(self,drive: number,mode : AudioSaturationMode?): Audio 
     --[=[
         @within Audio
-        @method compress
+        @method Compress
         @param config The configuration for the compressor.
 
         Compresses the dynamic range of the audio, making quiet sounds louder and loud sounds quieter.
     ]=]
-    function compress(self,config: AudioCompressConfig): Audio 
+    function Compress(self,config: AudioCompressConfig): Audio 
     function __tostring(self): string
 end
 

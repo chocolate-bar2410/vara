@@ -42,23 +42,23 @@ for i = 0,DATA_SIZE - 1,4 do
 end
 
 fs.Write("demo_scripts/audio/bell.flac",
-    media.audio({
-        tracks = {data,data},
-        sampleRate = SAMPLE_RATE,
-        frames = DATA_SIZE // 4
+    media.Audio({
+        Tracks = {data,data},
+        SampleRate = SAMPLE_RATE,
+        Frames = DATA_SIZE // 4
     })
-    :fadeIn(0.01)
-    :fadeOut(0.3)
-    :compress({
-        output = 1,
-        threshold = -12,
-        attack = 0.02,
-        release = 0.12,
-        ratio = 3,
-        knee = 2
+    :FadeIn(0.01)
+    :FadeOut(0.3)
+    :Compress({
+        Output = 1,
+        Threshold = -12,
+        Attack = 0.02,
+        Release = 0.12,
+        Ratio = 3,
+        Knee = 2
     })
-    :saturate(1,"TANH")
-    :softClip(-3)
-    :lowpass(1000)
-    :encode("FLAC")
+    :Saturate(1,"TANH")
+    :SoftClip(-3)
+    :Lowpass(1000)
+    :Encode("FLAC")
 )

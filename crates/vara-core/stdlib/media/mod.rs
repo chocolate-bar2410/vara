@@ -199,9 +199,9 @@ fn create_audio(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_ob
             audio_obj::Audio::new(tracks,sample_rate,frames as u64)
         }
         mlua::Value::Table(tab) => {
-            let track_table : mlua::Table = tab.get::<mlua::Table>("tracks")?;
-            let sample_rate : u32 = tab.get::<u32>("sampleRate")?;
-            let frames : u64 = tab.get::<u64>("frames")?;
+            let track_table : mlua::Table = tab.get::<mlua::Table>("Tracks")?;
+            let sample_rate : u32 = tab.get::<u32>("SampleRate")?;
+            let frames : u64 = tab.get::<u64>("Frames")?;
 
             let mut tracks : Vec<Vec<f32>> = Vec::new();
 
@@ -228,7 +228,7 @@ fn create_audio(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_ob
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
-    .add_function("image", create_image)?
-    .add_function("audio", create_audio)?
+    .add_function("Image", create_image)?
+    .add_function("Audio", create_audio)?
     .build_readonly()
 }

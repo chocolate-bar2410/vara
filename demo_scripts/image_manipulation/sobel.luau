@@ -20,14 +20,14 @@ local gaussian = {
     1/16,2/16,1/16
 }
 
-local image = media.image("demo_scripts/images/monarch.png"):removeAlpha():greyscale():convolve(3, 3, gaussian)
+local image = media.Image("demo_scripts/images/monarch.png"):RemoveAlpha():Greyscale():Convolve(3, 3, gaussian)
 
-local image_x = image:clone():convolve(3,3,sobel_x_3x3)
-local image_y = image:clone():convolve(3,3,sobel_y_3x3)
+local image_x = image:Clone():Convolve(3,3,sobel_x_3x3)
+local image_y = image:Clone():Convolve(3,3,sobel_y_3x3)
 
-local result = image_x:gradientMagnitude(image_y)
+local result = image_x:GradientMagnitude(image_y)
 
 fs.Write(
     "demo_scripts/images/monarch_edge.png", 
-    result:encode("PNG")
+    result:Encode("PNG")
 )
