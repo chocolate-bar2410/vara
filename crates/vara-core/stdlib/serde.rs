@@ -113,7 +113,7 @@ fn decode(
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
-        .add_function("encode", encode)?
-        .add_function("decode", decode)?
+        .add_function("Encode", encode)?
+        .add_function("Decode", decode)?
         .build_readonly()
 }

@@ -19,7 +19,7 @@ const module = {}
 type SerdeFormat = "JSON" | "TOML" | "YAML"
 --[=[
 	@within serde
-	@method encode
+	@method Encode
 	@param data The data being encoded.
 	@param format Support formats: `JSON`, `TOML` & `YAML`.
 	@tag must_use
@@ -27,13 +27,13 @@ type SerdeFormat = "JSON" | "TOML" | "YAML"
 	
 	Encodes the data provided into a specified file format.
 ]=]
-function module.encode(format: SerdeFormat, data: unknown): string
+function module.Encode(format: SerdeFormat, data: unknown): string
 	return nil :: unknown
 end
 
 --[=[
 	@within serde
-	@method decode
+	@method Decode
 	@param message The message being sent to stdout.
 	@param format Support formats: `JSON`, `TOML` & `YAML`.
 	@tag must_use
@@ -41,7 +41,7 @@ end
 	
 	Decode the data provided from a specified file format into luau values.
 ]=]
-function module.decode(format: SerdeFormat, data: string): unknown
+function module.Decode(format: SerdeFormat, data: string): unknown
 	return nil :: unknown
 end
 
