@@ -4,57 +4,57 @@ local system = require("@vara/system")
 local timestampA = os.time();
 
 local date = os.date("!*t",timestampA)
-local varaDate = chrono.fromUnix(timestampA)
+local varaDate = chrono.FromUnix(timestampA)
 
-assert(date.year == varaDate.year,`{date.year} ≠ {varaDate.year}`)
-assert(date.month == varaDate.month,`{date.month} ≠ {varaDate.month}`)
-assert(date.day == varaDate.day,`{date.day} ≠ {varaDate.day}`)
-assert(date.hour == varaDate.hour,`{date.hour} ≠ {varaDate.hour}`)
-assert(date.min == varaDate.minute,`{date.min} ≠ {varaDate.minute}`)
-assert(date.sec == varaDate.second,`{date.sec} ≠ {varaDate.second}`)
+assert(date.year == varaDate.Year,`{date.year} ≠ {varaDate.Year}`)
+assert(date.month == varaDate.Month,`{date.month} ≠ {varaDate.Month}`)
+assert(date.day == varaDate.Day,`{date.day} ≠ {varaDate.Day}`)
+assert(date.hour == varaDate.Hour,`{date.hour} ≠ {varaDate.Hour}`)
+assert(date.min == varaDate.Minute,`{date.min} ≠ {varaDate.Minute}`)
+assert(date.sec == varaDate.Second,`{date.sec} ≠ {varaDate.Second}`)
 
-local dateA = chrono.fromUnix(0)
-local dateB = chrono.fromUnix(-1)
+local dateA = chrono.FromUnix(0)
+local dateB = chrono.FromUnix(-1)
 
 assert(dateA > dateB)
 
-local dateC = chrono.fromUniversal({
-    year = 1970,
-    month = 1,
-    day = 1,
-    hour = 0,
-    minute = 0,
-    second = 0
+local dateC = chrono.FromUniversal({
+    Year = 1970,
+    Month = 1,
+    Day = 1,
+    Hour = 0,
+    Minute = 0,
+    Second = 0
 })
 
-assert(dateC == chrono.fromUnix(0),"fromUniversal conversion failed")
+assert(dateC == chrono.FromUnix(0),"fromUniversal conversion failed")
 
 -- haven't implemented local timezones for unix systems
-if system.os ~= "windows" then return end
+if system.Os ~= "windows" then return end
 
-local dateD = chrono.fromLocal({
-    year = 1970,
-    month = 1,
-    day = 1,
-    hour = 0,
-    minute = 0,
-    second = 0
+local dateD = chrono.FromLocal({
+    Year = 1970,
+    Month = 1,
+    Day = 1,
+    Hour = 0,
+    Minute = 0,
+    Second = 0
 })
 
-local dateE = chrono.fromUnix(0)
-dateE.timeOffset = chrono.timezoneOffset();
+local dateE = chrono.FromUnix(0)
+dateE.TimeOffset = chrono.TimezoneOffset();
 
 assert(dateD == dateE,"fromLocal conversion failed")
 
 local timestampB = os.time();
 
 local timezoneDate = os.date("*t",timestampB)
-local timezonevaraDate = chrono.fromUnix(timestampB)
-timezonevaraDate.timeOffset = chrono.timezoneOffset()
+local timezonevaraDate = chrono.FromUnix(timestampB)
+timezonevaraDate.TimeOffset = chrono.TimezoneOffset()
 
-assert(timezoneDate.year == timezonevaraDate.year,`{timezoneDate.year} ≠ {timezonevaraDate.year}`)
-assert(timezoneDate.month == timezonevaraDate.month,`{timezoneDate.month} ≠ {timezonevaraDate.month}`)
-assert(timezoneDate.day == timezonevaraDate.day,`{timezoneDate.day} ≠ {timezonevaraDate.day}`)
-assert(timezoneDate.hour == timezonevaraDate.hour,`{timezoneDate.hour} ≠ {timezonevaraDate.hour}`)
-assert(timezoneDate.min == timezonevaraDate.minute,`{timezoneDate.min} ≠ {timezonevaraDate.minute}`)
-assert(timezoneDate.sec == timezonevaraDate.second,`{timezoneDate.sec} ≠ {timezonevaraDate.second}`)
+assert(timezoneDate.year == timezonevaraDate.Year,`{timezoneDate.year} ≠ {timezonevaraDate.Year}`)
+assert(timezoneDate.month == timezonevaraDate.Month,`{timezoneDate.month} ≠ {timezonevaraDate.Month}`)
+assert(timezoneDate.day == timezonevaraDate.Day,`{timezoneDate.day} ≠ {timezonevaraDate.Day}`)
+assert(timezoneDate.hour == timezonevaraDate.Hour,`{timezoneDate.hour} ≠ {timezonevaraDate.Hour}`)
+assert(timezoneDate.min == timezonevaraDate.Minute,`{timezoneDate.min} ≠ {timezonevaraDate.Minute}`)
+assert(timezoneDate.sec == timezonevaraDate.Second,`{timezoneDate.sec} ≠ {timezonevaraDate.Second}`)
