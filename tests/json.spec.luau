@@ -1,4 +1,3 @@
---!strict
 local serde = require("@vara/serde")
 
 local function table_eq<T>(A: {T},B: {T})
