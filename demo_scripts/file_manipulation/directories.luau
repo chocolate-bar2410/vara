@@ -13,7 +13,7 @@ const RESET = "\x1b[0m"
 const FOLDER_ICON = "\u{f114}"
 const IMAGE_ICON = "\u{f03e}"
 
-io.write("\x1b[2J\n")
+io.Write("\x1b[2J\n")
 
 local function printFolderTree(folder: Directory,prefix: string?)
     if prefix == nil then
@@ -51,5 +51,5 @@ end
 local test_folder = fs.directory("demo_scripts/images")
 
 printFolderTree(test_folder)
-io.readline()
-io.write("\x1b[2J\n")
+io.ReadLine()
+io.Write("\x1b[2J\n")

@@ -36,8 +36,8 @@ fn readline(context: &mlua::Lua, _: ()) -> Result<mlua::LuaString, mlua::error::
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
-        .add_function("write", write)?
-        .add_function("read", read)?
-        .add_function("readline", readline)?
+        .add_function("Write", write)?
+        .add_function("Read", read)?
+        .add_function("ReadLine", readline)?
         .build_readonly()
 }
