@@ -77,4 +77,15 @@ function module.fromLocal(params : DateTimeParameters) : DateTime
     return nil :: unknown
 end
 
+--[=[
+	@within chrono
+	@method timezoneOffset
+	@return DateTime
+
+	returns the current timezone offset in hours.
+]=]
+function module.timezoneOffset() : number
+    return nil :: unknown
+end
+
 return module
