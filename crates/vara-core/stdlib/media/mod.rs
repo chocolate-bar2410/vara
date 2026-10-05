@@ -23,7 +23,7 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
                 return Err(mlua::Error::FromLuaConversionError { 
                     from: "userdata", 
                     to: "file".to_string(), 
-                    message: Some("expected string or buffer".to_string()) 
+                    message: Some("expected a string, buffer or file".to_string()) 
                 });
             } 
 
@@ -64,14 +64,28 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
             return Err(mlua::Error::FromLuaConversionError {
                 from: data.type_name(),
                 to: "string or buffer".to_string(),
-                message: Some("expected string or buffer".to_string()),
+                message: Some("expected a string, buffer or file".to_string()),
             });
         }
     }
 }
 
-fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Audio>{
+fn create_audio(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Audio>{
     match data {
+        mlua::Value::UserData(userdata) => {
+            if !userdata.is::<vara_file>(){
+                return Err(mlua::Error::FromLuaConversionError { 
+                    from: "userdata", 
+                    to: "file".to_string(), 
+                    message: Some("expected a string, file or table".to_string()) 
+                });
+            } 
+
+            let file = userdata.borrow::<vara_file>()?;
+            let filepath = file.path.to_string_lossy();
+            
+            create_audio(context,filepath.into_lua(context)?)
+        },
         mlua::Value::String(s) => {
             let path = PathBuf::from(s.to_string_lossy());
             let bytes = vara_stdlib::files::read_file_as_binary(&path)?;
@@ -206,7 +220,7 @@ fn create_audio(_ : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_obj::Aud
             return Err(mlua::Error::FromLuaConversionError {
                 from: data.type_name(),
                 to: "string or buffer".to_string(),
-                message: Some("expected string or buffer".to_string()),
+                message: Some("expected a string, file or table".to_string()),
             });
         }
     }
