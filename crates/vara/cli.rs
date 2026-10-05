@@ -3,6 +3,7 @@ use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 
 use crate::luau;
+use crate::setup;
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3, 0x7d, 0xf4).into()));
     let dimmed = styling::Style::new().fg_color(Some(styling::AnsiColor::BrightBlack.into()));
@@ -20,7 +21,7 @@ fn get_style() -> styling::Styles {
 #[derive(Parser)]
 #[command(
     name="vara",
-    version = "0.1.0",
+    version = env!("CARGO_PKG_VERSION"),
     about = "A luau runtime for creating standalone applications.",
     styles = get_style(),
     help_template = "\
@@ -40,6 +41,7 @@ struct CLI {
 enum Commands {
     #[command(trailing_var_arg = true)]
     Run(RunArgs),
+    Setup,
 }
 
 #[derive(clap::Args)]
@@ -50,7 +52,7 @@ struct RunArgs {
     args: Vec<String>,
 }
 
-pub fn run() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
     let cli = CLI::parse();
 
     match cli.command {
@@ -62,6 +64,12 @@ pub fn run() -> Result<(), Box<dyn std::error::Error>> {
             match current.run(&path) {
                 Ok(()) => Ok(()),
                 Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
+            }
+        },
+        Some(Commands::Setup) => {
+            match setup::setup().await {
+                Ok(()) => Ok(()),
+                Err(err) => Err(format!("failed to setup luaurc:\n{}",err).into())
             }
         }
 
