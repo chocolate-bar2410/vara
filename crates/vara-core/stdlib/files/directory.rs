@@ -5,8 +5,9 @@ use mlua::ExternalError;
 
 use crate::stdlib as vara_stdlib;
 
-use vara_stdlib::chrono::datetime::DateTime as vara_datetime;
 use vara_stdlib::files::file_obj::File as vara_file;
+use vara_stdlib::chrono as vara_chrono;
+use vara_chrono::datetime::DateTime as vara_datetime;
 
 use std::rc::Rc;
 use std::cell::RefCell;
@@ -113,11 +114,7 @@ impl Directory{
 
         let metadata = std::fs::symlink_metadata(&self.path)?;
 
-        #[cfg(target_family = "windows")]
-        let timeoffset = vara_util::win_compat::get_timezone_offset();
-
-        #[cfg(target_family = "unix")]
-        let timeoffset = 0;
+        let timeoffset = vara_chrono::get_timezone_offset();
 
         let created = vara_datetime::new(metadata.created()?
             .duration_since(UNIX_EPOCH)
@@ -134,11 +131,7 @@ impl Directory{
 
         let metadata = std::fs::symlink_metadata(&self.path)?;
 
-        #[cfg(target_family = "windows")]
-        let timeoffset = vara_util::win_compat::get_timezone_offset();
-
-        #[cfg(target_family = "unix")]
-        let timeoffset = 0;
+        let timeoffset = vara_chrono::get_timezone_offset();
 
         let created = vara_datetime::new(metadata.accessed()?
             .duration_since(UNIX_EPOCH)
@@ -155,11 +148,7 @@ impl Directory{
 
         let metadata = std::fs::symlink_metadata(&self.path)?;
 
-        #[cfg(target_family = "windows")]
-        let timeoffset = vara_util::win_compat::get_timezone_offset();
-
-        #[cfg(target_family = "unix")]
-        let timeoffset = 0;
+        let timeoffset = vara_chrono::get_timezone_offset();
 
         let created = vara_datetime::new(metadata.modified()?
             .duration_since(UNIX_EPOCH)
