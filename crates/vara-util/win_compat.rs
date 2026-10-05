@@ -5,7 +5,8 @@ const CP_UTF8: c_uint = 65001;
 #[repr(C)]
 struct TimeZoneInformation {
     bias: i32,
-    _rest: [u8; 168], // ignore remaining fields
+    _rest: [u8; 164], // ignore remaining fields
+    daylight_bias: i32,
 }
 
 unsafe extern "system" {
@@ -20,8 +21,15 @@ pub fn init() {
 pub fn get_timezone_offset() -> i32 {
     unsafe {
         let mut tz = std::mem::zeroed::<TimeZoneInformation>();
-        GetTimeZoneInformation(&mut tz);
+        let result = GetTimeZoneInformation(&mut tz);
+
+        let bias = if result == 2 {
+            tz.bias + tz.daylight_bias
+        } else {
+            tz.bias
+        };
+
         // Windows bias is minutes west of UTC
-        -tz.bias * 60
+        -bias * 60 
     }
 }
