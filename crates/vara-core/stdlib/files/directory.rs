@@ -14,7 +14,7 @@ use std::cell::RefCell;
 
 #[derive(mlua::UserData)]
 pub struct Directory{
-    #[lua(get)]
+    #[lua(get,name = "Path")]
     path: PathBuf
 }
 
@@ -38,6 +38,7 @@ impl Directory{
         })
     }
 
+    #[lua(name = "Make")]
     fn make(this: mlua::AnyUserData) -> mlua::Result<mlua::AnyUserData>{
 
         {
@@ -48,7 +49,7 @@ impl Directory{
         Ok(this)
     }
 
-    #[lua(name = "move")]
+    #[lua(name = "Move")]
     fn move_dir(this : mlua::AnyUserData,new_path : PathBuf) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut directory = this.borrow_mut::<Directory>()?;
@@ -67,6 +68,7 @@ impl Directory{
         Ok(this)
     }
 
+    #[lua(name = "Delete")]
     fn delete(&mut self) -> mlua::Result<()>{
         std::fs::remove_dir_all(&self.path)
             .map_err(|err| format!("Could not delete directory at {}: {}", self.path.display(),err).into_lua_err())?;
@@ -74,6 +76,7 @@ impl Directory{
         Ok(())
     }
 
+    #[lua(name = "Walk")]
     fn walk(&self,context : &mlua::Lua) -> mlua::Result<mlua::Function>{
         let iter = Rc::new(RefCell::new(std::fs::read_dir(&self.path)?));
 
@@ -106,7 +109,7 @@ impl Directory{
         Ok(format!("directory {} ",self.path.display()))
     }
 
-    #[lua(getter,name="created")]
+    #[lua(getter,name="Created")]
     fn get_creation_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
             return Ok(vara_datetime::new(0,0));
@@ -123,7 +126,7 @@ impl Directory{
     
         Ok(created)
     }
-    #[lua(getter,name="accessed")]
+    #[lua(getter,name="Accessed")]
     fn get_accessed_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
             return Ok(vara_datetime::new(0,0));
@@ -140,7 +143,7 @@ impl Directory{
     
         Ok(created)
     }
-    #[lua(getter,name="modified")]
+    #[lua(getter,name="Modified")]
     fn get_modified_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
             return Ok(vara_datetime::new(0,0));
@@ -157,7 +160,7 @@ impl Directory{
     
         Ok(created)
     }
-    #[lua(getter,name="exists")]
+    #[lua(getter,name="Exists")]
     fn does_exist(&self) -> mlua::Result<bool> {
         Ok(self.path.exists())
     }

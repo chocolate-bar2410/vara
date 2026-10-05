@@ -20,49 +20,49 @@ const module = {}
 
 --[=[
 	@within fs
-	@method write
+	@method Write
 	@param path The file being written to.
 	@param contents The contents of the file.
 
 	Writes `contents` into the file that `path` points to.
 ]=]
-function module.write(path: string, contents: buffer | string): ()
+function module.Write(path: string, contents: buffer | string): ()
 	return nil :: unknown
 end
 
 --[=[
 	@within fs
-	@method write
+	@method Read
 	@param path The file being written to.
 	@return The contents of the file.
 
 	Reads the file contents of the file thats `path` points to.
 ]=]
-function module.read(path: string): buffer
+function module.Read(path: string): buffer
 	return nil :: unknown
 end
 
 --[=[
 	@within fs
-	@method file
+	@method File
 	@param path The path to a file.
 	@return A file object.
 
 	Creates a file object from a path string.
 ]=]
-function module.file(path: string): File
+function module.File(path: string): File
 	return nil :: unknown
 end
 
 --[=[
 	@within fs
-	@method directory
+	@method Directory
 	@param path The path to a file directory.
 	@return A directory object.
 
 	Creates a directory object from a path string.
 ]=]
-function module.directory(path: string): Directory
+function module.Directory(path: string): Directory
 	return nil :: unknown
 end
 

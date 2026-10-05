@@ -4,7 +4,7 @@ local media = require("@vara/media")
 
 local audioA = media.audio("demo_scripts/audio/drum_loop.flac")
 
-fs.write("demo_scripts/audio/drum_mastered.flac", 
+fs.Write("demo_scripts/audio/drum_mastered.flac", 
     audioA
     :saturate(2,"ARCTAN")
     :compress({

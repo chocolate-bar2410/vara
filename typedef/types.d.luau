@@ -405,65 +405,65 @@ end
     An Object representing a file.
 ]=]
 declare extern type File with
-    read path: string
-    read size: number
-    read created: DateTime
-    read accessed: DateTime
-    read modified: DateTime
-    read exists: boolean
-    read extension: boolean
+    read Path: string
+    read Size: number
+    read Created: DateTime
+    read Accessed: DateTime
+    read Modified: DateTime
+    read Exists: boolean
+    read Extension: boolean
     --[=[
         @within File
-        @method read
+        @method Read
         @returns Contents of the file.
 
         Reads the contents of a file as returns it as a buffer.
     ]=]
-    function read(self): buffer
+    function Read(self): buffer
     --[=[
         @within File
-        @method write
+        @method Write
         @param contents The contents of the file.
         @return Itself
 
         Writes the given contents into a file.
     ]=]
-    function write(self,contents : buffer) : File
+    function Write(self,contents : buffer) : File
     --[=[
         @within File
-        @method append
+        @method Append
         @param contents The contents of the file.
         @return Itself
 
         Appends the given contents onto the end of a file.
         If the file does not exist it will instead create a new file to append to.
     ]=]
-    function append(self,contents : buffer) : File
+    function Append(self,contents : buffer) : File
     --[=[
         @within File
-        @method delete
+        @method Delete
 
         Deletes the file.
     ]=]
-    function delete(self)
+    function Delete(self)
     --[=[
         @within File
-        @method move
+        @method Move
         @param path The path to move to.
         @return Itself
         
         Moves the file to a different location.
     ]=]
-    function move(self,path: string) : File
+    function Move(self,path: string) : File
     --[=[
         @within File
-        @method move
+        @method Copy
         @param newPath The path to copy to.
         @return The copy
         
         Copies the file to a new location.
     ]=]
-    function copy(self,path: string) : File
+    function Copy(self,path: string) : File
 
     function __tostring(self): string
 end
@@ -474,43 +474,43 @@ end
     An Object representing a file directory.
 ]=]
 declare extern type Directory with 
-    read path: string
-    read created: DateTime
-    read accessed: DateTime
-    read modified: DateTime
-    read exists: boolean
+    read Path: string
+    read Created: DateTime
+    read Accessed: DateTime
+    read Modified: DateTime
+    read Exists: boolean
     --[=[
         @within Directory
-        @method make
+        @method Make
         @return Itself
         
         Creates a file directory where the directory object's path is located.
     ]=]
-    function make(self) : File
+    function Make(self) : File
     --[=[
         @within Directory
-        @method move
+        @method Move
         @param path The path to move to.
         @return Itself
         
         Moves the directory to a different location.
     ]=]
-    function move(self,path: string) : File
+    function Move(self,path: string) : File
     --[=[
         @within Directory
-        @method delete
+        @method Delete
 
         Deletes the file directory and all files inside it.
     ]=]
-    function delete(self)
+    function Delete(self)
     --[=[
         @within Directory
-        @method walk
+        @method Walk
         @return iterator
 
         Returns an non recursive iterator that walks through every file and directory in that directory.
     ]=]
-    function walk(self) : () -> File | Directory
+    function Walk(self) : () -> File | Directory
 
     function __tostring(self): string
 end

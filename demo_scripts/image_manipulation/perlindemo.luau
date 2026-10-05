@@ -1,3 +1,4 @@
+--!strict
 const media = require("@vara/media")
 const fs = require("@vara/fs")
 
@@ -46,7 +47,7 @@ for y = 0,height - 1 do
     end
 end
 
-fs.write("./demo_scripts/images/basn2c16.qoi",
+fs.Write("./demo_scripts/images/basn2c16.qoi",
     media.image(data)
         :dimensions(width,height)
         :encode("QOI")

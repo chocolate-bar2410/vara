@@ -41,7 +41,7 @@ for i = 0,DATA_SIZE - 1,4 do
     buffer.writef32(data, i, bellOscillator())
 end
 
-fs.write("demo_scripts/audio/bell.flac",
+fs.Write("demo_scripts/audio/bell.flac",
     media.audio({
         tracks = {data,data},
         sampleRate = SAMPLE_RATE,

@@ -10,4 +10,4 @@ local data: typeof(load) = serde.Decode("YAML", message) :: typeof(load)
 print(data.globals.hello)
 print(data.globals.testing)
 
-fs.write("testing.yaml", message)
+fs.Write("testing.yaml", message)

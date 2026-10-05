@@ -61,9 +61,9 @@ fn write_file_fn(_: &mlua::Lua,(path_string, data): (mlua::LuaString, mlua::Valu
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
-        .add_function("read", read_file_fn)?
-        .add_function("write", write_file_fn)?
-        .add_function("file", |_: &mlua::Lua, path: PathBuf| file_obj::File::new(&path))?
-        .add_function("directory", |_: &mlua::Lua, path: PathBuf| directory::Directory::new(&path))?
+        .add_function("Read", read_file_fn)?
+        .add_function("Write", write_file_fn)?
+        .add_function("File", |_: &mlua::Lua, path: PathBuf| file_obj::File::new(&path))?
+        .add_function("Directory", |_: &mlua::Lua, path: PathBuf| directory::Directory::new(&path))?
         .build_readonly()
 }

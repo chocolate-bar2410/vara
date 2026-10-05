@@ -13,9 +13,9 @@ use vara_chrono::datetime::DateTime as vara_datetime;
 
 #[derive(mlua::UserData)]
 pub struct File{
-    #[lua(get)]
+    #[lua(get,name = "Path")]
     pub path: PathBuf,
-    #[lua(get)]
+    #[lua(get,name = "Size")]
     size: u64,
 }
 
@@ -44,7 +44,8 @@ impl File {
             size : size,
         })
     }
-
+    
+    #[lua(name = "Read")]
     fn read(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
         let mut file = std::fs::File::open(&self.path)
             .map_err(|err| format!("Could not read file at {}: {}", self.path.display(),err).into_lua_err())?;
@@ -54,7 +55,8 @@ impl File {
 
         context.create_buffer(contents)
     }
-
+    
+    #[lua(name = "Write")]
     fn write(this : mlua::AnyUserData,contents : mlua::Buffer) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut file_obj = this.borrow_mut::<File>()?;
@@ -71,7 +73,8 @@ impl File {
 
         Ok(this)
     }
-
+    
+    #[lua(name = "Append")]
     fn append(this : mlua::AnyUserData,contents : mlua::Buffer) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut file_obj = this.borrow_mut::<File>()?;
@@ -92,7 +95,8 @@ impl File {
 
         Ok(this)
     }
-
+    
+    #[lua(name = "Delete")]
     fn delete(&mut self) -> mlua::Result<()>{
         std::fs::remove_file(&self.path)
             .map_err(|err| format!("Could not delete file at {}: {}", self.path.display(),err).into_lua_err())?;
@@ -101,7 +105,7 @@ impl File {
         Ok(())
     }
 
-    #[lua(name = "move")]
+    #[lua(name = "Move")]
     fn move_file(this : mlua::AnyUserData,new_path : PathBuf) -> mlua::Result<mlua::AnyUserData>{
         {
             let mut file_obj = this.borrow_mut::<File>()?;
@@ -120,7 +124,7 @@ impl File {
         Ok(this)
     }
 
-    #[lua(name = "copy")]
+    #[lua(name = "Copy")]
     fn copy_file(&self,new_path : PathBuf) -> mlua::Result<Self>{
         let new_file = File::new(&new_path)?;
 
@@ -148,7 +152,7 @@ impl File {
         Ok(format!("file {} {}",size_string,self.path.display()))
     }
 
-    #[lua(getter,name="created")]
+    #[lua(getter,name="Created")]
     fn get_creation_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
             return Ok(vara_datetime::new(0,0));
@@ -165,7 +169,7 @@ impl File {
     
         Ok(created)
     }
-    #[lua(getter,name="accessed")]
+    #[lua(getter,name="Accessed")]
     fn get_accessed_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
             return Ok(vara_datetime::new(0,0));
@@ -182,7 +186,7 @@ impl File {
     
         Ok(created)
     }
-    #[lua(getter,name="modified")]
+    #[lua(getter,name="Modified")]
     fn get_modified_date(&self) -> mlua::Result<vara_datetime> {
         if !std::fs::exists(&self.path)?{
             return Ok(vara_datetime::new(0,0));
@@ -199,11 +203,11 @@ impl File {
     
         Ok(created)
     }
-    #[lua(getter,name="exists")]
+    #[lua(getter,name="Exists")]
     fn does_exist(&self) -> mlua::Result<bool> {
         Ok(self.path.exists())
     }
-    #[lua(getter,name="extension")]
+    #[lua(getter,name="Extension")]
     fn get_extension(&self,context : &mlua::Lua) -> mlua::Result<mlua::LuaString> {
         match self.path.extension() {
             Some(ext) => context.create_string(&ext.as_encoded_bytes()),
