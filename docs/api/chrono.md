@@ -4,6 +4,9 @@ title: chrono
 
 Vara's library for handling date times.
 
+!!! danger
+    functions relating to timezones only work on windows, timezones for unix systems have not been implemented yet
+
 ## functions
 
 <h3 markdown> Now <span class="API-type"> -> DateTime </span></h3>
