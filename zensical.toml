@@ -15,14 +15,16 @@ nav = [
   { "API" = [
     {"Libraries" = [
       "api/index.md",
-      "api/fs.md",
-      "api/io.md",
-      "api/serde.md",
-      "api/system.md",
-      "api/chrono.md",
-      "api/media.md",
+      "api/libraries/fs.md",
+      "api/libraries/io.md",
+      "api/libraries/serde.md",
+      "api/libraries/system.md",
+      "api/libraries/chrono.md",
+      "api/libraries/media.md",
       ]},
-      {"Objects" = []}
+      {"Objects" = [
+        "api/objects/file.md",
+      ]}
     ]}
 ]
 
