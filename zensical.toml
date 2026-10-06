@@ -13,10 +13,14 @@ repo_name = "chocolate-bar2410/vara"
 nav = [
   { "home" = "index.md" },
   { "API" = [
-    "api/index.md",
-    "api/io.md",
-    "api/chrono.md",
-    ] }
+    {"Libraries" = [
+      "api/index.md",
+      "api/fs.md",
+      "api/io.md",
+      "api/chrono.md",
+      ]},
+      {"Objects" = []}
+    ]}
 ]
 
 
