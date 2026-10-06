@@ -38,3 +38,20 @@ Constructs a DateTime using a table of parameters in the local timezone.
 chrono.TimezoneOffset() : number
 ```
 returns the current timezone offset in hours.
+
+## types
+
+### LanguagePreferences
+
+```luau
+type DateTimeParameters = {
+    Year : number,
+    Month : number,
+    Day : number,
+
+    Hour : number,
+    Minute : number,
+    Second : number,
+    Millisecond : number?,
+}
+```

@@ -18,6 +18,7 @@ nav = [
       "api/fs.md",
       "api/io.md",
       "api/serde.md",
+      "api/system.md",
       "api/chrono.md",
       "api/media.md",
       ]},
