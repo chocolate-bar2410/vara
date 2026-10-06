@@ -1,7 +1,6 @@
 /target
 
 /.vscode
-node_modules
-
-docs/.vitepress/dist
-docs/.vitepress/cache
+site
+.venv
+.cache
