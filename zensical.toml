@@ -17,6 +17,7 @@ nav = [
       "api/index.md",
       "api/fs.md",
       "api/io.md",
+      "api/serde.md",
       "api/chrono.md",
       ]},
       {"Objects" = []}
