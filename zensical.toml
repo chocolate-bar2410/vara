@@ -24,6 +24,7 @@ nav = [
       ]},
       {"Objects" = [
         "api/objects/file.md",
+        "api/objects/directory.md",
       ]}
     ]}
 ]
