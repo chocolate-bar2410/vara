@@ -84,7 +84,7 @@ The ammount of virtual memory being used up by the process.
 
 ## types
 
-### LanguagePreferences
+<h3 markdown>LanguagePreferences</h3>
 
 ```luau
 type LanguagePreferences : {

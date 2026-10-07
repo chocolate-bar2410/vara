@@ -41,7 +41,7 @@ returns the current timezone offset in hours.
 
 ## types
 
-### LanguagePreferences
+<h3 markdown>DateTimeParameters</h3>
 
 ```luau
 type DateTimeParameters = {
