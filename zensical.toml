@@ -13,8 +13,8 @@ repo_name = "chocolate-bar2410/vara"
 nav = [
   { "home" = "index.md" },
   { "API" = [
+    "api/index.md",
     {"Libraries" = [
-      "api/index.md",
       "api/libraries/fs.md",
       "api/libraries/io.md",
       "api/libraries/serde.md",
@@ -25,6 +25,7 @@ nav = [
       {"Objects" = [
         "api/objects/file.md",
         "api/objects/directory.md",
+        "api/objects/image.md",
       ]}
     ]}
 ]
