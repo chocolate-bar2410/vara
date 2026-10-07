@@ -8,7 +8,10 @@ Vara's library for accessing the file system.
 
 <h3 markdown>Write<span class="API-type"> -> () </span></h3>
 ```luau
-fs.Write(path: string, contents: buffer | string): ()
+fs.Write(
+    path: string, 
+    contents: buffer | string
+): ()
 ```
 Writes `contents` into the file that `path` points to.
 
