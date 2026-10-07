@@ -13,6 +13,7 @@ media.Image = function(
 ) : Image
 ```
 Creates a image from a File, pathstring or a raw buffer.
+Creating a image from a raw buffer assumes the image is RGBA.
 
 <h3 markdown>Audio<span class="API-type"> -> Audio </span></h3>
 ```luau
