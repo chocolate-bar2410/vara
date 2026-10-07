@@ -123,3 +123,15 @@ Returns itself.
 <h3 markdown>__tostring<span class="API-type"> -> string </span></h3>
 
 Converts the image into a string in the format `image [Width]x[Height]`
+
+## types
+
+<h3 markdown>ImageFormat</h3>
+```luau
+type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI"
+```
+
+<h3 markdown>ImageResizeFilter</h3>
+```luau
+type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
+```
