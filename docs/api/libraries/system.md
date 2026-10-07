@@ -88,10 +88,15 @@ The ammount of virtual memory being used up by the process.
 
 ```luau
 type LanguagePreferences : {
+    -- language preferences for time
     time : {string},
+    -- language preferences for currency
     monetary : {string},
+    -- language preferences for collating words
     collation : {string},
+    -- language preferences for messaging
     message : {string},
+    -- language preferences for numbers.
     numeric : {string},
 }
 ```

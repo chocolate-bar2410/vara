@@ -28,8 +28,11 @@ Creates a audio from a File, pathstring or an audio config table.
 
 ```luau
 type AudioConfigTable = {
+    -- tracks containing a 32bit float buffer per channel.
     Tracks: {buffer},
+    -- the sample rate in hz.
     SampleRate: number,
+    -- the ammount of frames.
     Frames: number,
 }
 ```
