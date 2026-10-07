@@ -4,6 +4,17 @@ title: serde
 
 Vara's library for serialising and deserialising data.
 
+```luau
+local serde = require("@vara/serde")
+
+local message = serde.Encode("JSON", { hello = "world", testing = 123 })
+print(message)
+
+local data : { hello: string, testing: number } = serde.Decode("JSON",message)
+print(data.hello)
+print(data.testing)
+```
+
 ## functions
 
 <h3 markdown>Encode<span class="API-type"> -> string </span></h3>

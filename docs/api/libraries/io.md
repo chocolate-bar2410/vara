@@ -4,6 +4,22 @@ title: io
 
 Vara's library for handling input/output.
 
+```luau
+const io = require("@vara/io")
+
+io.Write("hi |")
+io.Write("hello |")
+io.Write("こんにちは |")
+io.Write("write directly to stdout\n") --// newlines automatically flush stdout
+
+const lineRead = io.ReadLine()
+io.Write(`read entire line: {lineRead}\n`)
+
+const readBytes = 256
+const lineRead = io.Read(readBytes)
+io.Write(`read 256 bytes: {lineRead}\n`)
+```
+
 ## functions
 
 <h3 markdown> Write <span class="API-type"> -> () </span></h3>

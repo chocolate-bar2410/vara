@@ -2,7 +2,20 @@
 title: chrono
 ---
 
-Vara's library for handling date times.
+Vara's library for managing time.
+
+```luau
+local chrono = require("@vara/chrono")
+
+local timestamp = chrono.Now()
+
+print(`ISO8601:   {timestamp:ToISO8601()}`)
+print(`RFC2822:   {timestamp:ToRFC2822()}`)
+print(`humanised: {timestamp:Humanise()}`)
+print(`中国:      {timestamp:ToZH()}`)
+print(`Apache:   {timestamp:ToApacheLog()}`)
+```
+
 
 !!! danger
     functions relating to timezones only work on windows, timezones for unix systems have not been implemented yet

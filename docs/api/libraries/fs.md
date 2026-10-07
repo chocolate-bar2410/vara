@@ -2,7 +2,19 @@
 title: fs
 ---
 
-Vara's library for accessing the file system.
+Vara's library for managing the file system.
+
+```luau
+const fs = require("@vara/fs")
+
+local source = buffer.fromstring("hello guys")
+const path = "example.txt"
+
+fs.Write(path,source)
+
+local fileContents = fs.Read(path)
+print(fileContents)
+```
 
 ## functions
 

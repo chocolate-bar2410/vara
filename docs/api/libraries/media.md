@@ -2,7 +2,17 @@
 title: media
 ---
 
-Vara's library for manipulating media files.
+Vara's library for processing media files.
+
+```luau
+const media = require("@vara/media")
+const fs = require("@vara/fs")
+
+local image: Image = media.Image("./demo_scripts/images/basn2c16.png")
+
+fs.Write("./demo_scripts/images/basn2c16.qoi",image:Encode("QOI"))
+
+```
 
 ## functions
 
