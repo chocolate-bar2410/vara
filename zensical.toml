@@ -26,6 +26,7 @@ nav = [
         "api/objects/file.md",
         "api/objects/directory.md",
         "api/objects/image.md",
+        "api/objects/audio.md",
       ]}
     ]}
 ]
