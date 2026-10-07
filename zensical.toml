@@ -25,6 +25,7 @@ nav = [
       {"Objects" = [
         "api/objects/file.md",
         "api/objects/directory.md",
+        "api/objects/datetime.md",
         "api/objects/image.md",
         "api/objects/audio.md",
       ]}
