@@ -13,9 +13,9 @@ export type AudioConfigTable = {
     const media = require("@vara/media")
     const fs = require("@vara/fs")
 
-    local image: Image = media.image("./demo_scripts/images/basn2c16.png")
+    local image: Image = media.Image("./demo_scripts/images/basn2c16.png")
 
-    fs.write("./demo_scripts/images/basn2c16.qoi",image:encode("QOI"))
+    fs.Write("./demo_scripts/images/basn2c16.qoi",image:Encode("QOI"))
 
     ```
 ]=]
@@ -23,7 +23,7 @@ local module = {}
 
 --[=[
     @within media
-    @method image
+    @method Image
     @param data A pathstring or a buffer that stores RGBA pixel data.
     @return A decoded image.
 
@@ -35,7 +35,7 @@ end
 
 --[=[
     @within media
-    @method audio
+    @method Audio
     @param data A pathstring or a AudioConfigTable that holds audio data.
     @return A decoded audio object.
 

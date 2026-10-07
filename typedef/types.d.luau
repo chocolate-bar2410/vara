@@ -6,7 +6,7 @@
     ```luau
     local chrono = require("@vara/chrono")
 
-    local timestamp = chrono.fromUniversal({
+    local timestamp = chrono.FromUniversal({
         Year = 2025,
         Month = 9,
         Day = 10,
@@ -56,8 +56,8 @@ declare extern type DateTime with
     function ToZH(self): string
     --[=[
 		@within DateTime
-		@method toApacheLog
-        Formats the datetime so as an Apache Log timestamp.
+		@method ToApacheLog
+        Formats the datetime as an Apache Log timestamp.
     ]=]
     function ToApacheLog(self): string
     function __tostring(self): string
@@ -279,7 +279,7 @@ declare extern type Audio with
     function FadeOut(self,duration: number): Audio  
     --[=[
         @within Audio
-        @method trim
+        @method Trim
         @param start The start time in seconds .
         @param stop The stop time in seconds.
         @return Itself
@@ -289,7 +289,7 @@ declare extern type Audio with
     function Trim(self,start: number,stop: number?): Audio      
     --[=[
         @within Audio
-        @method lowpass
+        @method Lowpass
         @param frequency the cutoff frequency of the filter.
         @param q the Q factor (or 'resonance') that controls the pointiness of the cutoff frequency being boosted.
         @return Itself

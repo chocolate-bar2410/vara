@@ -10,9 +10,9 @@
 	local source = buffer.fromstring("hello guys")
 	const path = "example.txt"
 
-	fs.write(path,source)
+	fs.Write(path,source)
 
-	local fileContents = fs.read(path)
+	local fileContents = fs.Read(path)
 	print(fileContents)
 	```
 ]=]
