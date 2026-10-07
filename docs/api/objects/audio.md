@@ -78,7 +78,7 @@ Image:FadeOut(duration: number): Audio
 
 Adds a linear fade out at the end of the audio that lasts for the given duration.
 
-<h3 markdown>trim<span class="API-type"> -> Audio </span></h3>
+<h3 markdown>Trim<span class="API-type"> -> Audio </span></h3>
 ```luau
 Image:Trim(
     start: number,
@@ -88,7 +88,7 @@ Image:Trim(
 
 Trims down the audio to be between a start and a optional stop time.
 
-<h3 markdown>lowpass<span class="API-type"> -> Audio </span></h3>
+<h3 markdown>Lowpass<span class="API-type"> -> Audio </span></h3>
 ```luau
 Image:Lowpass(
     frequency: number,
