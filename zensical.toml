@@ -36,8 +36,9 @@ nav = [
 extra_css = [
   "stylesheets/api_reference.css",
   "stylesheets/page.css",
-  "stylesheets/text.css"
-  ]
+  "stylesheets/text.css",
+  "stylesheets/homepage.css"
+]
 # extra_javascript = ["javascripts/extra.js"]
 
 [project.theme]
