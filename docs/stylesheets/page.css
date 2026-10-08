@@ -1,0 +1,29 @@
+.md-header {
+    padding: 0 0.4rem;
+}
+
+.md-sidebar--secondary .md-nav__link {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.md-grid {
+    padding: 0 1.95rem;
+    max-width: initial;
+    min-width: flex;
+}
+
+.md-content{
+    padding: 0 5vh;
+}
+
+@media screen and (max-width: 80em) {
+    .md-grid {
+        padding: 0 0rem;
+    }
+
+    .md-content {
+        padding: 0 0vh;
+    }
+}

@@ -33,7 +33,10 @@ nav = [
 ]
 
 
-extra_css = ["stylesheets/api_reference.css"]
+extra_css = [
+  "stylesheets/api_reference.css",
+  "stylesheets/page.css"
+  ]
 # extra_javascript = ["javascripts/extra.js"]
 
 [project.theme]
@@ -73,12 +76,13 @@ features = [
 
 # logo = "assets/logo.png"
 
-# [project.theme.icon]
+[project.theme.icon]
 # logo = "lucide/smile"
+repo = "fontawesome/brands/github"
 
-# [project.theme.font]
-# text = "Inter"
-# code = "Jetbrains Mono"
+[project.theme.font]
+text = "Helvetica"
+code = "Jetbrains Mono"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme)"
