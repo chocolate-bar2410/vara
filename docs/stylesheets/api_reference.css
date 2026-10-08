@@ -1,0 +1,26 @@
+.API-header>* {
+    flex-shrink: 0;
+}
+
+.API-header {
+    display: flex;
+    align-items: baseline;
+    margin: 0 !important;
+    flex-wrap: wrap;
+}
+
+.API-header .API-icon {
+    margin-right: 0.5em;
+}
+
+.API-type {
+    vertical-align: middle;
+    font-size: calc((0.5em + 1rem) / 2);
+
+    flex-shrink: 0;
+    
+    margin-left: 0.5em;
+
+    font-family: var(--md-code-font-family);
+    font-weight: 400;
+}
