@@ -1,6 +1,11 @@
 ---
-title: Directory
+icon: octicons/file-directory-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-file-directory-24:</span> 
+Directory 
+</h1>
 
 An object representing a file directory.
 

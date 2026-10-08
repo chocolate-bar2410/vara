@@ -1,6 +1,11 @@
 ---
-title: Audio
+icon: octicons/unmute-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-unmute-24:</span> 
+Audio
+</h1>
 
 An Object representing an audio.  
 

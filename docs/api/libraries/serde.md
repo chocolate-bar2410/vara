@@ -1,6 +1,11 @@
 ---
-title: serde
+icon: octicons/arrow-both-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-arrow-both-24:</span> 
+serde
+</h1>
 
 Vara's library for serialising and deserialising data.
 

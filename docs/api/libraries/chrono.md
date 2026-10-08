@@ -1,6 +1,11 @@
 ---
-title: chrono
+icon: octicons/clock-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-clock-24:</span> 
+chrono
+</h1>
 
 Vara's library for managing time.
 

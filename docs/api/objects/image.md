@@ -1,6 +1,11 @@
 ---
-title: Image
+icon: octicons/image-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-image-24:</span> 
+Image 
+</h1>
 
 An object representing a image.  
 

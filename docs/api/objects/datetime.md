@@ -1,6 +1,11 @@
 ---
-title: DateTime
+icon: octicons/calendar-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-calendar-24:</span> 
+DateTime
+</h1>
 
 An Object representing a date and time.
 

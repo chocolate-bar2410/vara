@@ -1,7 +1,11 @@
 ---
-title: fs
+icon: octicons/file-directory-16
 ---
 
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-file-directory-24:</span> 
+fs
+</h1>
 Vara's library for managing the file system.
 
 ```luau

@@ -1,6 +1,11 @@
 ---
-title: media
+icon: octicons/triangle-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-triangle-24:</span> 
+media
+</h1>
 
 Vara's library for processing media files.
 

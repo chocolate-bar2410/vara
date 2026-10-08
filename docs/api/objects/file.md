@@ -1,7 +1,11 @@
 ---
-title: File
+icon: octicons/file-16
 ---
 
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-file-24:</span> 
+File
+</h1>
 An object representing a file
 
 ## properties

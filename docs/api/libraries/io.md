@@ -1,6 +1,11 @@
 ---
-title: io
+icon: octicons/terminal-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-terminal-24:</span> 
+io
+</h1>
 
 Vara's library for handling input/output.
 

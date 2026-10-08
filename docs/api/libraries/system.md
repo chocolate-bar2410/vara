@@ -1,6 +1,11 @@
 ---
-title: system
+icon: octicons/cpu-16
 ---
+
+<h1 class = "API-header" markdown> 
+<span class="API-icon" markdown>:octicons-cpu-24:</span> 
+system
+</h1>
 
 Vara's library for accessing system data.
 
