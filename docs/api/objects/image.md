@@ -9,6 +9,8 @@ Image
 
 An object representing a image.  
 
+---
+
 ## properties
 
 <h3 markdown>Data<span class="API-type"> : buffer</span></h3>
@@ -26,6 +28,8 @@ The height of the image in pixels.
 <h3 markdown>Channels<span class="API-type"> : number</span></h3>
 
 How many colour channels the image has.  
+
+---
 
 ## methods
 
@@ -123,11 +127,16 @@ Image:RemoveAlpha() : Image
 Removes the alpha channel of the image.  
 Treated as a no-op if the image does not have a alpha channel.  
 Returns itself.  
+
+---
+
 ## metamethods
 
 <h3 markdown>__tostring<span class="API-type"> -> string </span></h3>
 
 Converts the image into a string in the format `image [Width]x[Height]`
+
+---
 
 ## types
 

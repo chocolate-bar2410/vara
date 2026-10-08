@@ -26,6 +26,8 @@ local timestamp = chrono.FromUniversal({
 print(timestamp:Humanise())
 ```
 
+---
+
 ## properties
 
 <h3 markdown>TimeOffset<span class="API-type"> : number</span></h3>
@@ -59,6 +61,9 @@ The ammount of Seconds.
 <h3 markdown>Millisecond<span class="API-type"> : number</span></h3>
 
 The ammount of Milliseconds.
+
+
+---
 
 ## methods
 
@@ -97,6 +102,9 @@ DateTime:ToApacheLog(self): string
 
 Formats the datetime as an Apache Log timestamp.
 
+
+
+---
 
 ## metamethods
 

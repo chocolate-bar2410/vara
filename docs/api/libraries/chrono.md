@@ -25,6 +25,8 @@ print(`Apache:   {timestamp:ToApacheLog()}`)
 !!! danger
     functions relating to timezones only work on windows, timezones for unix systems have not been implemented yet
 
+---
+
 ## functions
 
 <h3 markdown> Now <span class="API-type"> -> DateTime </span></h3>
@@ -56,6 +58,8 @@ Constructs a DateTime using a table of parameters in the local timezone.
 chrono.TimezoneOffset() : number
 ```
 returns the current timezone offset in hours.
+
+---
 
 ## types
 

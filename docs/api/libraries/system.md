@@ -9,6 +9,8 @@ system
 
 Vara's library for accessing system data.
 
+---
+
 ## fields
 <h3 markdown>Os<span class="API-type"> : "linux" | "macos" | "windows" </span></h3>
 
@@ -67,6 +69,8 @@ The environment variables declared by the system and a optional .env file.
 Command line arguments passed into the program.
 
 
+---
+
 ## functions
 
 <h3 markdown>ProcessorCount<span class="API-type"> -> number </span></h3>
@@ -86,6 +90,8 @@ The ammount of physical memory being used up by the process.
 system.VirtualMemoryUsage() : number
 ```
 The ammount of virtual memory being used up by the process.
+
+---
 
 ## types
 

@@ -20,6 +20,8 @@ local fileContents = fs.Read(path)
 print(fileContents)
 ```
 
+---
+
 ## functions
 
 <h3 markdown>Write<span class="API-type"> -> () </span></h3>

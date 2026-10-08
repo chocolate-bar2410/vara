@@ -25,6 +25,8 @@ const lineRead = io.Read(readBytes)
 io.Write(`read 256 bytes: {lineRead}\n`)
 ```
 
+---
+
 ## functions
 
 <h3 markdown> Write <span class="API-type"> -> () </span></h3>

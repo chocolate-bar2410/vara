@@ -9,6 +9,8 @@ Directory
 
 An object representing a file directory.
 
+---
+
 ## properties
 
 <h3 markdown>Path<span class="API-type"> : string</span></h3>
@@ -30,6 +32,8 @@ The time the directory was modified.
 <h3 markdown>Exists<span class="API-type"> : boolean</span></h3>
 
 Whether or not the directory exists yet.
+
+---
 
 ## methods
 
@@ -60,6 +64,8 @@ Directory:Walk() : () -> File | Directory
 ```
 
 Returns an non recursive iterator that walks through every file and directory in that directory.
+
+---
 
 ## metamethods
 

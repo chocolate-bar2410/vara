@@ -20,6 +20,8 @@ print(data.hello)
 print(data.testing)
 ```
 
+---
+
 ## functions
 
 <h3 markdown>Encode<span class="API-type"> -> string </span></h3>
@@ -39,6 +41,8 @@ serde.Decode(
 ): unknown
 ```
 Decode the data provided from a specified file format into luau values.
+
+---
 
 ## types
 <h3 markdown>SerdeFormat</h3>

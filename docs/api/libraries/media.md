@@ -19,6 +19,8 @@ fs.Write("./demo_scripts/images/basn2c16.qoi",image:Encode("QOI"))
 
 ```
 
+---
+
 ## functions
 
 <h3 markdown>Image<span class="API-type"> -> Image </span></h3>

@@ -8,6 +8,8 @@ File
 </h1>
 An object representing a file
 
+---
+
 ## properties
 
 <h3 markdown>Path<span class="API-type"> : string</span></h3>
@@ -37,6 +39,8 @@ Whether or not the file exists yet.
 <h3 markdown>Extension<span class="API-type"> : boolean</span></h3>
 
 The file extension of the file.
+
+---
 
 ## methods
 
@@ -79,6 +83,8 @@ File:Copy(path: string) : File
 ```
 Copies the file to a new location.
 Returns the copied file.
+
+---
 
 ## metamethods
 

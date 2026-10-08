@@ -9,6 +9,8 @@ Audio
 
 An Object representing an audio.  
 
+---
+
 ## properties
 <h3 markdown>Data<span class="API-type"> : {buffer}</span></h3>
 
@@ -30,6 +32,8 @@ The duration of the audio in seconds.
 <h3 markdown>Channels<span class="API-type"> : number</span></h3>
 
 The ammount of audio channels in the audio.
+
+---
 
 ## methods
 
@@ -196,11 +200,15 @@ Image:Compress(config: AudioCompressConfig): Audio
 
 Compresses the dynamic range of the audio, making quiet sounds louder and loud sounds quieter.
 
+---
+
 ## metamethods
 
 <h3 markdown>__tostring<span class="API-type"> -> string </span></h3>
 
 Converts the audio into a string in the format `audio [Channels]ch [SampleRate]Hz [Frames] frames`
+
+---
 
 ## types
 
