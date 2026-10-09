@@ -109,29 +109,17 @@ Formats the datetime as an Apache Log timestamp.
 ## metamethods
 
 <h3 markdown>__tostring<span class="API-type"> -> string </span></h3>
-```luau
-function __tostring() : string
-```
 
 Converts the data to a string, formatted according to ToISO8601.
 
 <h3 markdown>__eq<span class="API-type"> -> boolean </span></h3>
-```luau
-function __eq(other : DateTime) : boolean
-```
 
 Checks if 2 datetimes are equivalent.
 
 <h3 markdown>__le<span class="API-type"> -> boolean </span></h3>
-```luau
-function __le(other : DateTime) : boolean
-```
 
 Checks if the datetime is earlier than or equivalent to another datetime.
 
 <h3 markdown>__lt<span class="API-type"> -> boolean </span></h3>
-```luau
-function __lt(other : DateTime) : boolean
-```
 
 Checks if the datetime is earlier than another datetime.
