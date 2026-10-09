@@ -69,35 +69,35 @@ The ammount of Milliseconds.
 
 <h3 markdown>ToISO8601<span class="API-type"> -> string </span></h3>
 ```luau
-DateTime:ToISO8601(self): string
+DateTime:ToISO8601() : string
 ```
 
 Formats the datetime according to the ISO8601 standard.
 
 <h3 markdown>ToRFC2822<span class="API-type"> -> string </span></h3>
 ```luau
-DateTime:ToRFC2822(self): string
+DateTime:ToRFC2822() : string
 ```
 
 Formats the datetime according to the RFC2822 standard.
 
 <h3 markdown>Humanise<span class="API-type"> -> string </span></h3>
 ```luau
-DateTime:Humanise(self): string
+DateTime:Humanise() : string
 ```
 
 Formats the datetime so thats its human readable.
 
 <h3 markdown>ToZH<span class="API-type"> -> string </span></h3>
 ```luau
-DateTime:ToZH(self): string
+DateTime:ToZH() : string
 ```
 
 Formats the datetime so that its human readable in mandarin.
 
 <h3 markdown>toApacheLog<span class="API-type"> -> string </span></h3>
 ```luau
-DateTime:ToApacheLog(self): string
+DateTime:ToApacheLog() : string
 ```
 
 Formats the datetime as an Apache Log timestamp.
@@ -110,28 +110,28 @@ Formats the datetime as an Apache Log timestamp.
 
 <h3 markdown>__tostring<span class="API-type"> -> string </span></h3>
 ```luau
-function __tostring(): string
+function __tostring() : string
 ```
 
 Converts the data to a string, formatted according to ToISO8601.
 
 <h3 markdown>__eq<span class="API-type"> -> boolean </span></h3>
 ```luau
-function __eq(other : DateTime): boolean
+function __eq(other : DateTime) : boolean
 ```
 
 Checks if 2 datetimes are equivalent.
 
 <h3 markdown>__le<span class="API-type"> -> boolean </span></h3>
 ```luau
-function __le(other : DateTime): boolean
+function __le(other : DateTime) : boolean
 ```
 
 Checks if the datetime is earlier than or equivalent to another datetime.
 
 <h3 markdown>__lt<span class="API-type"> -> boolean </span></h3>
 ```luau
-function __lt(other : DateTime): boolean
+function __lt(other : DateTime) : boolean
 ```
 
 Checks if the datetime is earlier than another datetime.
