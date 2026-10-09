@@ -1,12 +1,12 @@
 :root {
     --doc-black:  oklch(0.00 0 0);
-    --doc-grey-1: oklch(0.07 0.0328 318.87);
-    --doc-grey-2: oklch(0.12 0.0328 318.87);
-    --doc-grey-3: oklch(0.20 0.0328 318.87);
-    --doc-grey-4: oklch(0.30 0.0328 318.87);
-    --doc-grey-5: oklch(0.70 0.0328 318.87);
-    --doc-grey-6: oklch(0.90 0.0328 318.87);
-    --doc-grey-7: oklch(0.93 0.0328 318.87);
+    --doc-grey-1: oklch(0.07 0.0328 10.15);
+    --doc-grey-2: oklch(0.12 0.0328 10.15);
+    --doc-grey-3: oklch(0.20 0.0328 10.15);
+    --doc-grey-4: oklch(0.30 0.0328 10.15);
+    --doc-grey-5: oklch(0.70 0.0328 10.15);
+    --doc-grey-6: oklch(0.90 0.0328 10.15);
+    --doc-grey-7: oklch(0.93 0.0328 10.15);
     --doc-white:  oklch(1.00 0 0);
 }
 
@@ -19,6 +19,12 @@
     --doc-text-muted: var(--doc-grey-5);
 
     --doc-border: var(--doc-grey-4);
+
+    --doc-gradient: linear-gradient(
+        0deg,
+        var(--doc-bg-light) -40%,
+        var(--doc-bg) 100%
+    );
 }
 
 [data-md-color-scheme="vara-light"] {
@@ -30,5 +36,10 @@
     --doc-text-muted: var(--doc-grey-4);
 
     --doc-border: var(--doc-bg);
+
+    --doc-gradient: linear-gradient(
+        var(--doc-bg-dark) -50%,
+        var(--doc-bg) 100%
+    );
 }
 
