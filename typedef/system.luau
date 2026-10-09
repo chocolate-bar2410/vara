@@ -69,11 +69,11 @@ module.Endian = (nil :: unknown) :: "big" | "little"
     Language preferences set on the user's system.
 ]=]
 module.LanguagePreferences = (nil :: unknown) :: {
-    time : {string},
-    monetary : {string},
-    collation : {string},
-    message : {string},
-    numeric : {string},
+    Time : {string},
+    Monetary : {string},
+    Collation : {string},
+    Message : {string},
+    Numeric : {string},
 }
 
 --[=[

@@ -34,11 +34,11 @@ fn get_language_preferences(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
 
     TableBuilder::new(context.clone())?
         .add_values(vec![
-            ("time",context.create_sequence_from(time_langs)?),
-            ("monetary",context.create_sequence_from(monetary_langs)?),
-            ("collation",context.create_sequence_from(collation_langs)?),
-            ("message",context.create_sequence_from(message_langs)?),
-            ("numeric",context.create_sequence_from(numeric_langs)?),
+            ("Time",context.create_sequence_from(time_langs)?),
+            ("Monetary",context.create_sequence_from(monetary_langs)?),
+            ("Collation",context.create_sequence_from(collation_langs)?),
+            ("Message",context.create_sequence_from(message_langs)?),
+            ("Numeric",context.create_sequence_from(numeric_langs)?),
             ])?
         .build_readonly()
 }
