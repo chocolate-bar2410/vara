@@ -1,0 +1,36 @@
+[data-md-color-scheme="vara-dark"], 
+[data-md-color-scheme="vara-light"]{
+    --md-default-fg-color:              var(--doc-text);
+    --md-default-fg-color--light:       var(--doc-text-muted);
+    --md-default-fg-color--lightest:    var(--doc-text-muted2);
+
+    --md-default-bg-color: var(--doc-bg-dark);
+    --md-default-bg-color--light: var(--doc-bg);
+    --md-default-bg-color--lightest: var(--doc-bg-light);
+
+    --md-primary-bg-color: var(--doc-text);
+    --md-primary-bg-color--light: var(--doc-text);
+    --md-primary-bg-color--dark: var(--doc-text);
+
+    --md-primary-fg-color: var(--doc-bg-dark);
+    --md-primary-fg-color--light: var(--doc-bg-dark);
+    --md-primary-fg-color--dark: var(--doc-bg-dark);
+
+    --md-typeset-color: var(--doc-text);
+
+    /* code blocks */
+
+    --md-code-fg-color: var(--doc-text);
+    --md-code-bg-color: var(--doc-bg);
+
+    --md-code-bg-color--light: var(--doc-bg);
+    --md-code-bg-color--lighter: var(--doc-bg);
+
+    --doc-line-numbers: var(--doc-grey-4);
+    --md-code-hl-variable-color: var(--doc-text);
+
+    --md-code-hl-name-color: var(--doc-grey-3);
+    --md-code-hl-operator-color: var(--doc-grey-5);
+    --md-code-hl-punctuation-color: var(--doc-grey-5);
+    --md-code-hl-comment-color: var(--doc-grey-5);
+}

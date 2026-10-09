@@ -37,7 +37,9 @@ extra_css = [
   "stylesheets/api_reference.css",
   "stylesheets/page.css",
   "stylesheets/text.css",
-  "stylesheets/homepage.css"
+  "stylesheets/homepage.css",
+  "stylesheets/theme.css",
+  "stylesheets/colours.css",
 ]
 # extra_javascript = ["javascripts/extra.js"]
 
@@ -93,13 +95,17 @@ toggle.name = "Switch to light mode"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: light)"
-scheme = "default"
+scheme = "vara-light"
+primary = "custom"
+accent = "custom"
 toggle.icon = "lucide/sun"
 toggle.name = "Switch to dark mode"
 
 [[project.theme.palette]]
 media = "(prefers-color-scheme: dark)"
-scheme = "slate"
+scheme = "vara-dark"
+primary = "custom"
+accent = "custom"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
 

@@ -1,0 +1,33 @@
+:root {
+    --doc-black: hsl(0,0%,0%);
+    --doc-grey-1: hsl(0, 0%, 5%);
+    --doc-grey-2: hsl(0, 0%, 10%);
+    --doc-grey-3: hsl(0, 0%, 15%);
+    --doc-grey-4: hsl(0, 0%, 20%);
+    --doc-grey-5: hsl(0, 0%, 25%);
+    --doc-grey-6: hsl(0, 0%, 50%);
+    --doc-grey-7: hsl(0, 0%, 90%);
+    --doc-grey-8: hsl(0, 0%, 95%);
+    --doc-white: hsl(0, 0%, 100%);
+}
+
+[data-md-color-scheme="vara-dark"]{
+    --doc-bg-dark: var(--doc-grey-1);
+    --doc-bg: var(--doc-grey-2);
+    --doc-bg-light: var(--doc-grey-3);
+
+    --doc-text: var(--doc-grey-7);
+    --doc-text-muted: var(--doc-grey-6);
+    --doc-text-muted2: var(--doc-grey-5);
+}
+
+[data-md-color-scheme="vara-light"] {
+    --doc-bg-dark: var(--doc-grey-8);
+    --doc-bg: var(--doc-grey-7);
+    --doc-bg-light: var(--doc-grey-6);
+
+    --doc-text: var(--doc-grey-3);
+    --doc-text-muted: var(--doc-grey-4);
+    --doc-text-muted2: var(--doc-grey-5);
+}
+
