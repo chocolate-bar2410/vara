@@ -18,6 +18,10 @@
     padding: 0 5vh;
 }
 
+.md-footer-meta{
+    background-color: var(--md-default-bg-color);
+}
+
 @media screen and (max-width: 80em) {
     .md-grid {
         padding: 0 0rem;
