@@ -2,9 +2,9 @@
 # site_url = "https://www.example.com/"
 site_name = "vara"
 site_description = "Documentation for vara"
-# site_author = "Your name"
+site_author = "chocolate_bar2410"
 
-# copyright = "Copyright &copy; 2026 Your name"
+copyright = "Copyright &copy; 2026 chocolate_bar2410"
 
 repo_url = "https://github.com/chocolate-bar2410/vara"
 repo_name = "chocolate-bar2410/vara"
@@ -108,6 +108,9 @@ primary = "custom"
 accent = "custom"
 toggle.icon = "lucide/moon"
 toggle.name = "Switch to system preference"
+
+[project.extra]
+generator = false
 
 # [[project.extra.social]]
 # icon = "fontawesome/brands/github"
