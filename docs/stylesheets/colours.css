@@ -33,4 +33,14 @@
     --md-code-hl-operator-color:        var(--doc-text-muted);
     --md-code-hl-punctuation-color:     var(--doc-text-muted);
     --md-code-hl-comment-color:         var(--doc-text-muted);
+
+    --md-code-hl-special-color: var(--doc-red);
+    --md-code-hl-function-color: var(--doc-red);
+    --md-code-hl-constant-color: var(--doc-red);
+
+    --md-code-hl-generic-color: var(--doc-blue);
+
+    --md-code-hl-number-color: var(--doc-purple);
+    --md-code-hl-keyword-color: var(--doc-red);
+    --md-code-hl-string-color: var(--doc-green);
 }

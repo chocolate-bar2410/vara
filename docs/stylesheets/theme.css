@@ -8,6 +8,11 @@
     --doc-grey-6: oklch(0.90 0.0328 10.15);
     --doc-grey-7: oklch(0.93 0.0328 10.15);
     --doc-white:  oklch(1.00 0 0);
+
+    --doc-red: oklch(0.6335 0.1234 11.22);
+    --doc-purple: oklch(0.6335 0.1234 290.03);
+    --doc-green: oklch(0.6335 0.1234 160.94);
+    --doc-blue: oklch(0.6335 0.1234 236.62);
 }
 
 [data-md-color-scheme="vara-dark"]{
