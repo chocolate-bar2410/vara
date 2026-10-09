@@ -6,15 +6,12 @@ hide:
 
 <div class="homepage-main" markdown>
 <div class="homepage-inner" markdown>
-# Vara
-
-Make Luau feel like it belongs on your desktop.
+# Vara { .homepage-title } 
 
 Vara is a lightweight runtime that provides native system access, media processing and resource management.<br>
-Build native applications without the overhead of web runtimes.<br><br>
+Build applications without the overhead of web runtimes.<br><br>
 Turn luau into a language for desktop development.
 
-install vara
 === "ember"
     ```
     embr tool add chocolate-bar2410/vara
