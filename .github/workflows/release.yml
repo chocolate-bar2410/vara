@@ -12,17 +12,17 @@ jobs:
     if: github.repository == "chocolate-bar2410/vara"
     strategy:
       fail-fast: false
-    matrix:
-      include:
-        - name: windows-x86_64
-          os: windows-latest
-          binary: my-app.exe
-        - name: macos
-          os: macos-latest
-          binary: my-app
-        - name: linux-x86_64
-          os: ubuntu-latest
-          binary: my-app
+      matrix:
+        include:
+          - name: windows-x86_64
+            os: windows-latest
+            binary: my-app.exe
+          - name: macos
+            os: macos-latest
+            binary: my-app
+          - name: linux-x86_64
+            os: ubuntu-latest
+            binary: my-app
     runs-on: ${{ matrix.os }}
     
     steps:
@@ -37,6 +37,7 @@ jobs:
 
   release:
     needs: build
+    runs-on: ubuntu-latest
     if: github.repository == "chocolate-bar2410/vara"
    
     permissions:
