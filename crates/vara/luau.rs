@@ -47,6 +47,12 @@ impl Runtime {
         Ok(())
     }
 
+
+    pub fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
+        self.vm.load(bytecode).exec()?;
+        Ok(())
+    }
+
     pub fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         let file_contents = vara_stdlib::files::read_file(file_path)?;
 

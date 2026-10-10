@@ -2,7 +2,7 @@ use clap::builder::styling;
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 
-use crate::luau;
+use crate::{compile, luau};
 use crate::setup;
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3, 0x7d, 0xf4).into()));
@@ -42,6 +42,7 @@ enum Commands {
     #[command(trailing_var_arg = true)]
     Run(RunArgs),
     Setup,
+    Compile(CompileArgs)
 }
 
 #[derive(clap::Args)]
@@ -50,6 +51,11 @@ struct RunArgs {
 
     #[arg(trailing_var_arg = true, allow_hyphen_values = true)]
     args: Vec<String>,
+}
+#[derive(clap::Args)]
+
+struct CompileArgs {
+    path: PathBuf,
 }
 
 pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
@@ -71,6 +77,11 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
                 Ok(()) => Ok(()),
                 Err(err) => Err(format!("failed to setup luaurc:\n{}",err).into())
             }
+        }
+
+        Some(Commands::Compile(args)) => {
+            let path = args.path;
+            compile::compile(path).await
         }
 
         None => Ok(CLI::command().print_help()?),
