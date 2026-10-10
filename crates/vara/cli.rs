@@ -39,9 +39,12 @@ struct CLI {
 
 #[derive(Subcommand)]
 enum Commands {
+    /// runs a luau script
     #[command(trailing_var_arg = true)]
     Run(RunArgs),
+    /// setups up vara
     Setup,
+    /// compiles script into executable
     Compile(CompileArgs)
 }
 
