@@ -1,0 +1,57 @@
+name: release
+on:
+  push:
+    tags: 
+      - "v*"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    if: github.repository == "chocolate-bar2410/vara"
+    strategy:
+      fail-fast: false
+    matrix:
+      include:
+        - name: windows-x86_64
+          os: windows-latest
+          binary: my-app.exe
+        - name: macos
+          os: macos-latest
+          binary: my-app
+        - name: linux-x86_64
+          os: ubuntu-latest
+          binary: my-app
+    runs-on: ${{ matrix.os }}
+    
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: upload binary
+      uses: actions/upload-artifact@v4
+      with:
+        name: ${{ matrix.name }}
+        path: target/release/${{ matrix.binary }}
+        if-no-files-found: error
+
+  release:
+    needs: build
+    if: github.repository == "chocolate-bar2410/vara"
+   
+    permissions:
+      contents: write
+
+    strategy:
+      fail-fast: false
+    steps:
+    - uses: actions/download-artifact@v4
+      with: 
+        path: dist
+        merge-multiple: false
+    
+    - name: Create release
+      uses: softprops/action-gh-release@v2
+      with:
+        files: dist/**/*
+        generate_release_notes: true
