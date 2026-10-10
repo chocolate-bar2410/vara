@@ -31,8 +31,8 @@ Intentionally out of scope for vara
 
 - [x] CLI
     - [x] run
-    - [ ] build
-- [ ] standard library
+    - [x] build
+- [x] standard library
     - [x] io
     - [x] file system
         - [x] directories
@@ -49,6 +49,8 @@ Intentionally out of scope for vara
 ### v0.2.0
 - [ ] CLI
     - [ ] test
+    - [ ] build
+        - [ ] dependency bundling
 - [ ] standard library
     - [ ] networking
     - [ ] task
