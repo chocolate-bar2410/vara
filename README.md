@@ -25,6 +25,11 @@ Intentionally out of scope for vara
 - manipulating roblox model/place files (use lune) 
 - web development (maybe in the future)
 
+## community
+If you have any questions, suggestions or just want to discuss this project, vara has a thread in the [roblox OSS](https://discord.gg/8XGfhF2R2) discord server.  
+
+If you encounter a bug, vunerability or some other issue, please create an issue in this repository.
+
 ## todo
 
 ### v0.1.0
