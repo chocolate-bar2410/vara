@@ -9,7 +9,7 @@ permissions:
 
 jobs:
   build:
-    if: github.repository == "chocolate-bar2410/vara"
+    if: github.repository == 'chocolate-bar2410/vara'
     strategy:
       fail-fast: false
       matrix:
@@ -42,7 +42,7 @@ jobs:
   release:
     needs: build
     runs-on: ubuntu-latest
-    if: github.repository == "chocolate-bar2410/vara"
+    if: github.repository == 'chocolate-bar2410/vara'
    
     permissions:
       contents: write
