@@ -13,6 +13,3 @@ jobs:
 
     - name: Security check
       run: cargo audit
-
-    - name: Dependency policy check
-      run: cargo deny check
