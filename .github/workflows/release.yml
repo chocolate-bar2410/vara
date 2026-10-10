@@ -16,27 +16,41 @@ jobs:
         include:
           - name: windows-x86_64
             os: windows-latest
-            binary: my-app.exe
+            suffix: windows-x86_64.exe
           - name: macos
             os: macos-latest
-            binary: my-app
+            suffix: macos-x86_64
           - name: linux-x86_64
             os: ubuntu-latest
-            binary: my-app
+            suffix: linux-x86_64
     runs-on: ${{ matrix.os }}
     
     steps:
-    - uses: actions/checkout@v4
+    - uses: actions/checkout@v7
     - uses: dtolnay/rust-toolchain@stable
 
     - name: build files
       run: cargo build --release
 
+    - name: Rename binary with version
+      shell: bash
+      run: |
+        VERSION="${{ github.ref_name }}"
+        NEW_NAME="vara-$VERSION-${{ matrix.suffix }}"
+
+        if [ -f "target/release/vara.exe" ]; then
+          mv target/release/vara.exe target/release/$NEW_NAME
+        else
+          mv target/release/vara target/release/$NEW_NAME
+        fi
+
+        echo "RELEASE_BINARY=$NEW_NAME" >> $GITHUB_ENV
+
     - name: upload binary
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@v7
       with:
         name: ${{ matrix.name }}
-        path: target/release/${{ matrix.binary }}
+        path: target/release/${{ env.RELEASE_BINARY }}
         if-no-files-found: error
 
   release:
@@ -48,14 +62,14 @@ jobs:
       contents: write
 
     steps:
-    - uses: actions/download-artifact@v4
+    - uses: actions/download-artifact@v8
       with: 
         path: dist
         pattern: "*"
         merge-multiple: true
     
     - name: Create release
-      uses: softprops/action-gh-release@v2
+      uses: softprops/action-gh-release@v3
       with:
         files: dist/*
         generate_release_notes: true
