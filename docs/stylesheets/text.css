@@ -11,3 +11,9 @@
 .md-typeset hr {
     border-color: var(--doc-border);
 }
+
+.md-typeset .admonition,
+.md-typeset details.admonition {
+    color: var(--md-typeset-color);
+    font-size: 0.8rem;
+}

@@ -29,7 +29,14 @@ nav = [
         "api/objects/image.md",
         "api/objects/audio.md",
       ]}
-    ]}
+    ]},
+  { "CLI" = [
+    "cli/index.md",
+    "cli/run.md",
+    "cli/setup.md",
+    "cli/compile.md",
+  ]}
+
 ]
 
 
