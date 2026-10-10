@@ -128,7 +128,7 @@ module.Env = (nil :: unknown) :: {[string] : string}
 
     Command line arguments passed into the program.
 ]=]
-module.Args = (nil :: unknown) :: {[string] : string}
+module.Args = (nil :: unknown) :: {[number] : string}
 
 --[=[
 	@within system

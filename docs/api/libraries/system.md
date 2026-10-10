@@ -64,7 +64,7 @@ The desktop environment the system is using.
 
 The environment variables declared by the system and a optional .env file.
 
-<h3 markdown>Args<span class="API-type"> : {[string] : string} </span></h3>
+<h3 markdown>Args<span class="API-type"> : {[number] : string} </span></h3>
 
 Command line arguments passed into the program.
 
