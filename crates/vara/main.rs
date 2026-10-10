@@ -1,3 +1,6 @@
+#![deny(clippy::unwrap_in_result)]
+#![deny(clippy::unwrap_used)]
+
 use std::process::ExitCode;
 
 mod cli;

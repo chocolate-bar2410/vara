@@ -39,7 +39,7 @@ pub async fn compile(path : PathBuf) -> Result<(),Box<dyn std::error::Error>>{
 
     async_fs::write(format!("./{}.exe",filename), source).await?;
 
-    println!("{}",format!("compiled {} successfully",path.display()));
+    println!("compiled {} successfully",path.display());
     Ok(())
 }
 
@@ -81,7 +81,7 @@ pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Erro
     let bytecode = contents[(size_start - bytecode_size)..size_start].to_vec();
 
     let args = env::args().skip(1).collect::<Vec<_>>();
-    let runtime = Runtime::new(args).expect("failed to setup runtime exe");
+    let runtime = Runtime::new(args)?;
 
     runtime.run_bytecode(bytecode)?;
 

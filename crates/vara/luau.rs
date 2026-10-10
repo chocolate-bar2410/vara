@@ -12,7 +12,7 @@ pub struct Runtime {
 
 impl Runtime {
     pub fn new(args: Vec<String>) -> Result<Self, Box<dyn std::error::Error>> {
-        let lua = Lua::new_with(StdLib::ALL, LuaOptions::default()).unwrap();
+        let lua = Lua::new_with(StdLib::ALL, LuaOptions::default())?;
 
         let mut runtime = Self { vm: lua,args: args };
 

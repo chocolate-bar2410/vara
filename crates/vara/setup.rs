@@ -39,7 +39,7 @@ async fn get_luaurc_contents() -> Result<serde_json::Value, Box<dyn std::error::
             Err(err) => Err(Box::new(err)),
         }
     } else {
-        return Ok(serde_json::Value::Object(serde_json::Map::new()));
+        Ok(serde_json::Value::Object(serde_json::Map::new()))
     }
 }
 

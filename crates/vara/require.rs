@@ -129,7 +129,6 @@ impl mlua::luau::Require for Resolver {
             .as_file()
             .expect("tried to require a directory");
 
-        self.loader
-            .load(context, &self.relative.as_path(), resolved)
+        self.loader.load(context, self.relative.as_path(), resolved)
     }
 }
