@@ -1,4 +1,4 @@
-# Vara
+# Vara [![CI pipeline](https://github.com/chocolate-bar2410/vara/actions/workflows/CI.yml/badge.svg)](https://github.com/chocolate-bar2410/vara/actions/workflows/CI.yml)
 
 Vara is a standalone runtime for app development in luau. It is designed so [Luau](https://luau.org/) developers have access to all the features necessary to build a application in a way thats familar to luau developers. Including image and audio processing, file system and resource management, date and time handling and system access.
 
