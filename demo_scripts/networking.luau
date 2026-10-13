@@ -1,5 +1,6 @@
 local net = require("@vara/net")
+local pretty_table = require("./pretty_table")
 
-local result,status = net.HttpClient().GetAsync("http://example.com")
+local response = net.HttpClient():GetAsync("https://example.com")
 
-print(buffer.tostring(result))
+print(response)

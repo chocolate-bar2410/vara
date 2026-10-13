@@ -515,10 +515,23 @@ declare extern type Directory with
 end
 
 --[=[
+	@class HttpResponse
+
+    A object that sends http requests.
+]=]
+declare extern type HttpResponse with
+    Status: number
+    Body: buffer
+    Ok: boolean
+    Headers: {[string]: string}
+    Url: string
+end
+
+--[=[
 	@class HttpClient
 
     A object that sends http requests.
 ]=]
 declare extern type HttpClient with
-    function GetAsync(self,url: string) : (buffer,number)
+    function GetAsync(self,url: string) : HttpResponse
 end
