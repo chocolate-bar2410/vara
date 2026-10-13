@@ -1,5 +1,4 @@
 use reqwest::blocking::Client;
-use reqwest::blocking::ClientBuilder;
 
 use mlua::ExternalResult;
 use url::Url;
