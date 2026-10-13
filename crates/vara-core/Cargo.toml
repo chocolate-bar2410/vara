@@ -29,3 +29,4 @@ vara_util = { path = "../vara-util" }
 vara_files = { path = "../vara-files" }
 vara_chrono = { path = "../vara-chrono" }
 vara_media = { path = "../vara-media" }
+hyper = { version = "1.12.0", features = ["client", "http1"] }
