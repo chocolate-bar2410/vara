@@ -1,3 +1,11 @@
 [workspace]
 resolver = "2"
-members = ["crates/vara", "crates/vara-core","crates/vara-media","crates/vara-chrono","crates/vara-files", "crates/vara-util"]
+members = [
+    "crates/vara",
+    "crates/vara-core",
+    "crates/vara-media",
+    "crates/vara-chrono",
+    "crates/vara-files",
+    "crates/vara-net",
+    "crates/vara-util"
+]

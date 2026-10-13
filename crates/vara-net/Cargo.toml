@@ -1,0 +1,21 @@
+[package]
+name = "vara_net"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+mlua = { version = "0.12.1", features = [
+    "async",
+    "luau-jit",
+    "macros",
+] }
+
+
+vara_util = { path = "../vara-util" }
+
+http-body-util = "0.1.5"
+url = "2.5.8"
+reqwest = { version = "0.13.5", features = ["blocking"] }

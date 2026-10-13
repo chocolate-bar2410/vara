@@ -1,7 +1,8 @@
-
 use vara_util::table_builder::TableBuilder;
 
-use crate::stdlib::httpclient::HttpClient;
+use httpclient::HttpClient;
+
+mod httpclient;
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
