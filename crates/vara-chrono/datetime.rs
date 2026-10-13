@@ -395,7 +395,7 @@ impl mlua::UserData for DateTime {
         fields.add_field_method_get("Day", |_, this| Ok(this.days));
 
         fields.add_field_method_get("Hour", |_, this| Ok(this.hours));
-        fields.add_field_method_get("minute", |_, this| Ok(this.minutes));
+        fields.add_field_method_get("Minute", |_, this| {Ok(this.minutes)});
         fields.add_field_method_get("Second", |_, this| Ok(this.seconds));
         fields.add_field_method_get("Millisecond", |_, this| Ok(this.milliseconds));
 
