@@ -1549,6 +1549,7 @@ dependencies = [
  "serde",
  "serde_json",
  "vara_core",
+ "vara_media",
  "vara_util",
 ]
 
@@ -1568,6 +1569,22 @@ dependencies = [
  "spin_on",
  "symphonia",
  "toml",
+ "vara_util",
+ "whoami",
+]
+
+[[package]]
+name = "vara_media"
+version = "0.1.0"
+dependencies = [
+ "dotenvy",
+ "hound",
+ "image",
+ "mlua",
+ "rusty_flac",
+ "serde",
+ "symphonia",
+ "vara_core",
  "vara_util",
  "whoami",
 ]

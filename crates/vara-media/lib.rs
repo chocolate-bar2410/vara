@@ -6,7 +6,7 @@ use symphonia::core::errors::Error as symphonia_error;
 
 use vara_util::table_builder::TableBuilder;
 
-use crate::stdlib as vara_stdlib;
+use vara_core::stdlib as vara_stdlib;
 use vara_stdlib::files::file_obj::File as vara_file;
 
 mod image_obj;

@@ -1,8 +1,7 @@
 use mlua::{AnyUserData, ExternalError};
 
-use crate::stdlib::media;
-use media::image_format::image_format_fromstring;
-use media::image_interpolation as interpolation;
+use crate::image_format::image_format_fromstring;
+use crate::image_interpolation as interpolation;
 
 
 #[derive(Clone,mlua::UserData)]

@@ -1,4 +1,4 @@
-use crate::stdlib::media::audio_obj::Audio;
+use crate::audio_obj::Audio;
 
 use std::f32::consts::PI;
 

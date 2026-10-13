@@ -1,4 +1,4 @@
-use crate::stdlib::media::image_obj::Image;
+use crate::image_obj::Image;
 
 use std::f32::consts::PI;
 

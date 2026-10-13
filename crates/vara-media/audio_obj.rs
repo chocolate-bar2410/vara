@@ -4,7 +4,7 @@ use mlua::LuaSerdeExt;
 
 use serde::Deserialize;
 
-use crate::stdlib::media::audio_interpolation;
+use crate::audio_interpolation;
 
 #[derive(mlua::UserData,Clone)]
 pub struct Audio{
