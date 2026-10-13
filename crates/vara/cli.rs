@@ -2,7 +2,9 @@ use clap::builder::styling;
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
 
-use crate::{compile, luau};
+use vara_core::runtime::luau as vara_runtime;
+
+use crate::compile;
 use crate::setup;
 fn get_style() -> styling::Styles {
     let accent = styling::Style::new().fg_color(Some(styling::RgbColor(0xb3, 0x7d, 0xf4).into()));
@@ -68,7 +70,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
         Some(Commands::Run(args)) => {
             let path = args.path;
             let trailing_args = args.args;
-            let mut current = luau::Runtime::new(trailing_args)?;
+            let mut current = vara_runtime::Runtime::new(trailing_args)?;
             
             match current.run(&path) {
                 Ok(()) => Ok(()),

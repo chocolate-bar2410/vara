@@ -3,10 +3,7 @@ use std::time::UNIX_EPOCH;
 
 use mlua::ExternalError;
 
-use crate::stdlib as vara_stdlib;
-
-use vara_stdlib::files::file_obj::File as vara_file;
-use vara_stdlib::chrono as vara_chrono;
+use crate::file_obj::File as vara_file;
 use vara_chrono::datetime::DateTime as vara_datetime;
 
 use std::rc::Rc;

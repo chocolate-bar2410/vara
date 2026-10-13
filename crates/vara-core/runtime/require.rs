@@ -7,7 +7,7 @@ use vara_util::path::clean_path_and_make_absolute;
 use vara_util::path::relative_path_normalize;
 use vara_util::path::relative_path_parent;
 
-use crate::require_loader::RequireLoader;
+use crate::runtime::require_loader::RequireLoader;
 
 pub struct Resolver {
     relative: PathBuf,

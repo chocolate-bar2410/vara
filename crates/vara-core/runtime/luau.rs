@@ -1,9 +1,8 @@
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
 
-use vara_core::stdlib as vara_stdlib;
-
-use crate::require;
+use crate::stdlib as vara_stdlib;
+use crate::runtime::require;
 
 pub struct Runtime {
     vm: Lua,
@@ -24,9 +23,9 @@ impl Runtime {
 
     fn setup_standard_library(&mut self) -> Result<(), Box<dyn std::error::Error>> {
         let io_lib = vara_stdlib::stdio::get_module(&self.vm)?;
-        let fs_lib = vara_stdlib::files::get_module(&self.vm)?;
+        let fs_lib = vara_files::get_module(&self.vm)?;
         let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
-        let chrono_lib = vara_stdlib::chrono::get_module(&self.vm)?;
+        let chrono_lib = vara_chrono::get_module(&self.vm)?;
         let system_lib = vara_stdlib::system::get_module(&self.vm,&self.args)?;
         let media_lib = vara_media::get_module(&self.vm)?;
 
@@ -54,7 +53,7 @@ impl Runtime {
     }
 
     pub fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
-        let file_contents = vara_stdlib::files::read_file(file_path)?;
+        let file_contents = vara_files::read_file(file_path)?;
 
         let module_path =
             vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))

@@ -6,9 +6,6 @@ use std::time::UNIX_EPOCH;
 
 use mlua::ExternalError;
 
-use crate::stdlib as vara_stdlib;
-
-use vara_stdlib::chrono as vara_chrono;
 use vara_chrono::datetime::DateTime as vara_datetime;
 
 #[derive(mlua::UserData)]

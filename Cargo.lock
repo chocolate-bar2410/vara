@@ -951,12 +951,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "a89322df9ebe1c1578d689c92318e070967d1042b512afbe49518723f4e6d5cd"
 
 [[package]]
-name = "pin-utils"
-version = "0.1.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b870d8c151b6f2fb93e84a13146138f05d02ed11c7e7c54f8826aaaf7c9f184"
-
-[[package]]
 name = "piper"
 version = "0.2.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1239,15 +1233,6 @@ name = "smallvec"
 version = "1.15.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "8ed6a63f02c8539c91a8685a86f4099661ba3da017932f6ebbea6de3f0fa7c90"
-
-[[package]]
-name = "spin_on"
-version = "0.1.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "076e103ed41b9864aa838287efe5f4e3a7a0362dd00671ae62a212e5e4612da2"
-dependencies = [
- "pin-utils",
-]
 
 [[package]]
 name = "strength_reduce"
@@ -1549,7 +1534,15 @@ dependencies = [
  "serde",
  "serde_json",
  "vara_core",
- "vara_media",
+ "vara_files",
+ "vara_util",
+]
+
+[[package]]
+name = "vara_chrono"
+version = "0.1.0"
+dependencies = [
+ "mlua",
  "vara_util",
 ]
 
@@ -1558,19 +1551,26 @@ name = "vara_core"
 version = "0.1.0"
 dependencies = [
  "dotenvy",
- "hound",
- "image",
  "memory-stats",
  "mlua",
- "rusty_flac",
  "serde",
  "serde-saphyr",
  "serde_json",
- "spin_on",
- "symphonia",
  "toml",
+ "vara_chrono",
+ "vara_files",
+ "vara_media",
  "vara_util",
  "whoami",
+]
+
+[[package]]
+name = "vara_files"
+version = "0.1.0"
+dependencies = [
+ "mlua",
+ "vara_chrono",
+ "vara_util",
 ]
 
 [[package]]
@@ -1584,7 +1584,7 @@ dependencies = [
  "rusty_flac",
  "serde",
  "symphonia",
- "vara_core",
+ "vara_files",
  "vara_util",
  "whoami",
 ]

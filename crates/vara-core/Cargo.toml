@@ -8,16 +8,7 @@ path = "lib.rs"
 
 [dependencies]
 dotenvy = "0.15.7"
-hound = "3.5.1"
-image = { version = "0.25.10", default-features = false, features = [
-    "png",
-    "pnm",
-    "jpeg",
-    "bmp",
-    "qoi",
-    "webp",
-    "tiff",
-] }
+
 memory-stats = "1.2.0"
 mlua = { version = "0.12.1", features = [
     "async",
@@ -25,13 +16,16 @@ mlua = { version = "0.12.1", features = [
     "serde",
     "macros",
 ] }
-rusty_flac = "0.1.3"
+
 serde = { version = "1.0.229", features = ["derive"] }
 serde-saphyr = "1.2.0"
 serde_json = { version = "1.0.151", features = ["preserve_order"] }
-spin_on = "0.1.1"
-symphonia = "0.6.1"
+
 toml = { version = "1.1.6", features = ["preserve_order"] }
 
-vara_util = { path = "../vara-util" }
 whoami = "2.1.3"
+
+vara_util = { path = "../vara-util" }
+vara_files = { path = "../vara-files" }
+vara_chrono = { path = "../vara-chrono" }
+vara_media = { path = "../vara-media" }

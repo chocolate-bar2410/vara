@@ -6,8 +6,7 @@ use symphonia::core::errors::Error as symphonia_error;
 
 use vara_util::table_builder::TableBuilder;
 
-use vara_core::stdlib as vara_stdlib;
-use vara_stdlib::files::file_obj::File as vara_file;
+use vara_files::file_obj::File as vara_file;
 
 mod image_obj;
 mod image_format;
@@ -33,7 +32,7 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
             create_image(context,filepath.into_lua(context)?)
         },
         mlua::Value::String(s) => {
-            let bytes = vara_stdlib::files::read_file_as_binary(&PathBuf::from(s.to_string_lossy()))?;
+            let bytes = vara_files::read_file_as_binary(&PathBuf::from(s.to_string_lossy()))?;
 
             let reader = image::ImageReader::new(Cursor::new(bytes))
                 .with_guessed_format()?;
@@ -88,7 +87,7 @@ fn create_audio(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<audio_ob
         },
         mlua::Value::String(s) => {
             let path = PathBuf::from(s.to_string_lossy());
-            let bytes = vara_stdlib::files::read_file_as_binary(&path)?;
+            let bytes = vara_files::read_file_as_binary(&path)?;
 
 
             let mss = MediaSourceStream::new(Box::new(Cursor::new(bytes)), Default::default());

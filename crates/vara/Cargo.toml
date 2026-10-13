@@ -16,8 +16,9 @@ async-fs = "2.2.0"
 serde = { version = "1.0.229", features = ["derive"] }
 
 vara_core = { path = "../vara-core" }
+vara_files = { path = "../vara-files" }
 vara_util = { path = "../vara-util" }
-vara_media = { path = "../vara-media" }
+
 serde_json = "1.0.151"
 async-io = "2.6.0"
 jsonc-parser = { version = "0.34.0", features = ["serde"] }

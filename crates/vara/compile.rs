@@ -1,9 +1,9 @@
 use std::{env, path::PathBuf, sync::LazyLock};
 
 use mlua::chunk::Compiler;
-use vara_core::stdlib::files as vara_fs;
+use vara_files as vara_fs;
 
-use crate::luau::Runtime;
+use vara_core::runtime::luau as vara_runtime;
 
 pub static CURRENT_EXE : LazyLock<PathBuf> = LazyLock::new(|| env::current_exe().expect("failed to retrieve current exe"));
 
@@ -81,7 +81,7 @@ pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Erro
     let bytecode = contents[(size_start - bytecode_size)..size_start].to_vec();
 
     let args = env::args().skip(1).collect::<Vec<_>>();
-    let runtime = Runtime::new(args)?;
+    let runtime = vara_runtime::Runtime::new(args)?;
 
     runtime.run_bytecode(bytecode)?;
 

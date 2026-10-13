@@ -4,9 +4,7 @@
 use std::process::ExitCode;
 
 mod cli;
-mod luau;
-mod require;
-mod require_loader;
+
 mod setup;
 mod compile;
 
