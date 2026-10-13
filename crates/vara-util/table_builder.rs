@@ -39,7 +39,7 @@ impl TableBuilder {
         A: mlua::FromLuaMulti,
         R: mlua::IntoLuaMulti,
         K: mlua::IntoLua,
-        F: Fn(&mlua::Lua, A) -> mlua::Result<R> + 'static,
+        F: Fn(&mlua::Lua, A) -> mlua::Result<R> + 'static + mlua::MaybeSend,
     {
         let luau_func = self.context.create_function(callback)?;
         self.result.set(key, mlua::Value::Function(luau_func))?;
@@ -51,8 +51,8 @@ impl TableBuilder {
         A: mlua::FromLuaMulti,
         R: mlua::IntoLuaMulti,
         K: mlua::IntoLua,
-        F: Fn(mlua::Lua, A) -> Fut + 'static,
-        Fut: Future<Output = mlua::Result<R>> + 'static
+        F: Fn(mlua::Lua, A) -> Fut + 'static + mlua::MaybeSend,
+        Fut: Future<Output = mlua::Result<R>> + 'static + mlua::MaybeSend
     {
         let luau_func = self.context.create_async_function(callback)?;
 
