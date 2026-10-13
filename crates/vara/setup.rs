@@ -3,13 +3,16 @@ use std::{fs, path::Path};
 
 use directories::UserDirs;
 
-const SERDE_TYPEDEF: &str = include_str!("../../typedef/serde.luau");
-const FS_TYPEDEF: &str = include_str!("../../typedef/fs.luau");
-const IO_TYPEDEF: &str = include_str!("../../typedef/io.luau");
-const SYSTEM_TYPEDEF: &str = include_str!("../../typedef/system.luau");
-const CHRONO_TYPEDEF: &str = include_str!("../../typedef/chrono.luau");
-const MEDIA_TYPEDEF: &str = include_str!("../../typedef/media.luau");
-const TYPES_TYPEDEF: &str = include_str!("../../typedef/types.d.luau");
+const SERDE_TYPEDEF: &str = include_str!("../../typedef/api/serde.luau");
+const FS_TYPEDEF: &str = include_str!("../../typedef/api/fs.luau");
+const IO_TYPEDEF: &str = include_str!("../../typedef/api/io.luau");
+const SYSTEM_TYPEDEF: &str = include_str!("../../typedef/api/system.luau");
+const CHRONO_TYPEDEF: &str = include_str!("../../typedef/api/chrono.luau");
+const MEDIA_TYPEDEF: &str = include_str!("../../typedef/api/media.luau");
+const NET_TYPEDEF: &str = include_str!("../../typedef/api/net.luau");
+
+
+const TYPES_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
 
 pub async fn setup() -> Result<(), Box<dyn std::error::Error>>{
 
@@ -45,7 +48,7 @@ async fn get_luaurc_contents() -> Result<serde_json::Value, Box<dyn std::error::
 
 async fn write_luaurc(contents : &mut serde_json::Value) -> Result<(), Box<dyn std::error::Error>>{
     let version_string = env!("CARGO_PKG_VERSION");
-    let typedef_directory = serde_json::Value::String(format!("~/.vara/.typedefs/{}",version_string));
+    let typedef_directory = serde_json::Value::String(format!("~/.vara/.typedefs/{}/api",version_string));
 
     let field = String::from("aliases");
     let alias = String::from("vara");
@@ -129,15 +132,24 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
         .join(".typedefs")
         .join(version_string);
 
+    let api_directory = UserDirs::new()
+        .ok_or("failed to load typedefs")?
+        .home_dir()
+        .join(".vara")
+        .join(".typedefs")
+        .join(version_string)
+        .join("api");
+
+    async_fs::create_dir_all(&api_directory).await?;
     async_fs::create_dir_all(&cache_directory).await?;
 
-    async_fs::write(cache_directory.join("serde").with_extension("luau"), SERDE_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("fs").with_extension("luau"), FS_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("io").with_extension("luau"),IO_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("system").with_extension("luau"),SYSTEM_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("chrono").with_extension("luau"),CHRONO_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("media").with_extension("luau"),MEDIA_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("types").with_extension("d.luau"),TYPES_TYPEDEF).await?;
-
+    async_fs::write(api_directory.join("serde").with_extension("luau"), SERDE_TYPEDEF).await?;
+    async_fs::write(api_directory.join("fs").with_extension("luau"), FS_TYPEDEF).await?;
+    async_fs::write(api_directory.join("io").with_extension("luau"),IO_TYPEDEF).await?;
+    async_fs::write(api_directory.join("system").with_extension("luau"),SYSTEM_TYPEDEF).await?;
+    async_fs::write(api_directory.join("chrono").with_extension("luau"),CHRONO_TYPEDEF).await?;
+    async_fs::write(api_directory.join("media").with_extension("luau"),MEDIA_TYPEDEF).await?;
+    async_fs::write(api_directory.join("net").with_extension("luau"),NET_TYPEDEF).await?;
+    async_fs::write(cache_directory.join("types").with_extension("d.luau"),TYPES_DEF).await?;
     Ok(())
 }

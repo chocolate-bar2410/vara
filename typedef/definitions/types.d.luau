@@ -231,7 +231,6 @@ declare extern type Audio with
         Clones your audio.
     ]=]
     function Clone(self): Audio  
-
     --[=[
         @within Audio
         @method Reverse
@@ -513,4 +512,13 @@ declare extern type Directory with
     function Walk(self) : () -> File | Directory
 
     function __tostring(self): string
+end
+
+--[=[
+	@class HttpClient
+
+    A object that sends http requests.
+]=]
+declare extern type HttpClient with
+    function GetAsync(self,url: string) : (buffer,number)
 end

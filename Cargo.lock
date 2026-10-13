@@ -2514,7 +2514,7 @@ checksum = "06abde3611657adf66d383f00b093d7faecc7fa57071cce2578660c9f1010821"
 
 [[package]]
 name = "vara"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "async-fs",
  "async-io",
@@ -2531,7 +2531,7 @@ dependencies = [
 
 [[package]]
 name = "vara_chrono"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "mlua",
  "vara_util",
@@ -2539,28 +2539,26 @@ dependencies = [
 
 [[package]]
 name = "vara_core"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "dotenvy",
- "http-body-util",
- "hyper",
  "memory-stats",
  "mlua",
  "serde",
  "serde-saphyr",
  "serde_json",
  "toml",
- "url",
  "vara_chrono",
  "vara_files",
  "vara_media",
+ "vara_net",
  "vara_util",
  "whoami",
 ]
 
 [[package]]
 name = "vara_files"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "mlua",
  "vara_chrono",
@@ -2569,7 +2567,7 @@ dependencies = [
 
 [[package]]
 name = "vara_media"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "dotenvy",
  "hound",
@@ -2585,7 +2583,7 @@ dependencies = [
 
 [[package]]
 name = "vara_net"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "http-body-util",
  "mlua",
@@ -2596,7 +2594,7 @@ dependencies = [
 
 [[package]]
 name = "vara_util"
-version = "0.1.0"
+version = "0.0.0"
 dependencies = [
  "dunce",
  "mlua",
