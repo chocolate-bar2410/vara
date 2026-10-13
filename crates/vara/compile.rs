@@ -53,7 +53,7 @@ pub async fn check() -> (bool,Vec<u8>){
     (is_binary,contents)
 }
 
-pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
     const SIZE_BYTES : usize = 8;
     const MAGIC_BYTES : usize = 6;
     const FOOTER_SIZE : usize = SIZE_BYTES + MAGIC_BYTES;
@@ -83,7 +83,7 @@ pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Erro
     let args = env::args().skip(1).collect::<Vec<_>>();
     let runtime = vara_runtime::Runtime::new(args)?;
 
-    runtime.run_bytecode(bytecode)?;
+    runtime.run_bytecode(bytecode).await?;
 
     Ok(())
 }

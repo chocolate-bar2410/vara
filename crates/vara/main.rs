@@ -18,7 +18,7 @@ fn main() -> ExitCode {
 
         if is_binary {
 
-            return match compile::run_standalone(contents){
+            return match compile::run_standalone(contents).await{
                 Ok(_) => ExitCode::SUCCESS,
                 Err(err) => {
                     eprintln!("{err}");

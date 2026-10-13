@@ -72,7 +72,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             let trailing_args = args.args;
             let mut current = vara_runtime::Runtime::new(trailing_args)?;
             
-            match current.run(&path) {
+            match current.run(&path).await {
                 Ok(()) => Ok(()),
                 Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
             }

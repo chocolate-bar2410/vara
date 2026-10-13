@@ -47,12 +47,13 @@ impl Runtime {
     }
 
 
-    pub fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-        self.vm.load(bytecode).exec()?;
+    pub async fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
+        self.vm.load(bytecode).exec_async().await?;
+
         Ok(())
     }
 
-    pub fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         let file_contents = vara_files::read_file(file_path)?;
 
         let module_path =
@@ -66,7 +67,7 @@ impl Runtime {
                 vara_util::constants::FILE_CHUNK_PREFIX,
                 module_path
             ))
-            .exec()?;
+            .exec_async().await?;
         Ok(())
     }
 }
