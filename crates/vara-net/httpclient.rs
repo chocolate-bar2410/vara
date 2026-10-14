@@ -7,13 +7,13 @@ use crate::httpresponse::HttpResponse;
 
 #[derive(mlua::UserData)]
 pub struct HttpClient{
-    #[lua(name="Method")]
+    #[lua(set,name="Method")]
     method: String,
-    #[lua(name="Timeout")]
+    #[lua(set,name="Timeout")]
     timeout: u64,
-    #[lua(name="Headers")]
+    #[lua(set,name="Headers")]
     headers: mlua::Table,
-    #[lua(name="Query")]
+    #[lua(set,name="Query")]
     query: mlua::Table,
     #[lua(skip)]
     body: Vec<u8>,
@@ -116,6 +116,17 @@ impl HttpClient {
         {
             let client = this.borrow::<HttpClient>()?;
             client.query.set(key, value)?;
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="AddHeader")]
+    pub fn add_header(this: mlua::AnyUserData,key : &str,value : &str) -> mlua::Result<mlua::AnyUserData>{
+
+        {
+            let client = this.borrow::<HttpClient>()?;
+            client.headers.set(key, value)?;
         }
 
         Ok(this)

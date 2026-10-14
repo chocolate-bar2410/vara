@@ -520,11 +520,11 @@ end
     A object that sends http requests.
 ]=]
 declare extern type HttpResponse with
-    Status: number
-    Body: buffer
-    Ok: boolean
-    Headers: {[string]: string}
-    Url: string
+    read Status: number
+    read Body: buffer
+    read Ok: boolean
+    read Headers: {[string]: string}
+    read Url: string
 end
 
 type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE"
@@ -540,6 +540,33 @@ declare extern type HttpClient with
     Headers: {[string]: string}
     Query: {[string]: string}
     Body: buffer
+    --[=[
+        @within HttpClient
+        @method RequestAsync
+        @param url The URL to send the request to.
+        @return HttpResponse
+        
+        Sends a http request to the given url.
+    ]=]
     function RequestAsync(self,url: string) : HttpResponse
+    --[=[
+        @within HttpClient
+        @method AddQuery
+        @param key The key value of the query.
+        @param value The value of the query.
+        @return HttpResponse
+        
+        Adds a query to the http client's http request.
+    ]=]
     function AddQuery(self,key: string,value: string) : HttpClient
+    --[=[
+        @within HttpClient
+        @method AddHeader
+        @param key The key value of the header.
+        @param value The value of the header.
+        @return HttpResponse
+        
+        Adds a header to the http client's http request.
+    ]=]
+    function AddHeader(self,key: string,value: string) : HttpClient
 end
