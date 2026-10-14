@@ -15,6 +15,4 @@ mlua = { version = "0.12.1", features = [
 
 vara_util = { path = "../vara-util" }
 
-http-body-util = "0.1.5"
-url = "2.5.8"
-reqwest = { version = "0.13.5", features = ["blocking"] }
+isahc = "2.0.1"
