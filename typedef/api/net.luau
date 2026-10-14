@@ -20,12 +20,13 @@ end
 --[=[
     @within net
     @method HttpRequest
+    @param url The url of the request.
     @tag must_use
     @return HttpRequest
 
     Creates a HTTP client.
 ]=]
-module.HttpRequest = function() : HttpRequest
+module.HttpRequest = function(url: string) : HttpRequest
     return nil :: (unknown)
 end
 
