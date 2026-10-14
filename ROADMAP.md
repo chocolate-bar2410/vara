@@ -6,7 +6,7 @@
     - [ ] build
         - [ ] dependency bundling
 - [ ] standard library
-    - [ ] networking
+    - [x] networking
     - [ ] task
     - [ ] UI
     - [ ] path
@@ -20,3 +20,9 @@
     - [ ] custom errors
     - [ ] custom warns
     - [ ] test
+
+### v0.3.0
+- [ ] standard library
+    - [ ] networking
+        - [ ] websockets?
+        - [ ] UDP?
