@@ -6,6 +6,8 @@ local serde = require("@vara/serde")
 
 local title_string = "\x1b[33m\u{f005}\x1b[0m %d - \x1b[1m%s\x1b[0m"
 local client = net.HttpClient()
+    :AddHeader("Content-Type", "application/json")
+    :SetTimeout(5)
 
 local request = net.HttpRequest("https://api.github.com/search/repositories")
 

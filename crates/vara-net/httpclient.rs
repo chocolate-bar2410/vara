@@ -112,4 +112,15 @@ impl HttpClient {
 
         Ok(this)
     }
+
+    #[lua(name="SetTimeout")]
+    pub fn set_timeout(this: mlua::AnyUserData,duration: u64) -> mlua::Result<mlua::AnyUserData>{
+
+        {
+            let mut client = this.borrow_mut::<HttpClient>()?;
+            client.timeout = duration;
+        }
+
+        Ok(this)
+    }
 }

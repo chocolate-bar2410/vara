@@ -573,9 +573,18 @@ declare extern type HttpClient with
         @method AddHeader
         @param key The key value of the header.
         @param value The value of the header.
-        @return HttpResponse
+        @return itself
         
         Adds a header to the http client.
     ]=]
     function AddHeader(self,key: string,value: string) : HttpClient
+    --[=[
+        @within HttpClient
+        @method SetTimeout
+        @param duration The duration the
+        @return itself
+        
+        Helper method for setting the timeout
+    ]=]
+    function SetTimeout(self,duration: number) : HttpClient
 end
