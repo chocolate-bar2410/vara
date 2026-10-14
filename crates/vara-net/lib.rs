@@ -7,6 +7,6 @@ mod httpresponse;
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
-        .add_function("HttpClient", |_: &mlua::Lua, ()| Ok(HttpClient::new()))?
+        .add_function("HttpClient", |lua: &mlua::Lua, ()| Ok(HttpClient::new(&lua)))?
         .build_readonly()
 }
