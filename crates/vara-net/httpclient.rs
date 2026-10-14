@@ -1,5 +1,5 @@
 use isahc::{AsyncReadResponseExt, RequestExt, ResponseExt, config::Configurable};
-use mlua::ExternalResult;
+use mlua::{ExternalError, ExternalResult};
 use url::Url;
 use vara_util::table_builder::TableBuilder;
 
@@ -19,7 +19,7 @@ impl HttpClient {
     pub fn new(context : &mlua::Lua) -> mlua::Result<Self>{
 
         Ok(Self{
-            timeout: 100,
+            timeout: 30,
             headers: context.create_table()?,
         })
     }
@@ -115,7 +115,10 @@ impl HttpClient {
 
     #[lua(name="SetTimeout")]
     pub fn set_timeout(this: mlua::AnyUserData,duration: u64) -> mlua::Result<mlua::AnyUserData>{
-
+        if duration <= 0 {
+            return Err("Timeout duration must be above 0".into_lua_err());
+        }
+        
         {
             let mut client = this.borrow_mut::<HttpClient>()?;
             client.timeout = duration;
