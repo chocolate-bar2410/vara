@@ -527,16 +527,19 @@ declare extern type HttpResponse with
     Url: string
 end
 
+type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTIONS" | "CONNECT" | "TRACE"
+
 --[=[
 	@class HttpClient
 
     A object that sends http requests.
 ]=]
 declare extern type HttpClient with
-    Method: string
+    Method: HttpMethod
     Timeout: number
     Headers: {[string]: string}
     Query: {[string]: string}
     Body: buffer
     function RequestAsync(self,url: string) : HttpResponse
+    function AddQuery(self,key: string,value: string) : HttpClient
 end

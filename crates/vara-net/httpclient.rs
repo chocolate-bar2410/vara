@@ -110,6 +110,18 @@ impl HttpClient {
         self.parse_response(context,&mut response).await
     }
 
+    #[lua(name="AddQuery")]
+    pub fn add_query(this: mlua::AnyUserData,key : &str,value : &str) -> mlua::Result<mlua::AnyUserData>{
+
+        {
+            let client = this.borrow::<HttpClient>()?;
+            client.query.set(key, value)?;
+        }
+
+        Ok(this)
+    }
+
+
     #[lua(getter,name="Body")]
     pub fn get_body(&self,context : &mlua::Lua) -> mlua::Result<mlua::Buffer>{
         let body = &self.body;

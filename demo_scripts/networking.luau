@@ -1,14 +1,31 @@
+--// libraries
 local net = require("@vara/net")
 local serde = require("@vara/serde")
-local pretty_table = require("./pretty_table")
 
-local response = net.HttpClient():GetAsync("https://jsonplaceholder.typicode.com/posts")
+--// variables
 
-local users = serde.Decode("JSON",buffer.tostring(response.Body))
+local title_string = "\x1b[33m\u{f005}\x1b[0m %d - \x1b[1m%s\x1b[0m"
+local client = net.HttpClient()
 
-for _,user in users do
-    print(`\x1b[1m{user.title}\x1b[0m`)
-    print(`\x1b[1mUser\x1b[0m: \x1b[34m{user.userId}\x1b[0m`)
-    print(`\x1b[1mID\x1b[0m:   \x1b[34m{user.id}\x1b[0m`)
-    print(`\x1b[2m{user.body}\x1b[0m\n`)
+--// logic
+
+local response = client:AddQuery("q", "language:luau")
+    :AddQuery("sort" , "stars")
+    :AddQuery("per_page" , "3")
+    :RequestAsync("https://api.github.com/search/repositories")
+
+if response.Ok == false then 
+    return 
+end
+
+local body = buffer.tostring(response.Body)
+local repositories = serde.Decode("JSON",body)
+
+for _,repository in repositories.items do
+    print(string.format(
+        title_string,
+        repository.stargazers_count,
+        repository.full_name
+    ))
+    print(repository.description .. "\n")
 end
