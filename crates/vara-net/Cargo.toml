@@ -16,3 +16,5 @@ mlua = { version = "0.12.1", features = [
 vara_util = { path = "../vara-util" }
 
 isahc = "2.0.1"
+http = "1.5.0"
+url = "2.5.8"

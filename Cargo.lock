@@ -2323,8 +2323,10 @@ dependencies = [
 name = "vara_net"
 version = "0.0.0"
 dependencies = [
+ "http",
  "isahc",
  "mlua",
+ "url",
  "vara_util",
 ]
 

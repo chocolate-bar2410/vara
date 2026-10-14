@@ -533,5 +533,10 @@ end
     A object that sends http requests.
 ]=]
 declare extern type HttpClient with
-    function GetAsync(self,url: string) : HttpResponse
+    Method: string
+    Timeout: number
+    Headers: {[string]: string}
+    Query: {[string]: string}
+    Body: buffer
+    function RequestAsync(self,url: string) : HttpResponse
 end
