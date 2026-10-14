@@ -7,12 +7,15 @@ local serde = require("@vara/serde")
 local title_string = "\x1b[33m\u{f005}\x1b[0m %d - \x1b[1m%s\x1b[0m"
 local client = net.HttpClient()
 
+local request = net.HttpRequest("https://api.github.com/search/repositories")
+
 --// logic
 
-local response = client:AddQuery("q", "language:luau")
-    :AddQuery("sort" , "stars")
-    :AddQuery("per_page" , "3")
-    :RequestAsync("https://api.github.com/search/repositories")
+request:AddQuery("q", "language:luau")
+       :AddQuery("sort", "stars")
+       :AddQuery("per_page", "3")
+
+local response = client:SendAsync(request)
 
 if response.Ok == false then 
     return 

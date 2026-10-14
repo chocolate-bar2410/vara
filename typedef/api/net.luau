@@ -17,4 +17,16 @@ module.HttpClient = function() : HttpClient
     return nil :: (unknown)
 end
 
+--[=[
+    @within net
+    @method HttpRequest
+    @tag must_use
+    @return HttpRequest
+
+    Creates a HTTP client.
+]=]
+module.HttpRequest = function() : HttpRequest
+    return nil :: (unknown)
+end
+
 return module

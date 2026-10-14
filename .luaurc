@@ -1,5 +1,5 @@
 {
   "aliases": {
-    "vara": "~/.vara/.typedefs/0.1.1/api"
+    "vara": "typedef/api"
   }
 }

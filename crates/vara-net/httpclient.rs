@@ -3,21 +3,14 @@ use mlua::ExternalResult;
 use url::Url;
 use vara_util::table_builder::TableBuilder;
 
-use crate::httpresponse::HttpResponse;
+use crate::{httprequest::HttpRequest, httpresponse::HttpResponse};
 
 #[derive(mlua::UserData)]
 pub struct HttpClient{
-    #[lua(set,name="Method")]
-    method: String,
     #[lua(set,name="Timeout")]
     timeout: u64,
     #[lua(set,name="Headers")]
     headers: mlua::Table,
-    #[lua(set,name="Query")]
-    query: mlua::Table,
-    #[lua(skip)]
-    body: Vec<u8>,
-
 }
 
 #[mlua::userdata_impl]
@@ -26,11 +19,8 @@ impl HttpClient {
     pub fn new(context : &mlua::Lua) -> mlua::Result<Self>{
 
         Ok(Self{
-            method: String::from("GET"),
             timeout: 100,
             headers: context.create_table()?,
-            query: context.create_table()?,
-            body: Vec::new(),
         })
     }
 
@@ -72,13 +62,15 @@ impl HttpClient {
     }
 
     #[lua(skip)]
-    fn create_request(&self,url: String) -> mlua::Result<isahc::Request<&[u8]>> {
-        let body = &self.body as &[u8];
+    fn create_request<'a>(&self,request: &'a HttpRequest) -> mlua::Result<isahc::Request<&'a [u8]>> {
+        let body : &'a [u8] = &request.body.as_slice();
+        let url = &request.url;
+        let method = &request.method.trim().to_ascii_uppercase();
 
-        let mut parsed_uri = Url::parse(&url).into_lua_err()?;
+        let mut parsed_uri = Url::parse(url).into_lua_err()?;
         let mut query_uri = parsed_uri.query_pairs_mut();
 
-        for pair in self.query.pairs::<String,String>() {
+        for pair in request.query.pairs::<String,String>() {
             let (key,value) = pair?;
             query_uri.append_pair(&key, &value);
         }
@@ -89,7 +81,7 @@ impl HttpClient {
             .into_lua_err()?;
 
         let mut request_builder = isahc::Request::builder()
-        .method(self.method.as_str().to_ascii_uppercase().trim())
+        .method(method.as_str())
         .timeout(std::time::Duration::from_secs(self.timeout))
         .uri(uri);
     
@@ -101,24 +93,13 @@ impl HttpClient {
         request_builder.body(body).into_lua_err()
     }
 
-    #[lua(name="RequestAsync")]
-    pub async fn request(&self,context : &mlua::Lua,url: String) -> mlua::Result<HttpResponse>{
-        let request = self.create_request(url)?;
+    #[lua(name="SendAsync")]
+    pub async fn send(&self,context : &mlua::Lua,request: &HttpRequest) -> mlua::Result<HttpResponse>{
+        let request = self.create_request(&request)?;
 
         let mut response = request.send_async().await.into_lua_err()?;
 
         self.parse_response(context,&mut response).await
-    }
-
-    #[lua(name="AddQuery")]
-    pub fn add_query(this: mlua::AnyUserData,key : &str,value : &str) -> mlua::Result<mlua::AnyUserData>{
-
-        {
-            let client = this.borrow::<HttpClient>()?;
-            client.query.set(key, value)?;
-        }
-
-        Ok(this)
     }
 
     #[lua(name="AddHeader")]
@@ -130,12 +111,5 @@ impl HttpClient {
         }
 
         Ok(this)
-    }
-
-
-    #[lua(getter,name="Body")]
-    pub fn get_body(&self,context : &mlua::Lua) -> mlua::Result<mlua::Buffer>{
-        let body = &self.body;
-        context.create_buffer(body)
     }
 }
