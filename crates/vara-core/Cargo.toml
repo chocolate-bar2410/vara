@@ -30,4 +30,5 @@ vara_files = { path = "../vara-files" }
 vara_chrono = { path = "../vara-chrono" }
 vara_media = { path = "../vara-media" }
 vara_net = { path = "../vara-net" } 
+mlua-luau-scheduler = "0.3.0"
 

@@ -4,16 +4,34 @@ use std::path::PathBuf;
 use crate::stdlib as vara_stdlib;
 use crate::runtime::require;
 
+// omg lune thx so much :heart_eyes:
+use mlua_luau_scheduler::Scheduler;
+use mlua_luau_scheduler::Functions;
 pub struct Runtime {
     vm: Lua,
-    args: Vec<String>
+    args: Vec<String>,
+    scheduler: Scheduler,
 }
 
 impl Runtime {
     pub fn new(args: Vec<String>) -> Result<Self, Box<dyn std::error::Error>> {
         let lua = Lua::new_with(StdLib::ALL, LuaOptions::default())?;
 
-        let mut runtime = Self { vm: lua,args: args };
+        let scheduler = Scheduler::new(lua.clone());
+
+        let async_fns = Functions::new(lua.clone())?;
+
+        let coroutine_lib = lua.globals().get::<mlua::Table>("coroutine")?;
+
+        // so these functions work with the task scheduler
+        coroutine_lib.set("resume",async_fns.resume.clone())?;
+        coroutine_lib.set("wrap",async_fns.wrap.clone())?;
+
+        let mut runtime = Self { 
+            vm: lua,
+            args,
+            scheduler,
+        };
 
         match runtime.setup_standard_library() {
             Ok(_) => Ok(runtime),
@@ -64,14 +82,18 @@ impl Runtime {
             vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))
                 .map_err(|e| mlua::Error::external(format!("{e:?}")))?;
 
-        self.vm
+        let main = self.vm
             .load(file_contents.as_str())
             .set_name(format!(
                 "{}{}",
                 vara_util::constants::FILE_CHUNK_PREFIX,
                 module_path
-            ))
-            .exec_async().await?;
+            ));
+
+        self.scheduler.push_thread_back(main, ())?;
+
+        smol::block_on(self.scheduler.run());
+
         Ok(())
     }
 }
