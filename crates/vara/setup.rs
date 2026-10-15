@@ -10,7 +10,7 @@ const SYSTEM_TYPEDEF: &str = include_str!("../../typedef/api/system.luau");
 const CHRONO_TYPEDEF: &str = include_str!("../../typedef/api/chrono.luau");
 const MEDIA_TYPEDEF: &str = include_str!("../../typedef/api/media.luau");
 const NET_TYPEDEF: &str = include_str!("../../typedef/api/net.luau");
-
+const TASK_TYPEDEF: &str = include_str!("../../typedef/api/task.luau");
 
 const TYPES_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
 
@@ -150,6 +150,7 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     async_fs::write(api_directory.join("chrono").with_extension("luau"),CHRONO_TYPEDEF).await?;
     async_fs::write(api_directory.join("media").with_extension("luau"),MEDIA_TYPEDEF).await?;
     async_fs::write(api_directory.join("net").with_extension("luau"),NET_TYPEDEF).await?;
+    async_fs::write(api_directory.join("task").with_extension("luau"),TASK_TYPEDEF).await?;
     async_fs::write(cache_directory.join("types").with_extension("d.luau"),TYPES_DEF).await?;
     Ok(())
 }
