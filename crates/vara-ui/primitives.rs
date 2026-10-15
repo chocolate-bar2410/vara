@@ -20,9 +20,9 @@ impl Vertex {
 }
 
 pub const QUAD_VERTICES : &[Vertex] = &[
-    Vertex{position: [-1.0, 1.0]},
-    Vertex{position: [-1.0,-1.0]},
-    Vertex{position: [ 1.0,-1.0]},
+    Vertex{position: [ 0.0, 1.0]},
+    Vertex{position: [ 0.0, 0.0]},
+    Vertex{position: [ 1.0, 0.0]},
     Vertex{position: [ 1.0, 1.0]},
 ];
 
@@ -37,14 +37,20 @@ pub struct Rect{
     pub position: [f32;2],
     pub size: [f32;2],
     pub colour: [f32;4],
+    pub corner_radius: f32,
+    pub border_width: f32,
+    pub border_colour: [f32; 4],
 }
 
 impl Rect {
     pub fn desc() -> wgpu::VertexBufferLayout<'static> {
-        const ATTRIBUITES: [wgpu::VertexAttribute; 3] = wgpu::vertex_attr_array![
+        const ATTRIBUITES: [wgpu::VertexAttribute; 6] = wgpu::vertex_attr_array![
             1 => Float32x2,
             2 => Float32x2,
-            3 => Float32x4
+            3 => Float32x4,
+            4 => Float32,
+            5 => Float32,
+            6 => Float32x4,
         ];
 
         wgpu::VertexBufferLayout {

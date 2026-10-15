@@ -69,7 +69,10 @@ impl RenderState {
         rect_pipeline.add_rect(Rect{
             position: [0.0,0.0],
             size: [0.5,0.5],
-            colour: [0.05,0.05,0.05,1.0],
+            colour: [0.02,0.02,0.02,1.0],
+            corner_radius: 0.01,
+            border_width: 0.002,
+            border_colour:  [0.2,0.2,0.2,1.0],
         });
 
         Ok(Self { 
