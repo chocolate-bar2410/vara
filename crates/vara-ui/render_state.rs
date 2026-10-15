@@ -3,7 +3,7 @@ use std::sync::Arc;
 use mlua::{ExternalError, ExternalResult};
 use winit::{event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
 
-use crate::{primitives::Rect, rect_pipeline::RectPipeline, text_pipeline::TextPipeline};
+use crate::{primitives::Rect, rect_pipeline::RectPipeline, text_entry::TextEntry, text_pipeline::TextPipeline};
 
 
 pub struct RenderState{
@@ -140,9 +140,23 @@ impl RenderState {
             label: Some("Encoder")
         });
 
+        self.text_pipeline.draw_text(TextEntry {
+            position: [20.0,20.0],
+            size: 20.0,
+            colour: [1.0,1.0,1.0,1.0],
+            text: String::from("hello world"),
+        });
+
+        self.text_pipeline.draw_text(TextEntry {
+            position: [20.0,40.0],
+            size: 20.0,
+            colour: [1.0,1.0,1.0,1.0],
+            text: String::from("hi guys"),
+        });
+
         self.text_pipeline.update(&self.queue, &self.config);
         self.text_pipeline.prepare(&self.device, &self.queue, &self.config)?;
-        
+
         {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
                 label: Some("Render Pass"),
