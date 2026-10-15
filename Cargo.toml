@@ -7,5 +7,6 @@ members = [
     "crates/vara-chrono",
     "crates/vara-files",
     "crates/vara-net",
+    "crates/vara-ui",
     "crates/vara-util"
 ]
