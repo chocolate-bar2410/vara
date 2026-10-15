@@ -67,7 +67,7 @@ impl RenderState {
         let mut rect_pipeline = RectPipeline::new(&device, &config);
 
         rect_pipeline.add_rect(Rect{
-            position: [0.0,0.0],
+            position: [-0.98,0.98],
             size: [0.5,0.5],
             colour: [0.02,0.02,0.02,1.0],
             corner_radius: 0.01,
