@@ -588,3 +588,18 @@ declare extern type HttpClient with
     ]=]
     function SetTimeout(self,duration: number) : HttpClient
 end
+
+--[=[
+	@class UiContext
+
+    Object that handles user interfaces.
+]=]
+declare extern type UiContext with
+    --[=[
+        @within UiContext
+        @method Run
+        
+        Starts rendering the UI.
+    ]=]
+    function Run(self) : ()
+end

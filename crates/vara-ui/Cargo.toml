@@ -11,6 +11,7 @@ mlua = { version = "0.12.1", features = [
     "luau-jit",
     "macros",
 ] }
+pollster = "1.0.1"
 taffy = "0.15.0"
 
 vara_util = { path = "../vara-util" }

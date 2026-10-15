@@ -48,6 +48,7 @@ impl Runtime {
         let media_lib = vara_media::get_module(&self.vm)?;
         let net_lib = vara_net::get_module(&self.vm)?;
         let task_lib = vara_stdlib::task::get_module(&self.vm)?;
+        let ui_lib = vara_ui::get_module(&self.vm)?;
 
         self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;
@@ -57,6 +58,7 @@ impl Runtime {
         self.vm.register_module("@vara/media", media_lib)?;
         self.vm.register_module("@vara/net", net_lib)?;
         self.vm.register_module("@vara/task", task_lib)?;
+        self.vm.register_module("@vara/ui", ui_lib)?;
 
         self.vm.globals().set(
             "require",

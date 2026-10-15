@@ -1,10 +1,13 @@
 use vara_util::table_builder::TableBuilder;
 
-mod window;
+mod render_state;
 mod ui_context;
 
-pub fn get_modules(context : &mlua::Lua) -> mlua::Result<mlua::Table>{
+use ui_context::UiContext;
+
+pub fn get_module(context : &mlua::Lua) -> mlua::Result<mlua::Table>{
 
     TableBuilder::new(context.clone())?
+    .add_async_function("CreateContext", |_:mlua::Lua,()|async {Ok(UiContext::new())})?
     .build_readonly()
 }

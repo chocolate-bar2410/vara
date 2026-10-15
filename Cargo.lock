@@ -2361,6 +2361,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "pollster"
+version = "1.0.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bc6355899e1c9462875b6757c79f3caa011a1fdae12bbb1a2e72dd1f234f8336"
+
+[[package]]
 name = "portable-atomic"
 version = "1.15.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -3543,6 +3549,7 @@ dependencies = [
  "vara_files",
  "vara_media",
  "vara_net",
+ "vara_ui",
  "vara_util",
  "whoami",
 ]
@@ -3588,6 +3595,7 @@ name = "vara_ui"
 version = "0.0.0"
 dependencies = [
  "mlua",
+ "pollster",
  "taffy",
  "vara_util",
  "wgpu",
