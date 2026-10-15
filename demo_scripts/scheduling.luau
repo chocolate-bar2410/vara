@@ -2,10 +2,11 @@ local task = require("@vara/task")
 
 local loop1 = function()
     for i = 1,20 do
-        print("task 1",i)
+        print("task 1")
         task.Sleep(0.1)
     end
-    print("finished")
+    
+    return "task 1"
 end
 
 local loop2 = function()
@@ -13,6 +14,10 @@ local loop2 = function()
         print("task 2")
         task.Sleep(0.1)
     end
+
+    return "task 2"
 end
 
-task.All(loop1,loop2)
+local winner = task.Race(loop1,loop2)
+
+print(`{winner} completed first`)

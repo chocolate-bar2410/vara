@@ -55,9 +55,22 @@ end
     @method All
     @param ... tasks to be ran.
     
-    Concurrently runs each function as a thread until they all finished.
+    Concurrently runs each provided thread until they all finished.
+    Functions that are passed in get converted to threads.
 ]=]
 module.All = function(...:( ) -> () | thread)
+    return nil :: unknown
+end
+
+--[=[
+    @within threadlib
+    @method Race
+    @param ... tasks to be ran.
+    
+    Concurrently runs each provided thread until atleast one of them is finished.
+    Functions that are passed in get converted to threads.
+]=]
+module.Race = function(...:( ) -> () | thread)
     return nil :: unknown
 end
 
