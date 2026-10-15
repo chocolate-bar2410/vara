@@ -1,18 +1,19 @@
 use std::sync::Arc;
 
-use mlua::ExternalResult;
+use mlua::{ExternalError, ExternalResult};
 use winit::event::{KeyEvent, WindowEvent};
 use winit::event_loop::EventLoop;
 use winit::application::ApplicationHandler;
 use winit::keyboard::{PhysicalKey};
 use winit::window::Window;
-
 use crate::render_state::RenderState;
 
 #[derive(mlua::UserData)]
 pub struct UiContext{
     #[lua(skip)]
-    state: Option<RenderState>
+    state: Option<RenderState>,
+    #[lua(skip)]
+    exit_error: mlua::Result<()>
 }
 
 #[mlua::userdata_impl]
@@ -21,6 +22,7 @@ impl UiContext {
     pub fn new() -> Self{
         Self{
             state: None,
+            exit_error: Ok(())
         }
     }
 
@@ -31,7 +33,7 @@ impl UiContext {
 
         event_loop.run_app(self).into_lua_err()?;
 
-        Ok(())
+        self.exit_error.clone()
     }
 }
 
@@ -40,10 +42,31 @@ impl ApplicationHandler<RenderState> for UiContext{
         #[allow(unused_mut)]
         let mut window_attribuites = Window::default_attributes();
 
-        // will remove unwraps when i figure out how im meant to do error handling
+        let window = match event_loop.create_window(window_attribuites){
+            Ok(win) => win,
+            Err(err) => {
+                self.exit_error = Err(err.into_lua_err());
+                event_loop.exit();
 
-        let window = Arc::new(event_loop.create_window(window_attribuites).unwrap());
-        self.state = Some(pollster::block_on(RenderState::new(window)).unwrap());
+                return;
+            }
+        };
+        
+        window.set_title("vara app");
+
+        let arc_window = Arc::new(window);
+
+        let render_state = match pollster::block_on(RenderState::new(arc_window)) {
+            Ok(state) => state,
+            Err(err) => {
+                self.exit_error = Err(err.into_lua_err());
+                event_loop.exit();
+
+                return;
+            }
+        };
+
+        self.state = Some(render_state);
     }
 
     fn user_event(&mut self, _event_loop: &winit::event_loop::ActiveEventLoop, event: RenderState) {
