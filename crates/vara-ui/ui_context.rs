@@ -4,7 +4,7 @@ use mlua::ExternalResult;
 use winit::event::{KeyEvent, WindowEvent};
 use winit::event_loop::EventLoop;
 use winit::application::ApplicationHandler;
-use winit::keyboard::{KeyCode, PhysicalKey};
+use winit::keyboard::{PhysicalKey};
 use winit::window::Window;
 
 use crate::render_state::RenderState;
@@ -40,8 +40,9 @@ impl ApplicationHandler<RenderState> for UiContext{
         #[allow(unused_mut)]
         let mut window_attribuites = Window::default_attributes();
 
-        let window = Arc::new(event_loop.create_window(window_attribuites).unwrap());
+        // will remove unwraps when i figure out how im meant to do error handling
 
+        let window = Arc::new(event_loop.create_window(window_attribuites).unwrap());
         self.state = Some(pollster::block_on(RenderState::new(window)).unwrap());
     }
 
@@ -66,6 +67,7 @@ impl ApplicationHandler<RenderState> for UiContext{
             WindowEvent::CloseRequested => event_loop.exit(),
             WindowEvent::Resized(size) => state.resize(size.width, size.height),
             WindowEvent::RedrawRequested => {
+                #[allow(unused)]
                 state.render();
             }
             WindowEvent::KeyboardInput {
@@ -76,10 +78,7 @@ impl ApplicationHandler<RenderState> for UiContext{
                         ..
                     },
                 ..
-            } => match (code, key_state.is_pressed()) {
-                (KeyCode::Escape, true) => event_loop.exit(),
-                _ => {}
-            },
+            } => state.handle_key(event_loop, code, key_state.is_pressed()),
             _ => {}
         }
         
