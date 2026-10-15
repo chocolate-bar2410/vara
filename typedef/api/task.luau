@@ -41,12 +41,23 @@ end
 
 --[=[
     @within threadlib
-    @method Defer
+    @method Cancel
     @param callback The thread being cancelled.
     
     Stops the thread provided thats currently scheduled from resuming.
 ]=]
 module.Cancel = function(thread: thread)
+    return nil :: unknown
+end
+
+--[=[
+    @within threadlib
+    @method All
+    @param ... tasks to be ran.
+    
+    Concurrently runs each function as a thread until they all finished.
+]=]
+module.All = function(...:( ) -> () | thread)
     return nil :: unknown
 end
 

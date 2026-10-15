@@ -15,6 +15,47 @@ pub async fn sleep(_: mlua::Lua,duration : Option<f64>) -> mlua::Result<()>{
     Ok(())
 }
 
+pub fn all(context: &mlua::Lua,tasks : mlua::MultiValue) -> mlua::Result<()>{ 
+    
+    let mut threads : Vec<mlua::Thread> = Vec::new();
+
+    for(i,value) in tasks.into_iter().enumerate() {
+        
+        if let Some(thread) = value.as_thread() {
+            threads.push(thread.clone());
+
+            continue;
+        };
+
+        let Some(lua_fn) = value.as_function() else {
+            return Err(format!("Argument at position {} is not a function",i + 1).into_lua_err());
+        };
+
+        let thread = context.create_thread(lua_fn.clone())?;
+
+        threads.push(thread);
+    }
+
+    let mut finished = false;
+
+    while finished == false {
+        for thread in &threads {
+            if thread.is_finished() {continue;}
+
+            thread.resume::<()>(())?;
+        }
+
+        finished = true;
+        for thread in &threads {
+            finished = thread.is_finished() && finished;
+        }
+    }
+
+    Ok(())
+}
+
+
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
 
     let async_fns = Functions::new(context.clone())?;
@@ -24,5 +65,6 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_value("Spawn", async_fns.spawn)?
         .add_value("Defer", async_fns.defer)?
         .add_value("Cancel", async_fns.cancel)?
+        .add_function("All", all)?
         .build_readonly()
 }

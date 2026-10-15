@@ -1,15 +1,18 @@
 local task = require("@vara/task")
 
-local loop1 = coroutine.create(function()
-    while true do
-        print("task 1")
-        task.Sleep()
+local loop1 = function()
+    for i = 1,20 do
+        print("task 1",i)
+        task.Sleep(0.1)
     end
-end)
-
-coroutine.resume(loop1)
-
-while true do
-    print("task 2")
-    task.Sleep()
+    print("finished")
 end
+
+local loop2 = function()
+    for i = 1,10 do
+        print("task 2")
+        task.Sleep(0.1)
+    end
+end
+
+task.All(loop1,loop2)
