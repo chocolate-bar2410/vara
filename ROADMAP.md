@@ -7,7 +7,7 @@
         - [ ] dependency bundling
 - [ ] standard library
     - [x] networking
-    - [ ] task
+    - [x] task
     - [ ] UI
     - [ ] path
     - [ ] system
