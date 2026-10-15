@@ -3,6 +3,8 @@ use std::sync::Arc;
 use mlua::{ExternalError, ExternalResult};
 use winit::{event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
 
+use crate::{primitives::Rect, rect_pipeline::RectPipeline};
+
 
 pub struct RenderState{
     window: Arc<Window>,
@@ -12,6 +14,8 @@ pub struct RenderState{
     queue: wgpu::Queue,
     config: wgpu::SurfaceConfiguration,
     is_surface_configured: bool,
+
+    rect_pipeline: RectPipeline,
 }
 
 impl RenderState {
@@ -60,13 +64,22 @@ impl RenderState {
             color_space: wgpu::SurfaceColorSpace::Auto,
         };
 
+        let mut rect_pipeline = RectPipeline::new(&device, &config);
+
+        rect_pipeline.add_rect(Rect{
+            position: [0.0,0.0],
+            size: [0.5,0.5],
+            colour: [0.05,0.05,0.05,1.0],
+        });
+
         Ok(Self { 
             window, 
             surface, 
             device, 
             queue, 
             config, 
-            is_surface_configured: false 
+            is_surface_configured: false,
+            rect_pipeline
         })
     }
 
@@ -120,7 +133,7 @@ impl RenderState {
         });
 
         {
-            let _render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
+            let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
                 label: Some("Render Pass"),
 
                 color_attachments: &[Some(wgpu::RenderPassColorAttachment{
@@ -129,9 +142,9 @@ impl RenderState {
                     depth_slice: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color{
-                            r: 1.0,
-                            g: 1.0,
-                            b: 1.0,
+                            r: 0.01,
+                            g: 0.01,
+                            b: 0.01,
                             a: 1.0,
                         }),
 
@@ -143,6 +156,9 @@ impl RenderState {
                 timestamp_writes: None,
                 multiview_mask: None,
             });
+
+            self.rect_pipeline.register(&self.queue);
+            self.rect_pipeline.render(&mut render_pass);
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));

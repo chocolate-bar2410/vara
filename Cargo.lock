@@ -3594,6 +3594,7 @@ dependencies = [
 name = "vara_ui"
 version = "0.0.0"
 dependencies = [
+ "bytemuck",
  "mlua",
  "pollster",
  "taffy",

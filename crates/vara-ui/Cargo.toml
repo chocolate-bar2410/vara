@@ -6,6 +6,7 @@ edition = "2024"
 path = "lib.rs"
 
 [dependencies]
+bytemuck = "1.25.2"
 mlua = { version = "0.12.1", features = [
     "async",
     "luau-jit",
