@@ -65,16 +65,7 @@ impl RenderState {
             color_space: wgpu::SurfaceColorSpace::Auto,
         };
 
-        let mut rect_pipeline = RectPipeline::new(&device, &config);
-
-        rect_pipeline.add_rect(Rect{
-            position: [-0.98,0.98],
-            size: [0.5,0.5],
-            colour: [0.02,0.02,0.02,1.0],
-            corner_radius: 0.01,
-            border_width: 0.002,
-            border_colour:  [0.2,0.2,0.2,1.0],
-        });
+        let rect_pipeline = RectPipeline::new(&device, &config);
 
         let text_pipeline = TextPipeline::new(&device, &queue, &config);
         
@@ -140,6 +131,15 @@ impl RenderState {
             label: Some("Encoder")
         });
 
+        self.rect_pipeline.draw_rect(Rect{
+            position: [-0.98,0.98],
+            size: [0.5,0.5],
+            colour: [0.02,0.02,0.02,1.0],
+            corner_radius: 0.01,
+            border_width: 0.002,
+            border_colour:  [0.2,0.2,0.2,1.0],
+        });
+
         self.text_pipeline.draw_text(TextEntry {
             position: [20.0,20.0],
             size: 20.0,
@@ -151,7 +151,7 @@ impl RenderState {
             position: [20.0,40.0],
             size: 20.0,
             colour: [1.0,1.0,1.0,1.0],
-            text: String::from("hi guys"),
+            text: String::from("welcome to vara"),
         });
 
         self.text_pipeline.update(&self.queue, &self.config);

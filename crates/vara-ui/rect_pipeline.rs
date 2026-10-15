@@ -101,7 +101,7 @@ impl RectPipeline {
         }
     }
 
-    pub fn add_rect(&mut self,rect: Rect){
+    pub fn draw_rect(&mut self,rect: Rect){
         self.rects.push(rect);
     }
 
@@ -113,7 +113,7 @@ impl RectPipeline {
         queue.write_buffer(&self.instance_buffer, 0, bytemuck::cast_slice(&self.rects));
     }
 
-    pub fn render(&self,render_pass: &mut wgpu::RenderPass){
+    pub fn render(&mut self,render_pass: &mut wgpu::RenderPass){
         render_pass.set_pipeline(&self.pipeline);
 
         render_pass.set_vertex_buffer(0, self.vertex_buffer.slice(..));
@@ -121,5 +121,7 @@ impl RectPipeline {
         render_pass.set_index_buffer(self.index_buffer.slice(..), wgpu::IndexFormat::Uint16);
 
         render_pass.draw_indexed(0..6, 0, 0..self.rects.len() as u32);
+
+        self.rects.clear();
     }
 }
