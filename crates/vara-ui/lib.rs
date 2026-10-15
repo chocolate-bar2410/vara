@@ -5,6 +5,7 @@ mod ui_context;
 use ui_context::UiContext;
 mod primitives;
 mod rect_pipeline;
+mod text_pipeline;
 
 pub fn get_module(context : &mlua::Lua) -> mlua::Result<mlua::Table>{
 

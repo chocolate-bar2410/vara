@@ -3,7 +3,7 @@ use std::sync::Arc;
 use mlua::{ExternalError, ExternalResult};
 use winit::{event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
 
-use crate::{primitives::Rect, rect_pipeline::RectPipeline};
+use crate::{primitives::Rect, rect_pipeline::RectPipeline, text_pipeline::TextPipeline};
 
 
 pub struct RenderState{
@@ -16,14 +16,7 @@ pub struct RenderState{
     is_surface_configured: bool,
 
     rect_pipeline: RectPipeline,
-
-    // text rendering - will probably move this to its own object later
-    font_system: glyphon::FontSystem,
-    swash_cache: glyphon::SwashCache,
-    text_atlas: glyphon::TextAtlas,
-    viewport: glyphon::Viewport,
-    text_renderer: glyphon::TextRenderer,
-    text_buffer: glyphon::Buffer
+    text_pipeline: TextPipeline
 }
 
 impl RenderState {
@@ -83,24 +76,8 @@ impl RenderState {
             border_colour:  [0.2,0.2,0.2,1.0],
         });
 
-
-        // text rendering
-
-        let mut font_system = glyphon::FontSystem::new();
-        let swash_cache = glyphon::SwashCache::new();
-
-        let cache = glyphon::Cache::new(&device);
-
-        let mut text_atlas = glyphon::TextAtlas::new(&device, &queue, &cache, config.format);
-
-        let viewport = glyphon::Viewport::new(&device, &cache);
-
-        let text_renderer = glyphon::TextRenderer::new(&mut text_atlas, &device, wgpu::MultisampleState::default(), None);
-        let mut text_buffer = glyphon::Buffer::new(&mut font_system, glyphon::Metrics::new(24.0,30.0));
-
-        text_buffer.set_size(Some(400.0), Some(500.0));
-        text_buffer.set_text("testing 123", &glyphon::Attrs::new(), glyphon::Shaping::Advanced,None);
-        text_buffer.shape_until_scroll(&mut font_system, false);
+        let text_pipeline = TextPipeline::new(&device, &queue, &config);
+        
 
         Ok(Self { 
             window, 
@@ -110,13 +87,7 @@ impl RenderState {
             config, 
             is_surface_configured: false,
             rect_pipeline,
-            
-            font_system,
-            swash_cache,
-            text_atlas,
-            viewport,
-            text_renderer,
-            text_buffer,
+            text_pipeline
         })
     }
 
@@ -169,31 +140,9 @@ impl RenderState {
             label: Some("Encoder")
         });
 
-        self.viewport.update(&self.queue,glyphon::Resolution{width: self.config.width,height: self.config.height});
+        self.text_pipeline.update(&self.queue, &self.config);
+        self.text_pipeline.prepare(&self.device, &self.queue, &self.config)?;
         
-        self.text_renderer.prepare(
-            &self.device, 
-            &self.queue, 
-            &mut self.font_system, 
-            &mut self.text_atlas, 
-            &self.viewport, 
-            [glyphon::TextArea {
-                left: 20.0,
-                top: 20.0,
-                buffer: &self.text_buffer,
-                scale: 1.0,
-                bounds: glyphon::TextBounds{
-                    left: 0,
-                    top: 0,
-                    right: self.config.width as i32,
-                    bottom: self.config.height as i32,
-                },
-                default_color: glyphon::Color::rgb(255,255,255),
-                custom_glyphs: &[],
-            }],
-            &mut self.swash_cache
-        ).into_lua_err()?;
-
         {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
                 label: Some("Render Pass"),
@@ -222,7 +171,7 @@ impl RenderState {
             self.rect_pipeline.register(&self.queue);
             self.rect_pipeline.render(&mut render_pass);
 
-            self.text_renderer.render(&self.text_atlas, &self.viewport, &mut render_pass).into_lua_err()?;
+            self.text_pipeline.render(&mut render_pass)?;
         }
 
         self.queue.submit(std::iter::once(encoder.finish()));
