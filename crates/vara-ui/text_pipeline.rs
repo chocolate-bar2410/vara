@@ -66,6 +66,11 @@ impl TextPipeline{
 
         let text_buffer = &mut self.text_buffers[self.text_entries.len()];
 
+        text_buffer.set_metrics(glyphon::Metrics { 
+            font_size: text_entry.text_size, 
+            line_height: text_entry.text_size * 1.25 
+        });
+
         text_buffer.set_size(
             Some(self.screen_width * text_entry.size[0]), 
             Some(self.screen_height * text_entry.size[1])
