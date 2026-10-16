@@ -11,8 +11,11 @@ const CHRONO_TYPEDEF: &str = include_str!("../../typedef/api/chrono.luau");
 const MEDIA_TYPEDEF: &str = include_str!("../../typedef/api/media.luau");
 const NET_TYPEDEF: &str = include_str!("../../typedef/api/net.luau");
 const TASK_TYPEDEF: &str = include_str!("../../typedef/api/task.luau");
+const UI_TYPEDEF: &str = include_str!("../../typedef/api/ui.luau");
 
-const TYPES_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
+const MAIN_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
+const NET_DEF: &str = include_str!("../../typedef/definitions/net.d.luau");
+const UI_DEF: &str = include_str!("../../typedef/definitions/ui.d.luau");
 
 pub async fn setup() -> Result<(), Box<dyn std::error::Error>>{
 
@@ -93,21 +96,36 @@ async fn get_vscode_contents() -> Result<serde_json::Value, Box<dyn std::error::
 async fn write_vscode(contents : &mut serde_json::Value) -> Result<(), Box<dyn std::error::Error>>{
     let version_string = env!("CARGO_PKG_VERSION");
 
-    let typedef_directory = serde_json::Value::String(format!("~/.vara/.typedefs/{}/types.d.luau",version_string));
     let definition = String::from("luau-lsp.types.definitionFiles");
-    let key = String::from("vara");
 
-    if let Some(serde_json::Value::Object(definitions)) = contents.get_mut(&definition) {
-        if definitions.contains_key(&key) {
-            if definitions.get(&key).unwrap() != &typedef_directory {
-                definitions.insert(key, typedef_directory);
+    let paths : [(String,String);3] = [
+        (String::from("vara"),format!("~/.vara/.typedefs/{}/definitions/types.d.luau",version_string)),
+        (String::from("vara/net"),format!("~/.vara/.typedefs/{}/definitions/net.d.luau",version_string)),
+        (String::from("vara/ui"),format!("~/.vara/.typedefs/{}/definitions/ui.d.luau",version_string)),
+    ];
+
+    if let Some(serde_json::Value::Object(definition)) = contents.get_mut(&definition) {
+
+        for pair in paths {
+            let (key,value) = pair;
+
+            let value_string = serde_json::Value::String(value);
+
+            if definition.contains_key(&key) {
+                if definition.get(&key).unwrap() != &value_string {
+                    definition.insert(key, value_string);
+                }
+            } else {
+                definition.insert(key, value_string);
             }
-        } else {
-            definitions.insert(key, typedef_directory);
         }
     } else {
         let mut map = serde_json::Map::new();
-        map.insert(key, typedef_directory);
+
+        for(key,value) in paths{
+            map.insert(key.to_string(), serde_json::Value::String(value.to_string()));
+        }
+
         contents[definition] = serde_json::Value::Object(map);
     }
 
@@ -125,12 +143,13 @@ async fn write_vscode(contents : &mut serde_json::Value) -> Result<(), Box<dyn s
 async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     let version_string = env!("CARGO_PKG_VERSION");
     
-    let cache_directory = UserDirs::new()
+    let typedef_directory = UserDirs::new()
         .ok_or("failed to load typedefs")?
         .home_dir()
         .join(".vara")
         .join(".typedefs")
-        .join(version_string);
+        .join(version_string)
+        .join("definitions");
 
     let api_directory = UserDirs::new()
         .ok_or("failed to load typedefs")?
@@ -141,7 +160,7 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
         .join("api");
 
     async_fs::create_dir_all(&api_directory).await?;
-    async_fs::create_dir_all(&cache_directory).await?;
+    async_fs::create_dir_all(&typedef_directory).await?;
 
     async_fs::write(api_directory.join("serde").with_extension("luau"), SERDE_TYPEDEF).await?;
     async_fs::write(api_directory.join("fs").with_extension("luau"), FS_TYPEDEF).await?;
@@ -151,6 +170,10 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     async_fs::write(api_directory.join("media").with_extension("luau"),MEDIA_TYPEDEF).await?;
     async_fs::write(api_directory.join("net").with_extension("luau"),NET_TYPEDEF).await?;
     async_fs::write(api_directory.join("task").with_extension("luau"),TASK_TYPEDEF).await?;
-    async_fs::write(cache_directory.join("types").with_extension("d.luau"),TYPES_DEF).await?;
+    async_fs::write(api_directory.join("ui").with_extension("luau"),UI_TYPEDEF).await?;
+
+    async_fs::write(typedef_directory.join("types").with_extension("d.luau"),MAIN_DEF).await?;
+    async_fs::write(typedef_directory.join("net").with_extension("d.luau"),NET_DEF).await?;
+    async_fs::write(typedef_directory.join("ui").with_extension("d.luau"),UI_DEF).await?;
     Ok(())
 }
