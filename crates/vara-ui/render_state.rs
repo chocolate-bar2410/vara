@@ -101,6 +101,13 @@ impl RenderState {
         }
     }
 
+    pub fn prepare_render(&mut self) -> mlua::Result<()>{
+        self.text_pipeline.update(&self.queue, &self.config);
+        self.text_pipeline.prepare(&self.device, &self.queue)?;
+        
+        Ok(())
+    }
+
     pub fn render(&mut self) -> mlua::Result<()> {
         self.window.request_redraw();
 
@@ -132,34 +139,6 @@ impl RenderState {
         let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some("Encoder")
         });
-
-        self.rect_pipeline.draw_rect(Rect{
-            position: [-0.98,0.98],
-            size: [0.5,0.5],
-            colour: [0.02,0.02,0.02,1.0],
-            corner_radius: 0.01,
-            border_width: 0.002,
-            border_colour:  [0.2,0.2,0.2,1.0],
-        });
-
-        self.text_pipeline.draw_text(TextEntry {
-            position: [-0.96,0.96],
-            size: [0.2,0.2],
-            text_size: 20.0,
-            colour: [1.0,1.0,1.0,1.0],
-            text: String::from("hello world"),
-        });
-
-        self.text_pipeline.draw_text(TextEntry {
-            position: [-0.96,0.9],
-            size: [0.2,0.2],
-            text_size: 20.0,
-            colour: [1.0,1.0,1.0,1.0],
-            text: String::from("welcome to vara こんにちは"),
-        });
-
-        self.text_pipeline.update(&self.queue, &self.config);
-        self.text_pipeline.prepare(&self.device, &self.queue)?;
 
         {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
@@ -197,4 +176,13 @@ impl RenderState {
 
         Ok(())
     }
+
+    pub fn draw_rect(&mut self,rect: Rect){
+        self.rect_pipeline.draw_rect(rect);
+    }
+
+    pub fn draw_text(&mut self,text: TextEntry){
+        self.text_pipeline.draw_text(text);
+    }
+
 }

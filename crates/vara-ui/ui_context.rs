@@ -6,9 +6,10 @@ use winit::event_loop::EventLoop;
 use winit::application::ApplicationHandler;
 use winit::keyboard::{PhysicalKey};
 use winit::window::Window;
+use crate::components::frame::UiFrame;
 use crate::render_state::RenderState;
 
-use crate::components::UiComponent;
+use crate::components::{Renderable, UiComponent};
 
 
 #[derive(mlua::UserData)]
@@ -49,9 +50,24 @@ impl UiContext {
             None => return Ok(()),
         };
 
+        state.prepare_render()?;
+
+        for component in self.ui_components.iter_mut(){
+            component.render(state)?;
+        }
+
         state.render()?;
 
         Ok(())
+    }
+
+    #[lua(name="Frame")]
+    pub fn frame(&mut self,context: &mlua::Lua) -> mlua::Result<mlua::AnyUserData>{
+        let frame = UiFrame::new();
+
+        self.ui_components.push(UiComponent::Frame(frame.clone()));
+
+        context.create_any_userdata(frame)
     }
 }
 
