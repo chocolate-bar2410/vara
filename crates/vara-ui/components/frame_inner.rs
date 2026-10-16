@@ -34,9 +34,12 @@ impl Renderable for UiFrameInner{
         let x = self.position[0] * 2.0 - 1.0;
         let y = 1.0 - self.position[1] * 2.0;
 
+        let width = self.size[0] * 2.0;
+        let height = self.size[1] * 2.0;
+
         render_state.draw_rect(Rect { 
             position: [x,y], 
-            size: self.size, 
+            size: [width,height], 
             colour: self.colour, 
             corner_radius: self.corner_radius, 
             border_width: self.border_width,
