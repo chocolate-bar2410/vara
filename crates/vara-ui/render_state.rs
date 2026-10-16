@@ -67,8 +67,8 @@ impl RenderState {
 
         let rect_pipeline = RectPipeline::new(&device, &config);
 
-        let text_pipeline = TextPipeline::new(&device, &queue, &config);
-        
+        let mut text_pipeline = TextPipeline::new(&device, &queue, &config);
+        text_pipeline.resize(config.width as f32, config.height as f32);
 
         Ok(Self { 
             window, 
@@ -90,6 +90,8 @@ impl RenderState {
 
         self.surface.configure(&self.device, &self.config);
         self.is_surface_configured = true;
+
+        self.text_pipeline.resize(width as f32, height as f32);
     }
 
     pub fn handle_key(&self, event_loop: &ActiveEventLoop, code: KeyCode, is_pressed: bool) {
@@ -141,21 +143,23 @@ impl RenderState {
         });
 
         self.text_pipeline.draw_text(TextEntry {
-            position: [20.0,20.0],
-            size: 20.0,
+            position: [-0.96,0.96],
+            size: [0.2,0.2],
+            text_size: 20.0,
             colour: [1.0,1.0,1.0,1.0],
             text: String::from("hello world"),
         });
 
         self.text_pipeline.draw_text(TextEntry {
-            position: [20.0,40.0],
-            size: 20.0,
+            position: [-0.96,0.9],
+            size: [0.2,0.2],
+            text_size: 20.0,
             colour: [1.0,1.0,1.0,1.0],
-            text: String::from("welcome to vara"),
+            text: String::from("welcome to vara こんにちは"),
         });
 
         self.text_pipeline.update(&self.queue, &self.config);
-        self.text_pipeline.prepare(&self.device, &self.queue, &self.config)?;
+        self.text_pipeline.prepare(&self.device, &self.queue)?;
 
         {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
