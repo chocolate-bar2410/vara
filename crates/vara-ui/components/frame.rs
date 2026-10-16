@@ -20,20 +20,20 @@ impl UiFrame {
     }
 
     pub fn lock(&self) -> mlua::Result<MutexGuard<'_, UiFrameInner>>{
-        self.inner.lock().map_err(|_| "frame inner mutex was poisioned".into_lua_err())
+        self.inner.lock().map_err(|_| "frame inner mutex was poisoned".into_lua_err())
     }
 }
 
 impl mlua::UserData for UiFrame {
     fn add_fields<F: mlua::prelude::LuaUserDataFields<Self>>(fields: &mut F) {
         
-        ui_property!(fields,visible,"Visible",bool);
-        ui_property!(fields,size,"Size",[f32;2]);
-        ui_property!(fields,position,"Position",[f32;2]);
-        ui_property!(fields,colour,"Colour",[f32;4]);
-        ui_property!(fields,corner_radius,"CornerRadius",f32);
-        ui_property!(fields,border_width,"BorderWidth",f32);
-        ui_property!(fields,border_colour,"BorderColour",[f32;4]);
+        ui_property!(fields,visible,"Visible");
+        ui_property!(fields,size,"Size");
+        ui_property!(fields,position,"Position");
+        ui_property!(fields,colour,"Colour");
+        ui_property!(fields,corner_radius,"CornerRadius");
+        ui_property!(fields,border_width,"BorderWidth");
+        ui_property!(fields,border_colour,"BorderColour");
     }
 }
 
