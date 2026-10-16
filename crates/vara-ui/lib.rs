@@ -8,6 +8,8 @@ mod rect_pipeline;
 mod text_pipeline;
 mod text_entry;
 
+mod components;
+
 pub fn get_module(context : &mlua::Lua) -> mlua::Result<mlua::Table>{
 
     TableBuilder::new(context.clone())?

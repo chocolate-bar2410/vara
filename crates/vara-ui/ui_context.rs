@@ -8,12 +8,17 @@ use winit::keyboard::{PhysicalKey};
 use winit::window::Window;
 use crate::render_state::RenderState;
 
+use crate::components::UiComponent;
+
+
 #[derive(mlua::UserData)]
 pub struct UiContext{
     #[lua(skip)]
     state: Option<RenderState>,
     #[lua(skip)]
-    exit_error: mlua::Result<()>
+    exit_error: mlua::Result<()>,
+    #[lua(skip)]
+    ui_components: Vec<UiComponent>,
 }
 
 #[mlua::userdata_impl]
@@ -22,7 +27,8 @@ impl UiContext {
     pub fn new() -> Self{
         Self{
             state: None,
-            exit_error: Ok(())
+            exit_error: Ok(()),
+            ui_components: Vec::new(),
         }
     }
 
@@ -34,6 +40,18 @@ impl UiContext {
         event_loop.run_app(self).into_lua_err()?;
 
         self.exit_error.clone()
+    }
+
+    #[lua(skip)]
+    pub fn render(&mut self) -> mlua::Result<()>{
+        let state = match &mut self.state{
+            Some(canvas) => canvas,
+            None => return Ok(()),
+        };
+
+        state.render()?;
+
+        Ok(())
     }
 }
 
@@ -91,7 +109,7 @@ impl ApplicationHandler<RenderState> for UiContext{
             WindowEvent::Resized(size) => state.resize(size.width, size.height),
             WindowEvent::RedrawRequested => {
                 #[allow(unused)]
-                state.render();
+                self.render();
             }
             WindowEvent::KeyboardInput {
                 event:
