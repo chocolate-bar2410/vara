@@ -70,13 +70,19 @@ impl RenderState {
         let mut text_pipeline = TextPipeline::new(&device, &queue, &config);
         text_pipeline.resize(config.width as f32, config.height as f32);
 
+        let is_surface_configured = config.width > 0 && config.height > 0;
+
+        if is_surface_configured {
+            surface.configure(&device, &config);
+        }
+
         Ok(Self { 
             window, 
             surface, 
             device, 
             queue, 
             config, 
-            is_surface_configured: false,
+            is_surface_configured: is_surface_configured,
             rect_pipeline,
             text_pipeline
         })
@@ -102,8 +108,6 @@ impl RenderState {
     }
 
     pub fn render(&mut self) -> mlua::Result<()> {
-        self.window.request_redraw();
-
         if !self.is_surface_configured {
             return Ok(());
         }
