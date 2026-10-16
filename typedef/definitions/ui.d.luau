@@ -31,4 +31,7 @@ declare extern type UiFrame with
     Position: {number}
     Size: {number}
     Colour: {number}
+    CornerRadius: number
+    BorderWidth: number
+    BorderColour: {number}
 end

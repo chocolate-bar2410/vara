@@ -67,7 +67,7 @@ impl UiContext {
 
         self.ui_components.push(UiComponent::Frame(frame.clone()));
 
-        context.create_any_userdata(frame)
+        context.create_userdata(frame)
     }
 }
 
