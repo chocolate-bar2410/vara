@@ -7,6 +7,7 @@ use winit::application::ApplicationHandler;
 use winit::keyboard::{PhysicalKey};
 use winit::window::Window;
 use crate::components::frame::UiFrame;
+use crate::components::textlabel::UiTextLabel;
 use crate::render_state::RenderState;
 
 use crate::components::{Renderable, UiComponent};
@@ -50,8 +51,6 @@ impl UiContext {
             None => return Ok(()),
         };
 
-        state.prepare_render()?;
-
         for component in self.ui_components.iter_mut(){
             component.render(state)?;
         }
@@ -68,6 +67,15 @@ impl UiContext {
         self.ui_components.push(UiComponent::Frame(frame.clone()));
 
         context.create_userdata(frame)
+    }
+
+    #[lua(name="TextLabel")]
+    pub fn textlabel(&mut self,context: &mlua::Lua) -> mlua::Result<mlua::AnyUserData>{
+        let text = UiTextLabel::new();
+
+        self.ui_components.push(UiComponent::TextLabel(text.clone()));
+
+        context.create_userdata(text)
     }
 }
 

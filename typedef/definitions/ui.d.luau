@@ -19,18 +19,46 @@ declare extern type UiContext with
         Creates a frame UI component.
     ]=]
     function Frame(self) : UiFrame
+
+    --[=[
+        @within UiContext
+        @method TextLabel
+        
+        Creates a text label UI component.
+    ]=]
+    function TextLabel(self) : UiTextLabel
 end
 
 --[=[
 	@class UiFrame
 
-    A UI component representing a plain frame.
+    A UI component representing a container.
 ]=]
 declare extern type UiFrame with
     Visible: boolean
     Position: {number}
     Size: {number}
     Colour: {number}
+    CornerRadius: number
+    BorderWidth: number
+    BorderColour: {number}
+end
+
+--[=[
+	@class UiTextLabel
+
+    Displays text on the UI.
+]=]
+declare extern type UiTextLabel with
+    Text: string
+    TextSize: number
+
+    Visible: boolean
+    Position: {number}
+    Size: {number}
+    TextColour: {number}
+    BackgroundColour: {number}
+
     CornerRadius: number
     BorderWidth: number
     BorderColour: {number}
