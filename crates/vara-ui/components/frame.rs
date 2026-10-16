@@ -1,118 +1,54 @@
 use std::sync::{Arc, Mutex, MutexGuard};
 
-use mlua::{ExternalError, ExternalResult};
+use mlua::{ExternalError};
 
 use crate::render_state::RenderState;
 use crate::components::{Renderable, frame_inner::UiFrameInner};
 
-#[derive(mlua::UserData,Clone)]
+
+macro_rules! ui_property{
+    ($fields:ident,$field:ident,$name:literal,$ty:ty) => {
+        $fields.add_field_method_set($name, |_, this, value: $ty| {
+            this.lock()?.$field = value;
+            Ok(())
+        });
+
+        $fields.add_field_method_get($name, |_: &mlua::Lua, this| {
+            Ok(this.lock()?.$field)
+        });
+    }
+}
+
+
+#[derive(Clone)]
 pub struct UiFrame{
-    #[lua(skip)]
     inner: Arc<Mutex<UiFrameInner>>,
 }
 
-#[mlua::userdata_impl]
 impl UiFrame {
 
-    #[lua(skip)]
     pub fn new() -> Self{
         Self {
            inner: Arc::new(Mutex::new(UiFrameInner::new())),
         }
     }
 
-    #[lua(skip)]
     pub fn lock(&self) -> mlua::Result<MutexGuard<'_, UiFrameInner>>{
         self.inner.lock().map_err(|_| "frame inner mutex was poisioned".into_lua_err())
     }
+}
 
-    #[lua(setter,name="Visible")]
-    fn set_visible(&mut self,visible : bool) -> mlua::Result<()>{
-        self.lock()?.visible = visible;
-
-        Ok(())
+impl mlua::UserData for UiFrame {
+    fn add_fields<F: mlua::prelude::LuaUserDataFields<Self>>(fields: &mut F) {
+        
+        ui_property!(fields,visible,"Visible",bool);
+        ui_property!(fields,size,"Size",[f32;2]);
+        ui_property!(fields,position,"Position",[f32;2]);
+        ui_property!(fields,colour,"Colour",[f32;4]);
+        ui_property!(fields,corner_radius,"CornerRadius",f32);
+        ui_property!(fields,border_width,"BorderWidth",f32);
+        ui_property!(fields,border_colour,"BorderColour",[f32;4]);
     }
-
-    #[lua(getter,name="Visible")]
-    fn get_visible(&self) -> mlua::Result<bool>{
-        Ok(self.lock()?.visible)
-    }
-
-    #[lua(setter,name="Size")]
-    fn set_size(&mut self,size : [f32;2]) -> mlua::Result<()>{
-        self.lock()?.size = size;
-
-        Ok(())
-    }
-
-    #[lua(getter,name="Size")]
-    fn get_size(&self) -> mlua::Result<[f32;2]>{
-        Ok(self.lock()?.size)
-    }
-
-    #[lua(setter,name="Position")]
-    fn set_position(&mut self,position : [f32;2]) -> mlua::Result<()>{
-        self.lock()?.position = position;
-
-        Ok(())
-    }
-
-    #[lua(getter,name="Position")]
-    fn get_position(&self) -> mlua::Result<[f32;2]>{
-        Ok(self.lock()?.position)
-    }
-
-    #[lua(setter,name="Colour")]
-    fn set_colour(&mut self,colour : [f32;4]) -> mlua::Result<()>{
-        self.lock()?.colour = colour;
-
-        Ok(())
-    }
-
-    #[lua(getter,name="Colour")]
-    fn get_colour(&self) -> mlua::Result<[f32;4]>{
-        Ok(self.lock()?.colour)
-    }
-
-    #[lua(setter,name="CornerRadius")]
-    fn set_corner_radius(&mut self,corner_radius : f32) -> mlua::Result<()>{
-        self.lock()?.corner_radius = corner_radius;
-
-        Ok(())
-    }
-
-    #[lua(getter,name="CornerRadius")]
-    fn get_corner_radius(&self) -> mlua::Result<f32>{
-        Ok(self.lock()?.corner_radius)
-    }
-
-    #[lua(setter,name="BorderWidth")]
-    fn set_border_width(&mut self,border_width : f32) -> mlua::Result<()>{
-        self.lock()?.border_width = border_width;
-
-        Ok(())
-    }
-
-    #[lua(getter,name="BorderWidth")]
-    fn get_border_width(&self) -> mlua::Result<f32>{
-        Ok(self.lock()?.border_width)
-    }
-
-
-    #[lua(setter,name="BorderColour")]
-    fn set_border_colour(&mut self,border_colour : [f32;4]) -> mlua::Result<()>{
-        self.lock()?.border_colour = border_colour;
-
-        Ok(())
-    }
-
-    #[lua(getter,name="BorderColour")]
-    fn get_border_colour(&self) -> mlua::Result<[f32;4]>{
-        Ok(self.lock()?.border_colour)
-    }
-
-
-    
 }
 
 impl Renderable for UiFrame{
