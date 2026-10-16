@@ -101,13 +101,6 @@ impl RenderState {
         }
     }
 
-    pub fn prepare_render(&mut self) -> mlua::Result<()>{
-        self.text_pipeline.update(&self.queue, &self.config);
-        self.text_pipeline.prepare(&self.device, &self.queue)?;
-        
-        Ok(())
-    }
-
     pub fn render(&mut self) -> mlua::Result<()> {
         self.window.request_redraw();
 
@@ -139,6 +132,9 @@ impl RenderState {
         let mut encoder = self.device.create_command_encoder(&wgpu::CommandEncoderDescriptor {
             label: Some("Encoder")
         });
+
+        self.text_pipeline.update(&self.queue, &self.config);
+        self.text_pipeline.prepare(&self.device, &self.queue)?;
 
         {
             let mut render_pass = encoder.begin_render_pass(&wgpu::RenderPassDescriptor{
