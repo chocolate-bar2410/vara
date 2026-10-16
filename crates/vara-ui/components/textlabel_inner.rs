@@ -1,7 +1,3 @@
-use std::sync::{Arc, Mutex, MutexGuard};
-
-use mlua::ExternalError;
-
 use crate::components::Renderable;
 use crate::primitives::Rect;
 use crate::render_state::RenderState;
