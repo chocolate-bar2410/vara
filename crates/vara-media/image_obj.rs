@@ -6,7 +6,7 @@ use crate::image_interpolation as interpolation;
 
 #[derive(Clone,mlua::UserData)]
 pub struct Image{
-    #[lua(get,name = "Data")]
+    #[lua(skip)]
     pub data : Vec<u8>,
     #[lua(get,name = "Width")]
     pub width : u32,
