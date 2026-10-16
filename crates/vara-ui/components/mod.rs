@@ -20,3 +20,18 @@ impl Renderable for UiComponent {
         }
     }
 }
+
+macro_rules! ui_property{
+    ($fields:ident,$field:ident,$name:literal,$ty:ty) => {
+        $fields.add_field_method_set($name, |_, this, value: $ty| {
+            this.lock()?.$field = value;
+            Ok(())
+        });
+
+        $fields.add_field_method_get($name, |_: &mlua::Lua, this| {
+            Ok(this.lock()?.$field)
+        });
+    }
+}
+
+pub(crate) use ui_property;

@@ -2,23 +2,9 @@ use std::sync::{Arc, Mutex, MutexGuard};
 
 use mlua::{ExternalError};
 
+use crate::components::ui_property;
 use crate::render_state::RenderState;
 use crate::components::{Renderable, frame_inner::UiFrameInner};
-
-
-macro_rules! ui_property{
-    ($fields:ident,$field:ident,$name:literal,$ty:ty) => {
-        $fields.add_field_method_set($name, |_, this, value: $ty| {
-            this.lock()?.$field = value;
-            Ok(())
-        });
-
-        $fields.add_field_method_get($name, |_: &mlua::Lua, this| {
-            Ok(this.lock()?.$field)
-        });
-    }
-}
-
 
 #[derive(Clone)]
 pub struct UiFrame{
