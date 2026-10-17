@@ -33,13 +33,25 @@ end
 
 --[=[
     @within path
-    @method WithExt
+    @method Basename
     @param path The file path.
     @return The name of the file.
 
     Gets the file name of a file path.
 ]=]
 module.Basename = function(path: string): string
+    return nil :: unknown
+end
+
+--[=[
+    @within path
+    @method Absolute
+    @param path The file path.
+    @return The name of the file.
+
+    Converts a file path into an absolute file path.
+]=]
+module.Absolute = function(path: string): string
     return nil :: unknown
 end
 

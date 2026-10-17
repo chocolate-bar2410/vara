@@ -1,5 +1,7 @@
 
-use mlua::LuaSerdeExt;
+use std::path::{Path, PathBuf};
+
+use mlua::{ExternalResult, LuaSerdeExt};
 use vara_util::table_builder::TableBuilder;
 
 pub fn join(context: &mlua::Lua,paths: mlua::MultiValue) -> mlua::Result<String>{
@@ -23,13 +25,17 @@ pub fn with_ext(_: &mlua::Lua,(path,ext): (String,String)) -> mlua::Result<Strin
 }
 
 pub fn base_name(_: &mlua::Lua,path: String) -> mlua::Result<String>{
-    let path_obj = std::path::Path::new(&path);
+    let path_obj = Path::new(&path);
 
     Ok(path_obj
         .file_name()
         .and_then(|os_str| Some(os_str.to_string_lossy().into_owned()))
         .unwrap_or(String::from(""))
     )
+}
+
+pub fn absolute(_: &mlua::Lua,path: String) -> mlua::Result<PathBuf>{
+    std::path::absolute(&path).into_lua_err()
 }
 
 pub fn _resolve(_resolve: &mlua::Lua,_paths: mlua::MultiValue){
@@ -41,5 +47,6 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("Join", join)?
         .add_function("WithExt", with_ext)?
         .add_function("Basename", base_name)?
+        .add_function("Absolute", absolute)?
         .build_readonly()
 }
