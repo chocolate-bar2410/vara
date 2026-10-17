@@ -47,11 +47,23 @@ end
     @within path
     @method Absolute
     @param path The file path.
-    @return The name of the file.
+    @return An absolute path.
 
     Converts a file path into an absolute file path.
 ]=]
 module.Absolute = function(path: string): string
+    return nil :: unknown
+end
+
+--[=[
+    @within path
+    @method Canonical
+    @param path The file path.
+    @return A canonical path.
+
+    Converts a file path into an canonical file path.
+]=]
+module.Canonical = function(path: string): string
     return nil :: unknown
 end
 

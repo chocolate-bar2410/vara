@@ -38,6 +38,10 @@ pub fn absolute(_: &mlua::Lua,path: String) -> mlua::Result<PathBuf>{
     std::path::absolute(&path).into_lua_err()
 }
 
+pub fn canonical(_: &mlua::Lua,path: String) -> mlua::Result<PathBuf>{
+    std::fs::canonicalize(&path).into_lua_err()
+}
+
 pub fn glob(_: &mlua::Lua,(path,pattern): (String,String)) -> mlua::Result<bool>{
     Ok(fast_glob::glob_match(path, pattern))
 }
@@ -48,6 +52,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("WithExt", with_ext)?
         .add_function("Basename", base_name)?
         .add_function("Absolute", absolute)?
+        .add_function("Canonical", canonical)?
         .add_function("Glob", glob)?
         .build_readonly()
 }
