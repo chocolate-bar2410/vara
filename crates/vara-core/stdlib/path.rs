@@ -1,7 +1,34 @@
 
+use mlua::LuaSerdeExt;
 use vara_util::table_builder::TableBuilder;
+
+pub fn join(context: &mlua::Lua,paths: mlua::MultiValue) -> mlua::Result<String>{
+
+    let path_items: mlua::Result<Vec<String>> = paths.into_vec()
+        .into_iter()
+        .map(|value| 
+            context.from_value::<String>(value)
+        )
+        .collect();
+
+    #[cfg(target_family = "unix")]
+    return Ok(path_items?.join("/"));
+
+    #[cfg(target_family = "windows")]
+    Ok(path_items?.join("\\"))
+}
+
+pub fn with_ext(_: &mlua::Lua,(path,ext): (String,String)) -> mlua::Result<String>{
+    Ok(format!("{}.{}",path,ext))
+}
+
+pub fn _resolve(_resolve: &mlua::Lua,_paths: mlua::MultiValue){
+
+}
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
+        .add_function("Join", join)?
+        .add_function("WithExt", with_ext)?
         .build_readonly()
 }
