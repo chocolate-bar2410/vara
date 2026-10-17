@@ -513,3 +513,21 @@ declare extern type Directory with
 
     function __tostring(self): string
 end
+
+--[=[
+    @class _RUNTIME
+
+    _RUNTIME global to follow the [_RUNTIME](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf) spec.
+
+    @prop name The name of the runtime, vara.
+    @prop version Version information
+    @prop url The github repository for vara.
+]=]
+declare _RUNTIME: {
+    read name: "vara",
+    read version: {
+        display: string
+    },
+
+    read url: string
+}

@@ -7,6 +7,10 @@ use crate::runtime::require;
 // omg lune thx so much :heart_eyes:
 use mlua_luau_scheduler::Scheduler;
 use mlua_luau_scheduler::Functions;
+
+const VARA_VERSION: &str = env!("CARGO_PKG_VERSION");
+const VARA_URL: &str = "https://github.com/chocolate_bar2410/vara";
+
 pub struct Runtime {
     pub vm: Lua,
     pub args: Vec<String>,
@@ -61,6 +65,15 @@ impl Runtime {
                 .create_require_function(require::Resolver::new())
                 .map(mlua::Value::Function)?,
         )?;
+
+        let runtime_global = self.vm.create_table()?;
+        let version_tab = self.vm.create_table()?;
+
+        version_tab.set("display", VARA_VERSION)?;
+        
+        runtime_global.set("name", "vara")?;
+        runtime_global.set("version", version_tab)?;
+        runtime_global.set("url", VARA_URL)?;
 
         Ok(())
     }
