@@ -11,11 +11,13 @@ pub fn register_libaries(runtime: &Runtime) -> mlua::Result<()>{
     let serde_lib = serde::get_module(&runtime.vm)?;
     let system_lib = system::get_module(&runtime.vm,&runtime.args)?;
     let task_lib = task::get_module(&runtime.vm)?;
+    let path_lib = path::get_module(&runtime.vm)?;
 
     runtime.vm.register_module("@vara/io", io_lib)?;
     runtime.vm.register_module("@vara/serde", serde_lib)?;
     runtime.vm.register_module("@vara/system", system_lib)?;
     runtime.vm.register_module("@vara/task", task_lib)?;
+    runtime.vm.register_module("@vara/path", path_lib)?;
 
     Ok(())
 }
