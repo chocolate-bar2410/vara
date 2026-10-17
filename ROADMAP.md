@@ -8,11 +8,12 @@
 - [ ] standard library
     - [x] networking
     - [x] task
-    - [ ] UI
+    - [x] UI
     - [ ] path
     - [ ] system
         - [ ] notify
     - [ ] terminal drawing
+    - [ ] colours
 - [ ] debugging
     - [ ] custom print
         - [ ] tables
