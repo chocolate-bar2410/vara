@@ -39,7 +39,7 @@ end
 	@tag must_use
 	@return string
 	
-	Reads `chunkSize` bytes from the stdout buffer.
+	Reads `chunkSize` bytes from the stdin buffer.
 ]=]
 function module.Read(chunkSize: number?): string
 	return nil :: unknown
@@ -51,9 +51,19 @@ end
 	@tag must_use
 	@return string
 	
-	Reads an entire line from the stdout buffer.
+	Reads an entire line from the stdin buffer.
 ]=]
 function module.ReadLine(): string
+	return nil :: unknown
+end
+
+--[=[
+	@within io
+	@method Flush
+	
+	Flushes the stdout buffer.
+]=]
+function module.Flush(): string
 	return nil :: unknown
 end
 
