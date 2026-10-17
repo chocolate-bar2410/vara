@@ -24,7 +24,7 @@ impl TextPipeline{
 
         let cache = glyphon::Cache::new(&device);
 
-        let mut text_atlas = glyphon::TextAtlas::new(&device, &queue, &cache, config.format);
+        let mut text_atlas = glyphon::TextAtlas::with_color_mode(&device, &queue, &cache, config.format,glyphon::ColorMode::Web);
 
         let viewport = glyphon::Viewport::new(&device, &cache);
 

@@ -15,6 +15,8 @@ context.BackgroundColour = {0.1,0.2,0.3,1}
 local inc_height = 0.05
 local current_height = 0.03
 
+local foreground_colour = {1,0.5,1,1}
+
 local create_stat = function(contents: string)
     local text_label = context:TextLabel()
 
@@ -23,7 +25,7 @@ local create_stat = function(contents: string)
     text_label.Position = {0.05,current_height}
 
     text_label.BackgroundColour = {0,0,0,0}
-    text_label.TextColour = {1,1,1,0.5}
+    text_label.TextColour = foreground_colour
 
     text_label.TextSize = 20
 
@@ -39,8 +41,8 @@ frame.Position = {0.025,0.025}
 frame.Colour = {0.05,0.05,0.05,0}
 
 frame.CornerRadius = 0.025
-frame.BorderWidth = 0.0025
-frame.BorderColour = {1,1,1,0.5}
+frame.BorderWidth = 0.01
+frame.BorderColour = foreground_colour
 
 create_stat("Welcome to vara")
 create_stat("------------------------------------------------------------------")
