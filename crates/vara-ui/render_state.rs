@@ -1,7 +1,7 @@
 use std::sync::Arc;
 
 use mlua::{ExternalError, ExternalResult};
-use winit::{dpi::LogicalSize, event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
+use winit::{event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
 
 use crate::{primitives::Rect, rect_pipeline::RectPipeline, text_entry::TextEntry, text_pipeline::TextPipeline};
 
