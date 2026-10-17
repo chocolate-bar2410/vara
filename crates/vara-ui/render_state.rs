@@ -1,13 +1,13 @@
 use std::sync::Arc;
 
 use mlua::{ExternalError, ExternalResult};
-use winit::{event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
+use winit::{dpi::LogicalSize, event_loop::ActiveEventLoop, keyboard::KeyCode, window::Window};
 
 use crate::{primitives::Rect, rect_pipeline::RectPipeline, text_entry::TextEntry, text_pipeline::TextPipeline};
 
 
 pub struct RenderState{
-    window: Arc<Window>,
+    pub window: Arc<Window>,
 
     surface: wgpu::Surface<'static>,
     device: wgpu::Device,
@@ -89,7 +89,7 @@ impl RenderState {
     }
 
     pub fn resize(&mut self,width: u32,height: u32){
-        if height == 0 || width == 0 {return;}
+        if height == 0 || width == 0 {return}
 
         self.config.width = width;
         self.config.height = height;

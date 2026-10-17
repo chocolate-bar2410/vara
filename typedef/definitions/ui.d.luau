@@ -4,6 +4,9 @@
     Object that handles user interfaces.
 ]=]
 declare extern type UiContext with
+    Resizable: boolean
+    Width: number
+    Height: number
     --[=[
         @within UiContext
         @method Run

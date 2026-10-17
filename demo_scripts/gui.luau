@@ -1,8 +1,14 @@
+--!strict
 local chrono = require("@vara/chrono")
 local system = require("@vara/system")
 local ui = require("@vara/ui")
 
 local context = ui.CreateContext()
+context.Width = 600
+context.Height = 400
+context.Resizable = false
+
+print(`{context.Width} x {context.Height}`)
 
 local inc_height = 0.05
 local current_height = 0.03

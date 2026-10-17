@@ -1,6 +1,7 @@
 use std::sync::Arc;
 
 use mlua::{ExternalError, ExternalResult};
+use winit::dpi::LogicalSize;
 use winit::event::{KeyEvent, WindowEvent};
 use winit::event_loop::EventLoop;
 use winit::application::ApplicationHandler;
@@ -21,6 +22,12 @@ pub struct UiContext{
     exit_error: mlua::Result<()>,
     #[lua(skip)]
     ui_components: Vec<UiComponent>,
+    #[lua(skip)]
+    window_width: u32,
+    #[lua(skip)]
+    window_height: u32,
+    #[lua(skip)]    
+    resizable: bool
 }
 
 #[mlua::userdata_impl]
@@ -31,6 +38,9 @@ impl UiContext {
             state: None,
             exit_error: Ok(()),
             ui_components: Vec::new(),
+            window_width: 600,
+            window_height: 800,
+            resizable: true
         }
     }
 
@@ -77,12 +87,64 @@ impl UiContext {
 
         context.create_userdata(text)
     }
+
+    #[lua(setter,name="Width")]
+    pub fn set_width(&mut self,width: u32) -> mlua::Result<()>{
+        self.window_width = width;
+        if let Some(state) = &self.state {
+            #[allow(unused)]
+            state.window.request_inner_size(LogicalSize::new(self.window_width, self.window_height));
+        }
+        Ok(())
+    }
+
+    #[lua(setter,name="Height")]
+    pub fn set_height(&mut self,height: u32) -> mlua::Result<()>{
+        self.window_height = height;
+        if let Some(state) = &self.state {
+            #[allow(unused)]
+            state.window.request_inner_size(LogicalSize::new(self.window_width, self.window_height));
+        }
+        Ok(())
+    }
+
+    #[lua(setter,name="Resizable")]
+    pub fn set_resizable(&mut self,resizable: bool) -> mlua::Result<()>{
+        self.resizable = resizable;
+        if let Some(state) = &self.state {
+            #[allow(unused)]
+            state.window.set_resizable(resizable);
+        }
+        Ok(())
+    }
+
+    #[lua(getter,name="Width")]
+    pub fn get_width(&self) -> mlua::Result<u32>{
+        Ok(self.window_width)
+    }
+
+    #[lua(getter,name="Height")]
+    pub fn get_height(&self) -> mlua::Result<u32>{
+        Ok(self.window_height)
+    }
+
+    #[lua(getter,name="Resizable")]
+    pub fn get_resizable(&self) -> mlua::Result<bool>{
+        Ok(self.resizable)
+    }
+
 }
 
 impl ApplicationHandler<RenderState> for UiContext{
     fn resumed(&mut self, event_loop: &winit::event_loop::ActiveEventLoop) {
+
+        let size = LogicalSize::new(self.window_width, self.window_height);
+
         #[allow(unused_mut)]
-        let mut window_attribuites = Window::default_attributes();
+        let mut window_attribuites = Window::default_attributes()
+            .with_resizable(self.resizable)
+            .with_inner_size(size)
+            .with_title("vara app");
 
         let window = match event_loop.create_window(window_attribuites){
             Ok(win) => win,
@@ -93,8 +155,6 @@ impl ApplicationHandler<RenderState> for UiContext{
                 return;
             }
         };
-        
-        window.set_title("vara app");
 
         let arc_window = Arc::new(window);
 
@@ -130,7 +190,15 @@ impl ApplicationHandler<RenderState> for UiContext{
 
         match event {
             WindowEvent::CloseRequested => event_loop.exit(),
-            WindowEvent::Resized(size) => state.resize(size.width, size.height),
+            WindowEvent::Resized(size) => {
+
+                if !self.resizable || !state.window.is_resizable() {
+                    #[allow(unused)]
+                    state.window.request_inner_size(LogicalSize::new(self.window_width,self.window_height));
+                }
+
+                state.resize(size.width, size.height)
+            },
             WindowEvent::RedrawRequested => {
                 #[allow(unused)]
                 self.render();
