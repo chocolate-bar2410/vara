@@ -9,7 +9,7 @@
     - [x] networking
     - [x] task
     - [x] UI
-    - [ ] path
+    - [x] path
     - [ ] system
         - [ ] notify
     - [ ] terminal drawing
