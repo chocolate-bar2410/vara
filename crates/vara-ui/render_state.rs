@@ -8,6 +8,7 @@ use crate::{primitives::Rect, rect_pipeline::RectPipeline, text_entry::TextEntry
 
 pub struct RenderState{
     pub window: Arc<Window>,
+    pub clear_colour: [f64;4],
 
     surface: wgpu::Surface<'static>,
     device: wgpu::Device,
@@ -16,7 +17,7 @@ pub struct RenderState{
     is_surface_configured: bool,
 
     rect_pipeline: RectPipeline,
-    text_pipeline: TextPipeline
+    text_pipeline: TextPipeline,
 }
 
 impl RenderState {
@@ -78,13 +79,16 @@ impl RenderState {
 
         Ok(Self { 
             window, 
+            clear_colour: [0.01,0.01,0.01,1.0],
+
             surface, 
             device, 
             queue, 
             config, 
             is_surface_configured: is_surface_configured,
+
             rect_pipeline,
-            text_pipeline
+            text_pipeline,
         })
     }
 
@@ -150,10 +154,10 @@ impl RenderState {
                     depth_slice: None,
                     ops: wgpu::Operations {
                         load: wgpu::LoadOp::Clear(wgpu::Color{
-                            r: 0.01,
-                            g: 0.01,
-                            b: 0.01,
-                            a: 1.0,
+                            r: self.clear_colour[0],
+                            g: self.clear_colour[1],
+                            b: self.clear_colour[2],
+                            a: self.clear_colour[3],
                         }),
 
                         store: wgpu::StoreOp::Store
@@ -184,5 +188,4 @@ impl RenderState {
     pub fn draw_text(&mut self,text: TextEntry){
         self.text_pipeline.draw_text(text);
     }
-
 }

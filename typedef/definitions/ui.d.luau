@@ -7,6 +7,7 @@ declare extern type UiContext with
     Resizable: boolean
     Width: number
     Height: number
+    BackgroundColour: {number}
     --[=[
         @within UiContext
         @method Run

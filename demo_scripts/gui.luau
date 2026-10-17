@@ -10,6 +10,8 @@ context.Resizable = false
 
 print(`{context.Width} x {context.Height}`)
 
+context.BackgroundColour = {0.1,0.2,0.3,1}
+
 local inc_height = 0.05
 local current_height = 0.03
 

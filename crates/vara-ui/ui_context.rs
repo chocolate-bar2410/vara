@@ -27,7 +27,9 @@ pub struct UiContext{
     #[lua(skip)]
     window_height: u32,
     #[lua(skip)]    
-    resizable: bool
+    resizable: bool,
+    #[lua(skip)] 
+    clear_colour: [f64;4],
 }
 
 #[mlua::userdata_impl]
@@ -40,7 +42,8 @@ impl UiContext {
             ui_components: Vec::new(),
             window_width: 600,
             window_height: 800,
-            resizable: true
+            resizable: true,
+            clear_colour: [0.01,0.01,0.01,1.0],
         }
     }
 
@@ -118,6 +121,15 @@ impl UiContext {
         Ok(())
     }
 
+    #[lua(setter,name="BackgroundColour")]
+    pub fn set_background_colour(&mut self,colour: [f64;4]) -> mlua::Result<()>{
+        self.clear_colour = colour.clone();
+        if let Some(state) = &mut self.state {
+            state.clear_colour = colour.clone();
+        }
+        Ok(())
+    }
+
     #[lua(getter,name="Width")]
     pub fn get_width(&self) -> mlua::Result<u32>{
         Ok(self.window_width)
@@ -131,6 +143,11 @@ impl UiContext {
     #[lua(getter,name="Resizable")]
     pub fn get_resizable(&self) -> mlua::Result<bool>{
         Ok(self.resizable)
+    }
+
+    #[lua(getter,name="BackgroundColour")]
+    pub fn get_background_colour(&self) -> mlua::Result<[f64;4]>{
+        Ok(self.clear_colour)
     }
 
 }
@@ -158,7 +175,7 @@ impl ApplicationHandler<RenderState> for UiContext{
 
         let arc_window = Arc::new(window);
 
-        let render_state = match pollster::block_on(RenderState::new(arc_window)) {
+        let mut render_state = match pollster::block_on(RenderState::new(arc_window)) {
             Ok(state) => state,
             Err(err) => {
                 self.exit_error = Err(err.into_lua_err());
@@ -167,6 +184,8 @@ impl ApplicationHandler<RenderState> for UiContext{
                 return;
             }
         };
+
+        render_state.clear_colour = self.clear_colour;
 
         self.state = Some(render_state);
     }
