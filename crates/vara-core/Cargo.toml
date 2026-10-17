@@ -32,4 +32,5 @@ vara_media = { path = "../vara-media" }
 vara_net = { path = "../vara-net" } 
 vara_ui = { path = "../vara-ui" } 
 mlua-luau-scheduler = "0.3.0"
+fast-glob = "1.1.2"
 
