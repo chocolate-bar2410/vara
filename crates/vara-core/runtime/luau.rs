@@ -8,8 +8,8 @@ use crate::runtime::require;
 use mlua_luau_scheduler::Scheduler;
 use mlua_luau_scheduler::Functions;
 pub struct Runtime {
-    vm: Lua,
-    args: Vec<String>,
+    pub vm: Lua,
+    pub args: Vec<String>,
     scheduler: Scheduler,
 }
 
@@ -40,24 +40,19 @@ impl Runtime {
     }
 
     fn setup_standard_library(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        let io_lib = vara_stdlib::stdio::get_module(&self.vm)?;
+
+        vara_stdlib::register_libaries(self)?;
+
         let fs_lib = vara_files::get_module(&self.vm)?;
-        let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
         let chrono_lib = vara_chrono::get_module(&self.vm)?;
-        let system_lib = vara_stdlib::system::get_module(&self.vm,&self.args)?;
         let media_lib = vara_media::get_module(&self.vm)?;
         let net_lib = vara_net::get_module(&self.vm)?;
-        let task_lib = vara_stdlib::task::get_module(&self.vm)?;
         let ui_lib = vara_ui::get_module(&self.vm)?;
 
-        self.vm.register_module("@vara/io", io_lib)?;
         self.vm.register_module("@vara/fs", fs_lib)?;
-        self.vm.register_module("@vara/serde", serde_lib)?;
         self.vm.register_module("@vara/chrono", chrono_lib)?;
-        self.vm.register_module("@vara/system", system_lib)?;
         self.vm.register_module("@vara/media", media_lib)?;
         self.vm.register_module("@vara/net", net_lib)?;
-        self.vm.register_module("@vara/task", task_lib)?;
         self.vm.register_module("@vara/ui", ui_lib)?;
 
         self.vm.globals().set(
