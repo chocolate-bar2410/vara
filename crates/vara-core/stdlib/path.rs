@@ -22,6 +22,16 @@ pub fn with_ext(_: &mlua::Lua,(path,ext): (String,String)) -> mlua::Result<Strin
     Ok(format!("{}.{}",path,ext))
 }
 
+pub fn base_name(_: &mlua::Lua,path: String) -> mlua::Result<String>{
+    let path_obj = std::path::Path::new(&path);
+
+    Ok(path_obj
+        .file_name()
+        .and_then(|os_str| Some(os_str.to_string_lossy().into_owned()))
+        .unwrap_or(String::from(""))
+    )
+}
+
 pub fn _resolve(_resolve: &mlua::Lua,_paths: mlua::MultiValue){
 
 }
@@ -30,5 +40,6 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_function("Join", join)?
         .add_function("WithExt", with_ext)?
+        .add_function("Basename", base_name)?
         .build_readonly()
 }
