@@ -10,8 +10,8 @@
     - [x] task
     - [x] UI
     - [x] path
-    - [ ] system
-        - [ ] notify
+    - [x] system
+        - [x] notify method
     - [ ] terminal drawing
     - [ ] colours
 - [ ] debugging

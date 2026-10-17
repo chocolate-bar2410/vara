@@ -160,4 +160,22 @@ function module.VirtualMemoryUsage() : number
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method Notify
+	@param summary A summary to the notification.
+	@param body	The contents of the notifications.
+	@param name The displayed app name.
+	@param timeout The ammount of time in ms that the notification pops up for.
+
+	Sends a desktop notification.
+
+	!!! note
+		notifications on windows require your executable to have a AUMID to properly show your app name.
+		if there is no AUMID, windows will give the notification a generic app name.
+]=]
+function module.Notify(summary : string,body : string,name : string,timeout : number)
+    return nil :: unknown
+end
+
 return module

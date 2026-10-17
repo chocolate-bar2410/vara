@@ -1,5 +1,6 @@
 use std::env::consts::{ARCH, FAMILY, OS};
-use mlua::{ExternalError, IntoLua};
+use mlua::{ExternalError, ExternalResult, IntoLua};
+use notify_rust::{Notification, Timeout};
 use vara_util::table_builder::TableBuilder;
 
 use std::thread::available_parallelism as cpus_available;
@@ -66,6 +67,20 @@ fn get_virtual_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::V
     Ok(usage.virtual_mem.into_lua(context)?)
 }
 
+
+fn notify(_: &mlua::Lua,(summary,body,name,timeout) : (String,String,String,u32)) -> mlua::Result<()>{
+    Notification::new()
+        .summary(&summary)
+        .body(&body)
+        .appname(&name)
+        .timeout(Timeout::Milliseconds(timeout))
+        .finalize()
+        .show()
+        .into_lua_err()?;
+
+    Ok(())
+}
+
 fn get_home_directory() -> Option<String>{
     #[cfg(target_family = "windows")]{
         std::env::var("USERPROFILE").ok()
@@ -110,5 +125,6 @@ pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::
         .add_function("ProcessorCount", get_cpu_count)?
         .add_function("PhysicalMemoryUsage", get_physical_memory_usage)?
         .add_function("VirtualMemoryUsage", get_virtual_memory_usage)?
+        .add_function("Notify", notify)?
         .build_readonly()
 }
