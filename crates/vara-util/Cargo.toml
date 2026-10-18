@@ -9,3 +9,6 @@ path = "lib.rs"
 dunce = "1.0.5"
 mlua = { version = "0.12.1", features = ["async", "luau-jit"] }
 path-clean = "1.0.1"
+
+[target.'cfg(unix)'.dependencies]
+termios = "0.3"
