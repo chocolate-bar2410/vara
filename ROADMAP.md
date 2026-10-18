@@ -14,6 +14,8 @@
         - [x] notify method
     - [ ] terminal drawing
     - [ ] colours
+    - [ ] file system
+        - [ ] watchers
 - [ ] debugging
     - [ ] custom print
         - [ ] tables
