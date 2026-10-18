@@ -67,4 +67,18 @@ function module.Flush(): string
 	return nil :: unknown
 end
 
+
+--[=[
+	@within io
+	@method Read
+	@param chunkSize The ammount of bytes being read, reads 1024 bytes if no size is given.
+	@tag must_use
+	@return string
+	
+	Reads `chunkSize` bytes from the stdin buffer asynchronously.
+]=]
+function module.ReadAsync(chunkSize: number?): string
+	return nil :: unknown
+end
+
 return module
