@@ -75,6 +75,8 @@ impl Runtime {
         runtime_global.set("version", version_tab)?;
         runtime_global.set("url", VARA_URL)?;
 
+        self.vm.globals().set("_RUNTIME", runtime_global)?;
+
         Ok(())
     }
 
