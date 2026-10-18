@@ -5,7 +5,7 @@ local terminal = require("@vara/terminal")
 local style = terminal.Style
 local colour = terminal.Colour
 
-terminal.Clear()
+terminal.EnterAltScreen()
 terminal.HideCursor()
 
 terminal.MoveCursor(1,2)
@@ -20,4 +20,4 @@ io.Flush()
 
 io.ReadLine(1)
 terminal.ShowCursor()
-terminal.Clear()
+terminal.ExitAltScreen()

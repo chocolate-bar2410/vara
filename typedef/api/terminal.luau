@@ -88,7 +88,7 @@ end
 
 --[=[
     @within terminal
-    @method HideCursor
+    @method ShowCursor
 
     Shows the cursor.
 ]=]
@@ -104,6 +104,26 @@ end
     Shows the cursor.
 ]=]
 module.MoveCursor = function(x: number,y: number)
+    return nil :: unknown
+end
+
+--[=[
+    @within terminal
+    @method EnterAltScreen
+
+    Moves to an alternate screen buffer.
+]=]
+module.EnterAltScreen = function()
+    return nil :: unknown
+end
+
+--[=[
+    @within terminal
+    @method ExitAltScreen
+
+    Exits an alternate screen buffer.
+]=]
+module.ExitAltScreen = function()
     return nil :: unknown
 end
 

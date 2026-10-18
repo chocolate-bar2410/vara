@@ -35,6 +35,22 @@ fn move_cursor(_: &mlua::Lua,(x,y): (u32,u32)) -> mlua::Result<()>{
     Ok(())
 }
 
+fn enter_alt_screen(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
+    let mut stdout = std::io::stdout();
+    write!(stdout,"\x1b[?1049h")?;
+    stdout.flush()?;
+
+    Ok(())
+}
+
+fn exit_alt_screen(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
+    let mut stdout = std::io::stdout();
+    write!(stdout,"\x1b[?1049l")?;
+    stdout.flush()?;
+
+    Ok(())
+}
+
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
 
@@ -95,6 +111,8 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("HideCursor", hide_cursor)?
         .add_function("ShowCursor", show_cursor)?
         .add_function("MoveCursor", move_cursor)?
+        .add_function("EnterAltScreen", enter_alt_screen)?
+        .add_function("ExitAltScreen", exit_alt_screen)?
         .add_value("Style", style_tab)?
         .add_value("Colour", colour_tab)?
         .build_readonly()
