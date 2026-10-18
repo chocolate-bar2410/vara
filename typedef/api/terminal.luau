@@ -127,4 +127,25 @@ module.ExitAltScreen = function()
     return nil :: unknown
 end
 
+--[=[
+    @within terminal
+    @method EnterRawMode
+
+    Sets the terminal to raw mode.
+]=]
+module.EnterRawMode = function()
+    return nil :: unknown
+end
+
+--[=[
+    @within terminal
+    @method ExitRawMode
+
+    Makes the terminal exit raw mode.
+]=]
+module.ExitRawMode = function()
+    return nil :: unknown
+end
+
+
 return module

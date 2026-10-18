@@ -6,6 +6,7 @@ local style = terminal.Style
 local colour = terminal.Colour
 
 terminal.EnterAltScreen()
+terminal.EnterRawMode()
 terminal.HideCursor()
 
 terminal.MoveCursor(1,2)
@@ -18,6 +19,9 @@ terminal.MoveCursor(1,3)
 io.Write(("-"):rep(18))
 io.Flush()
 
-io.ReadLine(1)
+repeat
+until io.Read(4) == "\r"
+
 terminal.ShowCursor()
+terminal.ExitRawMode()
 terminal.ExitAltScreen()

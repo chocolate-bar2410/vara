@@ -51,6 +51,26 @@ fn exit_alt_screen(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
     Ok(())
 }
 
+fn enter_raw_mode(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
+    #[cfg(windows)]
+    vara_util::win_compat::enter_raw_mode()?;
+
+    #[cfg(unix)]
+    vara_util::unix_compat::enter_raw_mode()?;
+
+    Ok(())
+}
+
+fn exit_raw_mode(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
+    #[cfg(windows)]
+    vara_util::win_compat::exit_raw_mode()?;
+
+    #[cfg(unix)]
+    vara_util::unix_compat::exit_raw_mode()?;
+
+    Ok(())
+}
+
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
 
@@ -113,6 +133,8 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("MoveCursor", move_cursor)?
         .add_function("EnterAltScreen", enter_alt_screen)?
         .add_function("ExitAltScreen", exit_alt_screen)?
+        .add_function("EnterRawMode", enter_raw_mode)?
+        .add_function("ExitRawMode", exit_raw_mode)?
         .add_value("Style", style_tab)?
         .add_value("Colour", colour_tab)?
         .build_readonly()
