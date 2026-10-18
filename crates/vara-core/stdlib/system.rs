@@ -93,7 +93,11 @@ fn get_home_directory() -> Option<String>{
 }
 
 pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::Table> {
-    dotenvy::dotenv().map_err(|err| err.into_lua_err())?;
+    match dotenvy::dotenv(){
+        Ok(_) => {},
+        Err(dotenvy::Error::Io(_)) => {},
+        Err(err) => return Err(err.into_lua_err())
+    }
 
     TableBuilder::new(context.clone())?
         .add_value("Os", OS)?
