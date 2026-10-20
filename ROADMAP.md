@@ -2,9 +2,9 @@
 
 ### v0.2.0
 - [ ] CLI
-    - [ ] test
     - [ ] build
         - [ ] dependency bundling
+    - [ ] test
 - [ ] standard library
     - [x] networking
     - [x] task
@@ -12,7 +12,7 @@
     - [x] path
     - [x] system
         - [x] notify method
-    - [ ] terminal drawing
+    - [x] terminal drawing
     - [ ] colours
     - [ ] file system
         - [ ] watchers
