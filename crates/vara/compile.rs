@@ -1,4 +1,4 @@
-use std::{env, path::{Path, PathBuf}, sync::LazyLock};
+use std::{env, fs, path::{Path, PathBuf}, sync::LazyLock};
 
 use darklua_core::{BundleConfiguration, Configuration, Options, Resources, rules::{bundle::BundleRequireMode}};
 use mlua::chunk::Compiler;
@@ -7,7 +7,13 @@ use vara_core::runtime::luau as vara_runtime;
 
 pub static CURRENT_EXE : LazyLock<PathBuf> = LazyLock::new(|| env::current_exe().expect("failed to retrieve current exe"));
 
+const FORMAT_VERSION : u16 = 1;
+
 const MAGIC : &[u8; 8]= b"VARABYTE";
+
+const SIZE_BYTES : usize = std::mem::size_of::<u64>();
+const VERSION_BYTES : usize = std::mem::size_of::<u16>();
+const FOOTER_SIZE : usize = SIZE_BYTES + VERSION_BYTES + MAGIC.len();
 
 pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
 
@@ -62,6 +68,7 @@ pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
     let mut metadata : Vec<u8> = Vec::new();
     metadata.extend_from_slice(&bytecode);
     metadata.extend_from_slice(&(bytecode.len() as u64).to_be_bytes());
+    metadata.extend_from_slice(&FORMAT_VERSION.to_be_bytes());
     metadata.extend_from_slice(MAGIC);
 
     let mut source = async_fs::read(CURRENT_EXE.to_path_buf()).await?;
@@ -77,10 +84,22 @@ pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
     let dir = path.parent().ok_or("could not get the parent directory of source file")?;
 
     #[cfg(windows)]
-    async_fs::write(dir.join(filename).with_extension("exe"), source).await?;
+    async_fs::write(dir.join(filename).with_extension("exe"), &source).await?;
 
-    #[cfg(not(windows))]
-    async_fs::write(dir.join(filename), source).await?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let output_path = dir.join(filename);
+
+        async_fs::write(&output_path, &source).await?;
+
+        let mut permissions = std::fs::metadata(output_path)?.permissions();
+        let current_mode = permissions.mode();
+        permissions.set_mode(current_mode | 0o100);
+
+        fs::set_permissions(output_path, permissions);
+    }
+    
 
     println!("compiled {} successfully",path.display());
     Ok(())
@@ -96,9 +115,6 @@ pub async fn check() -> std::io::Result<(bool,Vec<u8>)>{
 }
 
 pub async fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-    const SIZE_BYTES : usize = std::mem::size_of::<u64>();
-    const FOOTER_SIZE : usize = SIZE_BYTES + MAGIC.len();
-
     if contents.len() < FOOTER_SIZE {
         return Err("standalone binary too small".into());
     }
@@ -107,10 +123,12 @@ pub async fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error
         return Err("this is not a standalone binary".into());
     }
 
-    let size_start = contents.len() - FOOTER_SIZE;
-    let size_end = size_start + SIZE_BYTES;
+    let magic_start = contents.len() - MAGIC.len();
+    let version_start = magic_start - VERSION_BYTES;
 
-    let bytecode_bytesize : [u8;SIZE_BYTES] = contents[size_start..size_end].try_into()?;
+    let size_start = version_start - SIZE_BYTES;
+
+    let bytecode_bytesize : [u8;SIZE_BYTES] = contents[size_start..version_start].try_into()?;
 
     let bytecode_size = usize::try_from(u64::from_be_bytes(bytecode_bytesize))?;
 
