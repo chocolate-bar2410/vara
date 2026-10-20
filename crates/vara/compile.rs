@@ -1,4 +1,4 @@
-use std::{env, fs, path::{Path, PathBuf}, sync::LazyLock};
+use std::{env, path::{Path, PathBuf}, sync::LazyLock};
 
 use darklua_core::{BundleConfiguration, Configuration, Options, Resources, rules::{bundle::BundleRequireMode}};
 use mlua::chunk::Compiler;
@@ -14,6 +14,11 @@ const MAGIC : &[u8; 8]= b"VARABYTE";
 const SIZE_BYTES : usize = std::mem::size_of::<u64>();
 const VERSION_BYTES : usize = std::mem::size_of::<u16>();
 const FOOTER_SIZE : usize = SIZE_BYTES + VERSION_BYTES + MAGIC.len();
+/*
+EXECUTABLE LAYOUT
+
+[RUNTIME][BYTECODE][BYTECODE_SIZE <8 bytes>][VERSION <2 bytes>][MAGIC <8 bytes>]
+*/
 
 pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
 
@@ -97,7 +102,7 @@ pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
         let current_mode = permissions.mode();
         permissions.set_mode(current_mode | 0o100);
 
-        fs::set_permissions(output_path, permissions);
+        std::fs::set_permissions(output_path, permissions);
     }
     
 
