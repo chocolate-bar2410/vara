@@ -14,7 +14,13 @@ fn main() -> ExitCode {
 
     async_io::block_on(async {
 
-        let (is_binary, contents) = compile::check().await;
+        let (is_binary, contents) = match compile::check().await {
+            Ok((bin,source)) => (bin,source),
+            Err(err) => {
+                eprintln!("failed to read executable {err}");
+                return ExitCode::FAILURE
+            }
+        };
 
         if is_binary {
 

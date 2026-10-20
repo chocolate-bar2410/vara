@@ -1,15 +1,15 @@
-use std::{env, path::PathBuf, sync::LazyLock};
+use std::{env, path::{Path, PathBuf}, sync::LazyLock};
 
-use darklua_core::{BundleConfiguration, Configuration, Options, Resources, rules::{Rule, bundle::BundleRequireMode}};
+use darklua_core::{BundleConfiguration, Configuration, Options, Resources, rules::{bundle::BundleRequireMode}};
 use mlua::chunk::Compiler;
 
 use vara_core::runtime::luau as vara_runtime;
 
 pub static CURRENT_EXE : LazyLock<PathBuf> = LazyLock::new(|| env::current_exe().expect("failed to retrieve current exe"));
 
-const MAGIC : &[u8; 6]= b"$$VARA";
+const MAGIC : &[u8; 8]= b"VARABYTE";
 
-pub async fn compile(path : &PathBuf) -> Result<(),Box<dyn std::error::Error>>{
+pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
 
     if !path.exists(){
         return Err(format!("could not find file {}",path.display()).into());
@@ -46,7 +46,7 @@ pub async fn compile(path : &PathBuf) -> Result<(),Box<dyn std::error::Error>>{
     if !errors.is_empty() {
         let error_message = errors.iter().map(|err| format!("{err}")).collect::<Vec<_>>().join("\n");
 
-        return Err(format!("darklua failed to bundle code {error_message}").into());
+        return Err(format!("darklua failed to bundle code:\n{error_message}").into());
     }
 
     let bundled = resources.get("__$VARA_bundled.luau").map_err(|_| "failed to get bundled contents from resources")?;
@@ -74,26 +74,30 @@ pub async fn compile(path : &PathBuf) -> Result<(),Box<dyn std::error::Error>>{
         .map(|s| s.to_string())
         .unwrap_or("program".to_string());
 
-    async_fs::write(format!("./{}.exe",filename), source).await?;
+    let dir = path.parent().ok_or("could not get the parent directory of source file")?;
+
+    #[cfg(windows)]
+    async_fs::write(dir.join(filename).with_extension("exe"), source).await?;
+
+    #[cfg(not(windows))]
+    async_fs::write(dir.join(filename), source).await?;
 
     println!("compiled {} successfully",path.display());
     Ok(())
 }
 
-pub async fn check() -> (bool,Vec<u8>){
+pub async fn check() -> std::io::Result<(bool,Vec<u8>)>{
     let contents = async_fs::read(CURRENT_EXE.to_path_buf())
-        .await
-        .unwrap_or_default();
+        .await?;
 
     let is_binary = contents.ends_with(MAGIC);
 
-    (is_binary,contents)
+    Ok((is_binary,contents))
 }
 
 pub async fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-    const SIZE_BYTES : usize = 8;
-    const MAGIC_BYTES : usize = 6;
-    const FOOTER_SIZE : usize = SIZE_BYTES + MAGIC_BYTES;
+    const SIZE_BYTES : usize = std::mem::size_of::<u64>();
+    const FOOTER_SIZE : usize = SIZE_BYTES + MAGIC.len();
 
     if contents.len() < FOOTER_SIZE {
         return Err("standalone binary too small".into());
