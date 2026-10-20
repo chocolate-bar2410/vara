@@ -2,8 +2,8 @@
 
 ### v0.2.0
 - [ ] CLI
-    - [ ] build
-        - [ ] dependency bundling
+    - [x] build
+        - [x] dependency bundling
     - [ ] test
 - [ ] standard library
     - [x] networking

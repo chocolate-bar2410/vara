@@ -86,7 +86,10 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
 
         Some(Commands::Compile(args)) => {
             let path = args.path;
-            compile::compile(path).await
+            match compile::compile(&path).await {
+                Ok(()) => Ok(()),
+                Err(err) => Err(format!("failed to compile:\n{}",err).into())
+            }
         }
 
         None => Ok(CLI::command().print_help()?),

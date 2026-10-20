@@ -1,7 +1,7 @@
 use std::{env, path::PathBuf, sync::LazyLock};
 
+use darklua_core::{BundleConfiguration, Configuration, Options, Resources, rules::bundle::BundleRequireMode};
 use mlua::chunk::Compiler;
-use vara_files as vara_fs;
 
 use vara_core::runtime::luau as vara_runtime;
 
@@ -9,13 +9,39 @@ pub static CURRENT_EXE : LazyLock<PathBuf> = LazyLock::new(|| env::current_exe()
 
 const MAGIC : &[u8; 6]= b"$$VARA";
 
-pub async fn compile(path : PathBuf) -> Result<(),Box<dyn std::error::Error>>{
+pub async fn compile(path : &PathBuf) -> Result<(),Box<dyn std::error::Error>>{
 
     if !path.exists(){
         return Err(format!("could not find file {}",path.display()).into());
     }
 
-    let file_contents = &vara_fs::read_file_as_binary(&path)?;
+    let resources = Resources::from_file_system();
+    
+    let config = Configuration::empty()
+        .with_bundle_configuration(
+            BundleConfiguration::new(BundleRequireMode::Luau(Default::default()))
+        );
+
+    let options = Options::new(path)
+        .with_configuration(config)
+        .with_output("__$VARA_bundled.luau");
+
+    let result = match darklua_core::process(&resources, options) {
+        Ok(_result) => _result,
+        Err(err) => return Err(format!("{}",err).into()),
+    };
+
+    let errors = result.collect_errors();
+    if !errors.is_empty() {
+        return Err("darklua failed to bundle code".into());
+    }
+
+    let bundled = resources.get("__$VARA_bundled.luau").map_err(|_| "failed to get bundled contents from resources")?;
+
+    std::fs::remove_file("__$VARA_bundled.luau")?;
+
+    let file_contents = bundled.as_bytes().to_vec();
+
     let compiler = Compiler::new();
 
     let bytecode = compiler.compile(file_contents)?;
