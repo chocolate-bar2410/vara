@@ -69,8 +69,8 @@ local render = function()
 
     fs.File("log.txt"):Append(buffer.fromstring(("%.f %.f\n"):format(screen_width / 2 - 2, 3)))
 
-    draw_box(1, 1, screen_width, 13)
-    draw_box(2, 4, screen_width / 2 - 2, 3)
+    draw_box(1, 1, screen_width - 1, 13)
+    draw_box(2, 4, screen_width / 2 - 3, 3)
 
     draw_box(screen_width / 2 + 1, 4, screen_width / 2 - 2, 3)
     draw_box(2, 8, screen_width - 3, 5)
@@ -142,9 +142,8 @@ coroutine.resume(resize_thread)
 
 repeat
     local key = io.ReadAsync(1) 
-    fs.File("log.txt"):Append(buffer.fromstring(("%q %d\n"):format(key,key:byte())))
     
-until key == "\x1b" or key == string.char(3)
+until key == string.char(3)
 
 coroutine.close(resize_thread)
 coroutine.close(thread)
