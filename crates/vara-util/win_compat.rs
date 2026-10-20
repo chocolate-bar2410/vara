@@ -8,6 +8,7 @@ const STD_INPUT_HANDLE: u32 = (-10i32) as u32;
 const ENABLE_LINE_INPUT: u32 = 0x0002;
 const ENABLE_ECHO_INPUT: u32 = 0x0004;
 const ENABLE_PROCESSED_INPUT: u32 = 0x0001;
+const ENABLE_VIRTUAL_TERMINAL_INPUT: u32 = 0x0200;
 
 type Handle = *mut c_void;
 
@@ -62,6 +63,7 @@ pub fn enter_raw_mode() -> mlua::Result<()> {
         let original = mode;
 
         mode &= !(ENABLE_LINE_INPUT | ENABLE_ECHO_INPUT | ENABLE_PROCESSED_INPUT);
+        mode |= ENABLE_VIRTUAL_TERMINAL_INPUT;
 
         if SetConsoleMode(handle, mode) == 0 {
             return Err(std::io::Error::last_os_error().into_lua_err())
