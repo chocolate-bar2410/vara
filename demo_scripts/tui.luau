@@ -1,5 +1,6 @@
 --!strict
 local chrono = require("@vara/chrono")
+local fs = require("@vara/fs")
 local io = require("@vara/io")
 local system = require("@vara/system")
 local task = require("@vara/task")
@@ -8,8 +9,11 @@ local terminal = require("@vara/terminal")
 local style = terminal.Style
 local colour = terminal.Colour
 
-const TUI_WIDTH = 100
+local screen_width,_screen_height = terminal.GetSize()
 const SIZE_SUFFIXES = {"BYTES","KB","MB","GB","TB"}
+
+local os = system.Os
+    local language = system.LanguagePreferences.Message[1]
 
 local format_byte_count = function(bytes: number)
     if bytes <= 0 then return "0.00 BYTES " end
@@ -25,7 +29,6 @@ local format_byte_count = function(bytes: number)
 
     return size_string
 end
-
 
 local draw_box = function(x: number,y: number,width: number,height: number)
     terminal.MoveCursor(x,y)
@@ -57,16 +60,56 @@ local draw_box = function(x: number,y: number,width: number,height: number)
     io.Flush()
 end
 
+local render = function()
+    terminal.Clear()
+    terminal.MoveCursor(3,2)
+    io.Write(`{colour.Magenta}vara TUI demo{style.Reset}`)
+    terminal.MoveCursor(3,3)
+    io.Write(`{colour.Magenta}{style.Dim}v{_RUNTIME.version.display}{style.Reset}`)
+
+    fs.File("log.txt"):Append(buffer.fromstring(("%.f %.f\n"):format(screen_width / 2 - 2, 3)))
+
+    draw_box(1, 1, screen_width, 13)
+    draw_box(2, 4, screen_width / 2 - 2, 3)
+
+    draw_box(screen_width / 2 + 1, 4, screen_width / 2 - 2, 3)
+    draw_box(2, 8, screen_width - 3, 5)
+
+    terminal.MoveCursor(3,5)
+    io.Write(`{colour.Magenta}Process memory{style.Reset}`)
+
+    terminal.MoveCursor(screen_width / 2 + 2,5)
+    io.Write(`{colour.Magenta}Logical CPUS{style.Reset}`)
+
+    terminal.MoveCursor(3,9)
+    io.Write(`{colour.Magenta}System Info{style.Reset}`)
+
+    terminal.MoveCursor(3,9)
+    io.Write(`{colour.Magenta}System Info{style.Reset}`)
+
+    terminal.MoveCursor(3,11)
+    io.Write(`{colour.Magenta}{style.Dim}OS/ARCH{style.Reset}`)
+    terminal.MoveCursor(3,12)
+    io.Write(`{colour.Magenta}{style.Dim}Language{style.Reset}`)
+
+    terminal.MoveCursor(screen_width - 2 - #os,11)
+    io.Write(`{colour.BrightCyan}{os}{style.Reset}`)
+    terminal.MoveCursor(screen_width - 2 - #language,12)
+    io.Write(`{colour.BrightCyan}{language}{style.Reset}`)
+
+    io.Flush()
+end
+
 local thread = coroutine.create(function(...)
     while true do
         terminal.MoveCursor(3,6)
         io.Write(`{colour.BrightCyan}{format_byte_count(system.PhysicalMemoryUsage())}{style.Reset}`)
-        terminal.MoveCursor(TUI_WIDTH / 2 + 3,6)
+        terminal.MoveCursor(screen_width / 2 + 2,6)
         io.Write(`{colour.BrightCyan}{system.ProcessorCount()}{style.Reset}`)
 
         local date = chrono.Now():Humanise()
 
-        terminal.MoveCursor(TUI_WIDTH + 1 - #date ,2)
+        terminal.MoveCursor(screen_width - #date ,2)
         io.Write(`{colour.BrightCyan}{date}{style.Reset}`)
 
         io.Flush()
@@ -74,53 +117,36 @@ local thread = coroutine.create(function(...)
     end
 end)
 
+local resize_thread = coroutine.create(function(...)
+    while true do
+        local width,height = terminal.GetSize()
+
+        if width ~= screen_width or height ~= _screen_height then
+            screen_width = width
+            _screen_height = height
+            render()
+        end
+
+        task.Sleep(0.01)
+    end
+end)
+
 terminal.EnterAltScreen()
 terminal.EnterRawMode()
 terminal.HideCursor()
 
-terminal.MoveCursor(3,2)
-io.Write(`{colour.Magenta}vara TUI demo{style.Reset}`)
-terminal.MoveCursor(3,3)
-io.Write(`{colour.Magenta}{style.Dim}v{_RUNTIME.version.display}{style.Reset}`)
+render()
 
-draw_box(1, 1, TUI_WIDTH + 1, 13)
-draw_box(2, 4, TUI_WIDTH / 2 - 1, 3)
-draw_box(TUI_WIDTH / 2 + 2, 4, TUI_WIDTH / 2 - 1, 3)
-draw_box(2, 8, TUI_WIDTH - 1, 5)
-
-terminal.MoveCursor(3,5)
-io.Write(`{colour.Magenta}Process memory{style.Reset}`)
-
-terminal.MoveCursor(TUI_WIDTH / 2 + 3,5)
-io.Write(`{colour.Magenta}Logical CPUS{style.Reset}`)
-
-terminal.MoveCursor(3,9)
-io.Write(`{colour.Magenta}System Info{style.Reset}`)
-
-terminal.MoveCursor(3,9)
-io.Write(`{colour.Magenta}System Info{style.Reset}`)
-
-terminal.MoveCursor(3,11)
-io.Write(`{colour.Magenta}{style.Dim}OS/ARCH{style.Reset}`)
-terminal.MoveCursor(3,12)
-io.Write(`{colour.Magenta}{style.Dim}Language{style.Reset}`)
-
-local os = system.Os
-local language = system.LanguagePreferences.Message[1]
-
-terminal.MoveCursor(TUI_WIDTH - 1 - #os,11)
-io.Write(`{colour.BrightCyan}{os}{style.Reset}`)
-terminal.MoveCursor(TUI_WIDTH - 1 - #language,12)
-io.Write(`{colour.BrightCyan}{language}{style.Reset}`)
-
-io.Flush()
 coroutine.resume(thread)
+coroutine.resume(resize_thread)
 
 repeat
     local key = io.ReadAsync(1) 
+    fs.File("log.txt"):Append(buffer.fromstring(("%q %d\n"):format(key,key:byte())))
+    
+until key == "\x1b" or key == string.char(3)
 
-until key == string.char(13)
-
+coroutine.close(resize_thread)
 coroutine.close(thread)
 
 terminal.ShowCursor()

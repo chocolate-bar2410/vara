@@ -147,5 +147,17 @@ module.ExitRawMode = function()
     return nil :: unknown
 end
 
+--[=[
+    @within terminal
+    @method GetSize
+
+    @return The width & height of the terminal.
+
+    Gets the size of the terminal.
+]=]
+module.GetSize = function(): (number,number)
+    return nil :: unknown
+end
+
 
 return module

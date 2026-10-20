@@ -27,7 +27,10 @@ fn show_cursor(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
     Ok(())
 }
 
-fn move_cursor(_: &mlua::Lua,(x,y): (u32,u32)) -> mlua::Result<()>{
+fn move_cursor(_: &mlua::Lua,(x,y): (f64,f64)) -> mlua::Result<()>{
+    let x = x.clamp(1.0,u32::MAX as f64) as u32;
+    let y = y.clamp(1.0,u32::MAX as f64) as u32;
+
     let mut stdout = std::io::stdout();
     write!(stdout,"\x1b[{};{}H",y,x)?;
     stdout.flush()?;
@@ -71,6 +74,15 @@ fn exit_raw_mode(_: &mlua::Lua,_: ()) -> mlua::Result<()>{
     Ok(())
 }
 
+fn get_size(_: &mlua::Lua,_: ()) -> mlua::Result<(u16,u16)>{
+    let size = terminal_size::terminal_size();
+
+    if let Some((terminal_size::Width(w),terminal_size::Height(h))) = size {
+        Ok((w,h))
+    } else {
+        Ok((0,0))
+    }
+} 
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
 
@@ -135,6 +147,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("ExitAltScreen", exit_alt_screen)?
         .add_function("EnterRawMode", enter_raw_mode)?
         .add_function("ExitRawMode", exit_raw_mode)?
+        .add_function("GetSize", get_size)?
         .add_value("Style", style_tab)?
         .add_value("Colour", colour_tab)?
         .build_readonly()

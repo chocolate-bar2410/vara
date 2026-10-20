@@ -4018,6 +4018,7 @@ dependencies = [
  "serde-saphyr",
  "serde_json",
  "smol",
+ "terminal_size",
  "toml",
  "vara_chrono",
  "vara_files",
