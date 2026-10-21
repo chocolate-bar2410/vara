@@ -530,10 +530,18 @@ declare extern type Colour4 with
         @method ToAnsi
         @return ansi code
 
-        Returns the ansi code for the corressponding rgb colour.
+        Returns the true colour ansi code for the corressponding rgb colour.
         the ansi code will be normalised to 0 -> 255.
     ]=]
     function ToAnsi(self): string
+    --[=[
+        @within Colour4
+        @method ToSRGBA
+        @return ansi code
+
+        Returns the colour as a tuple of SRGBA values
+    ]=]
+    function ToSRGBA(self): (number,number,number,number)
 end
 
 --[=[

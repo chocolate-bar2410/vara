@@ -8,3 +8,5 @@ io.Write(A:ToAnsi() .. "████" .. "\x1b[0m")
 io.Write(B:ToAnsi() .. "████" .. "\x1b[0m\n")
 
 io.Flush()
+
+print(("%.2f %.2f %.2f %.2f"):format(A:ToSRGBA()))

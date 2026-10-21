@@ -42,10 +42,8 @@ impl Colour4 {
     #[lua(name="ToAnsi")]
     pub fn to_ansi(&self) -> mlua::Result<String>{
 
-        let mut red = if self.red <= 0.0031308 {self.red * 12.92} else {self.red.powf(1.0/2.4) * 1.055 - 0.055};
-        let mut green = if self.green <= 0.0031308 {self.green * 12.92} else {self.green.powf(1.0/2.4) * 1.055 - 0.055};
-        let mut blue = if self.blue <= 0.0031308 {self.blue * 12.92} else {self.blue.powf(1.0/2.4) * 1.055 - 0.055};
-
+        let (mut red,mut green,mut blue,_) = self.to_srgba()?;
+        
         red = red.clamp(0.0,1.0).mul(255.0).round();
         green = green.clamp(0.0,1.0).mul(255.0).round();
         blue = blue.clamp(0.0,1.0).mul(255.0).round();
@@ -53,11 +51,46 @@ impl Colour4 {
         Ok(format!("\x1b[38;2;{};{};{}m",red,green,blue).to_string())
     }
 
+    #[lua(name="ToSRGBA")]
+    pub fn to_srgba(&self) -> mlua::Result<(f32,f32,f32,f32)>{
+        let red = if self.red <= 0.0031308 {self.red * 12.92} else {self.red.powf(1.0/2.4) * 1.055 - 0.055};
+        let green = if self.green <= 0.0031308 {self.green * 12.92} else {self.green.powf(1.0/2.4) * 1.055 - 0.055};
+        let blue = if self.blue <= 0.0031308 {self.blue * 12.92} else {self.blue.powf(1.0/2.4) * 1.055 - 0.055};
+
+        Ok((red,green,blue,self.alpha))
+    }
+
 }
 
 #[cfg(test)]
 mod tests{
     use super::*;
+
+    fn compare_srgba_approx_eq(result: (f32,f32,f32,f32),expected: (f32,f32,f32,f32),messsage: &str){
+
+        let tolerance = 1e-6;
+
+        for(result,expected) in [(result.0,expected.0),(result.1,expected.1),(result.2,expected.2),(result.3,expected.3)]{
+            assert!((result - expected).abs() < tolerance,"{messsage}\nexpected {result} got {expected}")
+        }
+    }
+
+    #[test]
+    fn srgb_conversion(){
+        
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_srgba().unwrap(),(0.5, 0.5, 0.5,1.0),"gray srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_srgba().unwrap(),(1.0, 1.0, 1.0,1.0),"white srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_srgba().unwrap(),(0.0, 0.0, 0.0,1.0),"black srgba");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_srgba().unwrap(),(0.001, 0.002, 0.003,1.0),"near black srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_srgba().unwrap(),(0.999, 0.999, 0.999,1.0),"near white srgba");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_srgba().unwrap(),(0.04045, 0.04045, 0.04045,1.0),"below threshold");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_srgba().unwrap(),(0.04046, 0.04046, 0.04046,1.0),"above threshold");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_srgba().unwrap(),(-0.1, -0.1, -0.1,1.0),"below 0 colour");
+        compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_srgba().unwrap(),(2.0, 2.0, 2.0,1.0),"hdr colour");
+    }
 
     #[test]
     fn ansi_conversion(){
@@ -74,5 +107,6 @@ mod tests{
         assert_eq!(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;0;0m"),"below 0 colour");
         assert_eq!(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"),"hdr colour");
     }
+
 }
 
