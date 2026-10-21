@@ -22,7 +22,7 @@ end
 
 --[=[
     @within colourLib
-    @method new
+    @method FromSRGBA
     @param red
     @param green
     @param blue
@@ -37,13 +37,28 @@ end
 
 --[=[
     @within colourLib
-    @method new
+    @method FromHex
     @param hex_string a hexidecimal value that represents a srgba value.
     @return colour4 value.
 
     Creates a new Colour4 from a hex string.
 ]=]
 module.FromHex = function(hex_string: string) : Colour4
+    return nil :: unknown
+end
+
+--[=[
+    @within colourLib
+    @method FromHSVA
+    @param hue Angle that represents the colour on the colour wheel in degrees.
+    @param saturation How strong the colour is.
+    @param value How bright the colour is. 
+    @param alpha The transparency of the colour.
+    @return colour4 value.
+
+    Creates a new Colour4 from a hue, saturation and value.
+]=]
+module.FromHSVA = function(hue: number,saturation: number,value: number,alpha: number?) : Colour4
     return nil :: unknown
 end
 

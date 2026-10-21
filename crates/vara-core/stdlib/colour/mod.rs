@@ -43,10 +43,29 @@ pub fn from_hex(_: &mlua::Lua,hex_string:String) -> mlua::Result<colour::Colour4
     }
 }
 
+
+pub fn from_hsva(_: &mlua::Lua,(hue,saturation,value,alpha):(f32,f32,f32,Option<f32>)) -> mlua::Result<colour::Colour4>{
+    let alpha = alpha.unwrap_or(1.0);
+
+    let hue = (hue / 60.0).rem_euclid(6.0);
+
+    let red = (hue + 5.0).rem_euclid(6.0);
+    let green = (hue + 3.0).rem_euclid(6.0);
+    let blue = (hue + 1.0).rem_euclid(6.0);
+
+    Ok(colour::Colour4::from_srgba(
+        value * (1.0 - saturation * red.min(4.0 - red).clamp(0.0, 1.0)), 
+        value * (1.0 - saturation * green.min(4.0 - green).clamp(0.0, 1.0)), 
+        value * (1.0 - saturation * blue.min(4.0 - blue).clamp(0.0, 1.0)), 
+        alpha
+    ))
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
     .add_function("New", new)?
     .add_function("FromSRGBA", from_srgba)?
     .add_function("FromHex", from_hex)?
+    .add_function("FromHSVA", from_hsva)?
     .build_readonly()
 }
