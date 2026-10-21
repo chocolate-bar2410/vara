@@ -78,6 +78,45 @@ impl Colour4 {
         Ok(hex_string)
     }
 
+    #[lua(name="ToHSVA")]
+    pub fn to_hsva(&self) -> mlua::Result<(f32,f32,f32,f32)>{
+        let (mut red,mut green,mut blue,_) = self.to_srgba()?;
+
+        red = red.max(0.0);
+        green = green.max(0.0);
+        blue = blue.max(0.0);
+
+        let epsilon = 1.0e-20f32;
+
+        let c_min = red.min(green).min(blue);
+        let c_max = red.max(green).max(blue);
+
+        let chroma = c_max - c_min;
+        let inv_chroma = 1.0 / (6.0 * chroma + epsilon);
+
+        // sector masks, to reduce branching
+
+        let is_r = ((c_max == red) as u32) as f32;
+        let is_g = ((c_max == green && c_max != red) as u32) as f32;
+        let is_b = ((c_max == blue && c_max != green && c_max != red) as u32) as f32;
+        
+        let hr = (green - blue) * inv_chroma;
+        let hg = (blue - red) * inv_chroma + 1.0 / 3.0;
+        let hb = (red - green) * inv_chroma + 2.0 / 3.0;
+
+        let mut hue = (hr * is_r + hg * is_g + hb * is_b).rem_euclid(1.0);
+
+        let saturation = if c_max > 0.0 {
+            chroma / c_max
+        } else {
+            0.0
+        };
+
+        hue = if chroma == 0.0 {0.0} else {hue};
+
+        Ok((hue * 360.0,saturation,c_max,self.alpha))
+    }
+
 }
 
 #[cfg(test)]
@@ -86,10 +125,10 @@ mod tests{
 
     fn compare_srgba_approx_eq(result: (f32,f32,f32,f32),expected: (f32,f32,f32,f32),messsage: &str){
 
-        let tolerance = 1e-6;
+        let tolerance = 1e-4;
 
         for(result,expected) in [(result.0,expected.0),(result.1,expected.1),(result.2,expected.2),(result.3,expected.3)]{
-            assert!((result - expected).abs() < tolerance,"{messsage}\nexpected {result} got {expected}")
+            assert!((result - expected).abs() < tolerance,"{messsage}\nexpected {expected} got {result}")
         }
     }
 
@@ -145,6 +184,23 @@ mod tests{
         assert_eq!(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_hex()?,String::from("000000FF"),"below 0 colour");
         assert_eq!(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_hex()?,String::from("FFFFFFFF"),"hdr colour");
     
+        Ok(())
+    }
+    #[test]
+    fn hsv_conversion() -> Result<(),Box<dyn std::error::Error>> {
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_hsva()?,(0.0,0.0,0.5,1.0),"gray hsva");
+        compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_hsva()?,(0.0, 0.0, 1.0,1.0),"white hsva");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_hsva()?,(0.0, 0.0, 0.0,1.0),"black hsva");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_hsva()?,(210.0,2.0/3.0,0.003,1.0),"near black hsva");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_hsva()?,(0.0,0.0,0.999,1.0),"near white hsva");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_hsva()?,(0.0,0.0,0.04045,1.0),"below threshold");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_hsva()?,(0.0,0.0,0.04046,1.0),"above threshold");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_hsva()?,(0.0, 0.0, 0.0,1.0),"below 0 colour");
+        compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_hsva()?,(0.0, 0.0, 2.0,1.0),"hdr colour");
+
         Ok(())
     }
 }

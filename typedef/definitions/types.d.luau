@@ -544,12 +544,20 @@ declare extern type Colour4 with
     function ToSRGBA(self): (number,number,number,number)
     --[=[
         @within Colour4
-        @method ToSRGBA
+        @method ToHex
         @return ansi code
 
         Returns the colour as a hex string
     ]=]
     function ToHex(self): string
+    --[=[
+        @within Colour4
+        @method ToHSVA
+        @return ansi code
+
+        Returns the colour as a tuple of HSVA values
+    ]=]
+    function ToHSVA(self): (number,number,number,number)
 end
 
 --[=[

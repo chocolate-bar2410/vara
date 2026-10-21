@@ -3,4 +3,4 @@ local colour = require("@vara/colour")
 
 local A = colour.FromHSVA(320, 0.45, 0.85)
 
-print(A:ToHex())
+print(("%.2f %.2f %.2f %.2f"):format(A:ToHSVA()))
