@@ -30,6 +30,7 @@ module.Style = {
     Look up table for ansi colour codes.
 ]=]
 module.Colour = {
+    ["Black"]   = "\x1b[30m",
     ["Red"]     = "\x1b[31m",
     ["Green"]   = "\x1b[32m",
     ["Yellow"]  = "\x1b[33m",
