@@ -35,4 +35,16 @@ module.FromSRGBA = function(red: number,green: number,blue: number,alpha: number
     return nil :: unknown
 end
 
+--[=[
+    @within colourLib
+    @method new
+    @param hex_string a hexidecimal value that represents a srgba value.
+    @return colour4 value.
+
+    Creates a new Colour4 from a hex string.
+]=]
+module.FromHex = function(hex_string: string) : Colour4
+    return nil :: unknown
+end
+
 return module
