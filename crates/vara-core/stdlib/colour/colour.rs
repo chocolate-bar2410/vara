@@ -60,6 +60,24 @@ impl Colour4 {
         Ok((red,green,blue,self.alpha))
     }
 
+    #[lua(name="ToHex")]
+    pub fn to_hex(&self) -> mlua::Result<String>{
+        let (mut red,mut green,mut blue,alpha) = self.to_srgba()?;
+
+        red = red.clamp(0.0,1.0).mul(255.0).round();
+        green = green.clamp(0.0,1.0).mul(255.0).round();
+        blue = blue.clamp(0.0,1.0).mul(255.0).round();
+
+        let r = red.round() as u8;
+        let g = green.round() as u8;
+        let b = blue.round() as u8;
+        let a = alpha.mul(255.0).round() as u8;
+
+        let hex_string = [r,g,b,a].map(|num| format!("{:02X}",num)).concat();
+
+        Ok(hex_string)
+    }
+
 }
 
 #[cfg(test)]
@@ -76,37 +94,58 @@ mod tests{
     }
 
     #[test]
-    fn srgb_conversion(){
+    fn srgb_conversion() -> Result<(),Box<dyn std::error::Error>>{
         
-        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_srgba().unwrap(),(0.5, 0.5, 0.5,1.0),"gray srgba");
-        compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_srgba().unwrap(),(1.0, 1.0, 1.0,1.0),"white srgba");
-        compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_srgba().unwrap(),(0.0, 0.0, 0.0,1.0),"black srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_srgba()?,(0.5, 0.5, 0.5,1.0),"gray srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_srgba()?,(1.0, 1.0, 1.0,1.0),"white srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_srgba()?,(0.0, 0.0, 0.0,1.0),"black srgba");
 
-        compare_srgba_approx_eq(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_srgba().unwrap(),(0.001, 0.002, 0.003,1.0),"near black srgba");
-        compare_srgba_approx_eq(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_srgba().unwrap(),(0.999, 0.999, 0.999,1.0),"near white srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_srgba()?,(0.001, 0.002, 0.003,1.0),"near black srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_srgba()?,(0.999, 0.999, 0.999,1.0),"near white srgba");
 
-        compare_srgba_approx_eq(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_srgba().unwrap(),(0.04045, 0.04045, 0.04045,1.0),"below threshold");
-        compare_srgba_approx_eq(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_srgba().unwrap(),(0.04046, 0.04046, 0.04046,1.0),"above threshold");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_srgba()?,(0.04045, 0.04045, 0.04045,1.0),"below threshold");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_srgba()?,(0.04046, 0.04046, 0.04046,1.0),"above threshold");
 
-        compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_srgba().unwrap(),(-0.1, -0.1, -0.1,1.0),"below 0 colour");
-        compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_srgba().unwrap(),(2.0, 2.0, 2.0,1.0),"hdr colour");
+        compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_srgba()?,(-0.1, -0.1, -0.1,1.0),"below 0 colour");
+        compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_srgba()?,(2.0, 2.0, 2.0,1.0),"hdr colour");
+
+        Ok(())
     }
 
     #[test]
-    fn ansi_conversion(){
-        assert_eq!(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;128;128;128m"));
-        assert_eq!(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"));
-        assert_eq!(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;0;0m"));
+    fn ansi_conversion() -> Result<(),Box<dyn std::error::Error>>{
+        assert_eq!(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_ansi()?,String::from("\x1b[38;2;128;128;128m"));
+        assert_eq!(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_ansi()?,String::from("\x1b[38;2;255;255;255m"));
+        assert_eq!(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_ansi()?,String::from("\x1b[38;2;0;0;0m"));
 
-        assert_eq!(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;1;1m"));
-        assert_eq!(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"));
+        assert_eq!(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_ansi()?,String::from("\x1b[38;2;0;1;1m"));
+        assert_eq!(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_ansi()?,String::from("\x1b[38;2;255;255;255m"));
 
-        assert_eq!(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;10;10;10m"),"below threshold");
-        assert_eq!(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;10;10;10m"),"above threshold");
+        assert_eq!(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_ansi()?,String::from("\x1b[38;2;10;10;10m"),"below threshold");
+        assert_eq!(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_ansi()?,String::from("\x1b[38;2;10;10;10m"),"above threshold");
 
-        assert_eq!(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;0;0m"),"below 0 colour");
-        assert_eq!(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"),"hdr colour");
+        assert_eq!(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_ansi()?,String::from("\x1b[38;2;0;0;0m"),"below 0 colour");
+        assert_eq!(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_ansi()?,String::from("\x1b[38;2;255;255;255m"),"hdr colour");
+
+        Ok(())
     }
 
+    #[test]
+    fn hex_conversion() -> Result<(),Box<dyn std::error::Error>> {
+        assert_eq!(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_hex()?,String::from("808080FF"));
+        assert_eq!(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_hex()?,String::from("FFFFFFFF"));
+        assert_eq!(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_hex()?,String::from("000000FF"));
+
+        assert_eq!(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_hex()?,String::from("000101FF"));
+        assert_eq!(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_hex()?,String::from("FFFFFFFF"));
+
+        assert_eq!(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_hex()?,String::from("0A0A0AFF"),"below threshold");
+        assert_eq!(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_hex()?,String::from("0A0A0AFF"),"above threshold");
+
+        assert_eq!(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_hex()?,String::from("000000FF"),"below 0 colour");
+        assert_eq!(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_hex()?,String::from("FFFFFFFF"),"hdr colour");
+    
+        Ok(())
+    }
 }
 
