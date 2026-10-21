@@ -1,5 +1,10 @@
 local colour = require("@vara/colour")
+local io = require("@vara/io")
 
-local my_colour = colour.New(1, 0, 1)
+local A = colour.New(0.5,0.5,0.5)
+local B = colour.FromSRGBA(0.5,0.5,0.5)
 
-print(my_colour:ToAnsi() .. "#" .. "\x1b[0m")
+io.Write(A:ToAnsi() .. "████" .. "\x1b[0m")
+io.Write(B:ToAnsi() .. "████" .. "\x1b[0m\n")
+
+io.Flush()

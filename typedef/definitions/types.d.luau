@@ -517,7 +517,7 @@ end
 --[=[
 	@class Colour4
 
-    An Object representing a rgba colour.
+    An Object representing a linear rgba colour.
 ]=]
 declare extern type Colour4 with 
     red: number
