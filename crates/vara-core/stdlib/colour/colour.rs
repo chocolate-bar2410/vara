@@ -46,13 +46,33 @@ impl Colour4 {
         let mut green = if self.green <= 0.0031308 {self.green * 12.92} else {self.green.powf(1.0/2.4) * 1.055 - 0.055};
         let mut blue = if self.blue <= 0.0031308 {self.blue * 12.92} else {self.blue.powf(1.0/2.4) * 1.055 - 0.055};
 
-        red = red.clamp(0.0,1.0).mul(255.0).floor();
-        green = green.clamp(0.0,1.0).mul(255.0).floor();
-        blue = blue.clamp(0.0,1.0).mul(255.0).floor();
+        red = red.clamp(0.0,1.0).mul(255.0).round();
+        green = green.clamp(0.0,1.0).mul(255.0).round();
+        blue = blue.clamp(0.0,1.0).mul(255.0).round();
 
         Ok(format!("\x1b[38;2;{};{};{}m",red,green,blue).to_string())
     }
 
 }
 
+#[cfg(test)]
+mod tests{
+    use super::*;
+
+    #[test]
+    fn ansi_conversion(){
+        assert_eq!(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;128;128;128m"));
+        assert_eq!(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"));
+        assert_eq!(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;0;0m"));
+
+        assert_eq!(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;1;1m"));
+        assert_eq!(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"));
+
+        assert_eq!(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;10;10;10m"),"below threshold");
+        assert_eq!(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;10;10;10m"),"above threshold");
+
+        assert_eq!(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;0;0;0m"),"below 0 colour");
+        assert_eq!(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_ansi().unwrap(),String::from("\x1b[38;2;255;255;255m"),"hdr colour");
+    }
+}
 
