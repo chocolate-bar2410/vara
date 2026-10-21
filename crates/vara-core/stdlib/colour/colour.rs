@@ -1,4 +1,4 @@
-use std::{fmt::format, ops::Mul};
+use std::{ops::Mul};
 
 #[derive(mlua::UserData)]
 pub struct Colour4 {
