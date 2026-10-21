@@ -1,6 +1,5 @@
 --!strict
 local chrono = require("@vara/chrono")
-local fs = require("@vara/fs")
 local io = require("@vara/io")
 local system = require("@vara/system")
 local task = require("@vara/task")
@@ -9,7 +8,7 @@ local terminal = require("@vara/terminal")
 local style = terminal.Style
 local colour = terminal.Colour
 
-local screen_width,_screen_height = terminal.GetSize()
+local screen_width,screen_height = terminal.GetSize()
 const SIZE_SUFFIXES = {"BYTES","KB","MB","GB","TB"}
 
 local os = system.Os
@@ -67,8 +66,6 @@ local render = function()
     terminal.MoveCursor(3,3)
     io.Write(`{colour.Magenta}{style.Dim}v{_RUNTIME.version.display}{style.Reset}`)
 
-    fs.File("log.txt"):Append(buffer.fromstring(("%.f %.f\n"):format(screen_width / 2 - 2, 3)))
-
     draw_box(1, 1, screen_width - 1, 13)
     draw_box(2, 4, screen_width / 2 - 3, 3)
 
@@ -97,6 +94,16 @@ local render = function()
     terminal.MoveCursor(screen_width - 2 - #language,12)
     io.Write(`{colour.BrightCyan}{language}{style.Reset}`)
 
+    terminal.MoveCursor(1,screen_height)
+    io.Write(colour.BrightMagenta .."\u{E0B2}" .. colour.BackgroundBrightMagenta .. (" "):rep(screen_width // 2 - 1))
+
+    terminal.MoveCursor(5,screen_height)
+    io.Write(`{colour.Black}{style.Bold}Press ctrl + c to exit{style.Reset}`)
+
+
+    terminal.MoveCursor(screen_width // 2,screen_height)
+    io.Write(style.Reset .. colour.BrightMagenta .. "\u{E0B0}" .. style.Reset)
+
     io.Flush()
 end
 
@@ -121,9 +128,9 @@ local resize_thread = coroutine.create(function(...)
     while true do
         local width,height = terminal.GetSize()
 
-        if width ~= screen_width or height ~= _screen_height then
+        if width ~= screen_width or height ~= screen_height then
             screen_width = width
-            _screen_height = height
+            screen_height = height
             render()
         end
 
