@@ -2,9 +2,13 @@ use std::{ops::Mul};
 
 #[derive(mlua::UserData)]
 pub struct Colour4 {
+    #[lua(name="Red")]
     red : f32,
+    #[lua(name="Green")]
     green : f32,
+    #[lua(name="Blue")]
     blue : f32,
+    #[lua(name="Alpha")]
     alpha : f32,
 }
 

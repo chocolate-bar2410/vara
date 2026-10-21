@@ -520,10 +520,10 @@ end
     An Object representing a linear rgba colour.
 ]=]
 declare extern type Colour4 with 
-    red: number
-    green: number
-    blue: number
-    alpha: number
+    Red: number
+    Green: number
+    Blue: number
+    Alpha: number
 
     --[=[
         @within Colour4
