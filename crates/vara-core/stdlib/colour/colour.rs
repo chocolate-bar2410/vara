@@ -62,18 +62,14 @@ impl Colour4 {
 
     #[lua(name="ToHex")]
     pub fn to_hex(&self) -> mlua::Result<String>{
-        let (mut red,mut green,mut blue,alpha) = self.to_srgba()?;
+        let (mut red,mut green,mut blue,mut alpha) = self.to_srgba()?;
 
         red = red.clamp(0.0,1.0).mul(255.0).round();
         green = green.clamp(0.0,1.0).mul(255.0).round();
         blue = blue.clamp(0.0,1.0).mul(255.0).round();
+        alpha = alpha.clamp(0.0,1.0).mul(255.0).round();
 
-        let r = red.round() as u8;
-        let g = green.round() as u8;
-        let b = blue.round() as u8;
-        let a = alpha.mul(255.0).round() as u8;
-
-        let hex_string = [r,g,b,a].map(|num| format!("{:02X}",num)).concat();
+        let hex_string = [red,green,blue,alpha].map(|num| format!("{:02X}",num as u8)).concat();
 
         Ok(hex_string)
     }
