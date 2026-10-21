@@ -95,11 +95,10 @@ local render = function()
     io.Write(`{colour.BrightCyan}{language}{style.Reset}`)
 
     terminal.MoveCursor(1,screen_height)
-    io.Write(colour.BrightMagenta .."\u{E0B2}" .. colour.BackgroundBrightMagenta .. (" "):rep(screen_width // 2 - 1))
+    io.Write(colour.BrightMagenta .. "\u{E0B2}" .. colour.BackgroundBrightMagenta .. (" "):rep(screen_width // 2 - 1))
 
     terminal.MoveCursor(5,screen_height)
     io.Write(`{colour.Black}{style.Bold}Press ctrl + c to exit{style.Reset}`)
-
 
     terminal.MoveCursor(screen_width // 2,screen_height)
     io.Write(style.Reset .. colour.BrightMagenta .. "\u{E0B0}" .. style.Reset)
