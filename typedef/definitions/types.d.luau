@@ -515,6 +515,28 @@ declare extern type Directory with
 end
 
 --[=[
+	@class Colour4
+
+    An Object representing a rgba colour.
+]=]
+declare extern type Colour4 with 
+    red: number
+    green: number
+    blue: number
+    alpha: number
+
+    --[=[
+        @within Colour4
+        @method ToAnsi
+        @return ansi code
+
+        Returns the ansi code for the corressponding rgb colour.
+        the ansi code will be normalised to 0 -> 255.
+    ]=]
+    function ToAnsi(self): string
+end
+
+--[=[
     @class _RUNTIME
 
     _RUNTIME global to follow the [_RUNTIME](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf) spec.
