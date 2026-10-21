@@ -518,6 +518,7 @@ end
 	@class Colour4
 
     An Object representing a linear rgba colour.
+    Colour4 supports HDR, allowing colours channels to be greater than 1.
 ]=]
 declare extern type Colour4 with 
     Red: number

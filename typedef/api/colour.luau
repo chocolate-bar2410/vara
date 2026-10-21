@@ -51,8 +51,8 @@ end
     @within colourLib
     @method FromHSVA
     @param hue Angle that represents the colour on the colour wheel in degrees.
-    @param saturation How strong the colour is.
-    @param value How bright the colour is. 
+    @param saturation How strong the colour is from 0 - 1.
+    @param value How bright the colour is from 0 - 1. 
     @param alpha The transparency of the colour.
     @return colour4 value.
 
