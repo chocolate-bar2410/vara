@@ -1,6 +1,6 @@
 --!strict
 local colour = require("@vara/colour")
 
-local A = colour.New(0.5,0.5,0.5)
+local A = colour.FromOKLCH(0.8264, 0.1109, 65.7)
 
-print(A:WithAlpha(0.5))
+print(A:Brighten(0.05))

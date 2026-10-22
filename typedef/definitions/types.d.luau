@@ -591,6 +591,15 @@ declare extern type Colour4 with
         Creates a copy of the existing colour4 object.
     ]=]
     function Clone(self): Colour4
+    --[=[
+        @within Colour4
+        @method Brighten
+        @param lightness The ammount to brighten the colour4 by perceptually.
+        @return Itself.
+
+        Brightens the colour4 using the OKLAB colour space.
+    ]=]
+    function Brighten(self,lightness: number): Colour4
 end
 
 --[=[

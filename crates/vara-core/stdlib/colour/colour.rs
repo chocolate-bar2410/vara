@@ -1,4 +1,27 @@
-use std::{ops::Mul};
+use std::{ops::{Div, Mul}};
+
+pub fn oklch_to_lin_rgba(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> (f32,f32,f32,f32){
+    // convert oklch to oklab via polar coordinates
+    let a = chroma * hue.to_radians().cos();
+    let b = chroma * hue.to_radians().sin();
+
+    // convert from oklab -> lms
+    let mut l = lightness + 0.3963377774f32 * a + 0.2158037573f32 * b;
+    let mut m = lightness - 0.1055613458f32 * a - 0.0638541728f32 * b;
+    let mut s = lightness - 0.0894841775f32 * a - 1.2914855480f32 * b;
+
+    l = l.powi(3); 
+    m = m.powi(3); 
+    s = s.powi(3); 
+
+    // lms -> linear rgb
+    let red = 4.0767416621f32 * l - 3.3077115913f32 * m + 0.2309699292f32 * s;
+    let green = -1.2684380046f32 * l + 2.6097574011f32 * m - 0.3413193965f32 * s;
+    let blue = -0.0041960863f32 * l - 0.7034186147f32 * m + 1.7076147010f32 * s;
+
+    (red,green,blue,alpha)
+
+}
 
 #[derive(mlua::UserData,Clone)]
 pub struct Colour4 {
@@ -15,7 +38,7 @@ pub struct Colour4 {
 #[mlua::userdata_impl]
 impl Colour4 {
     #[lua(skip)]
-    pub fn new(red : f32,green : f32,blue : f32,alpha : f32) -> Colour4{
+    pub fn new(red : f32,green : f32,blue : f32,alpha : f32) -> Self{
         Self {
             red,
             green,
@@ -26,7 +49,7 @@ impl Colour4 {
     // conversion methods
 
     #[lua(skip)]
-    pub fn from_srgba(red : f32,green : f32,blue : f32,alpha : f32) -> Colour4{
+    pub fn from_srgba(red : f32,green : f32,blue : f32,alpha : f32) -> Self{
 
         let red = if red <= 0.04045 {red / 12.92} else {((red + 0.055)/1.055).powf(2.4)};
         let green = if green <= 0.04045 {green / 12.92} else {((green + 0.055)/1.055).powf(2.4)};
@@ -39,6 +62,12 @@ impl Colour4 {
             alpha,
         }
     } 
+    
+    #[lua(skip)]
+    pub fn from_oklch(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> Self{
+        let (red,green,blue,alpha) = oklch_to_lin_rgba(lightness,chroma,hue,alpha);
+        Self { red, green, blue, alpha }
+    }
 
     #[lua(name="ToAnsi")]
     pub fn to_ansi(&self) -> mlua::Result<String>{
@@ -161,7 +190,6 @@ impl Colour4 {
         Ok(self.clone())
     }
 
-
     // transforms
     #[lua(name="Greyscale")]
     pub fn greyscale(this : mlua::AnyUserData) -> mlua::Result<mlua::AnyUserData>{
@@ -172,6 +200,24 @@ impl Colour4 {
             colour.red = luminance;
             colour.green = luminance;
             colour.blue = luminance;
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Brighten")]
+    pub fn brighten(this : mlua::AnyUserData,lightness: f32) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+            let (l,chroma,hue,_) = colour.to_oklch()?;
+
+            let new_lightness = l + lightness;
+
+            let (red,green,blue,_) = oklch_to_lin_rgba(new_lightness,chroma,hue,colour.alpha);
+
+            colour.red = red;
+            colour.green = green;
+            colour.blue = blue;
         }
 
         Ok(this)
