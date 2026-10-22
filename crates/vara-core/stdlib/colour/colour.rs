@@ -242,12 +242,36 @@ impl Colour4 {
     }
 
     // palletes
-    #[lua(name="Complementary")]
-    pub fn complementary(&self) -> mlua::Result<Self>{
+    #[lua(name="Complement")]
+    pub fn complement(&self) -> mlua::Result<Colour4>{
         let (l,c,h,_) = self.to_oklch()?;
         let hue_complement = (h + 180.0).rem_euclid(360.0);
 
         Ok(Colour4::from_oklch(l, c, hue_complement, self.alpha))
+    }
+
+    #[lua(name="Triadic")]
+    pub fn triadic(&self) -> mlua::Result<(Colour4,Colour4)>{
+        let (l,c,h,_) = self.to_oklch()?;
+        let triadic_a = (h + 120.0).rem_euclid(360.0);
+        let triadic_b = (h + 240.0).rem_euclid(360.0);
+
+        Ok((
+            Colour4::from_oklch(l, c, triadic_a, self.alpha),
+            Colour4::from_oklch(l, c, triadic_b, self.alpha)
+        ))
+    }
+
+    #[lua(name="SplitComplement")]
+    pub fn split_compliment(&self) -> mlua::Result<(Colour4,Colour4)>{
+        let (l,c,h,_) = self.to_oklch()?;
+        let compliment_a = (h + 150.0).rem_euclid(360.0);
+        let compliment_b = (h + 210.0).rem_euclid(360.0);
+
+        Ok((
+            Colour4::from_oklch(l, c, compliment_a, self.alpha),
+            Colour4::from_oklch(l, c, compliment_b, self.alpha)
+        ))
     }
 
     // metamethods

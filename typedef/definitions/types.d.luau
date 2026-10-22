@@ -611,12 +611,28 @@ declare extern type Colour4 with
     function Darken(self,lightness: number): Colour4
     --[=[
         @within Colour4
-        @method Complementary
-        @return The complement colour.
+        @method Complement
+        @return The complementary colour.
 
-        Finds the colour directly opposite to the current colour4 on the colour circle.
+        Finds the colour directly opposite to the base colour on the colour circle.
     ]=]
-    function Complementary(self): Colour4
+    function Complement(self): Colour4
+    --[=[
+        @within Colour4
+        @method Triadic
+        @return The other 2 triadic colours.
+
+        Finds the exact colours which form a equilateral triangle with the base colour on the colour circle.
+    ]=]
+    function Triadic(self): (Colour4,Colour4)
+    --[=[
+        @within Colour4
+        @method SplitComplement
+        @return The other 2 split complementary colours.
+
+        Finds the colours adjacent to the base colour's complement
+    ]=]
+    function SplitComplement(self): (Colour4,Colour4)
 end
 
 --[=[
