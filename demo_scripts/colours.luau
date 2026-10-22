@@ -11,7 +11,8 @@ local function colour_bar(... : Colour4)
 end
 
 
-local A = colour.FromOKLCH(0.8264, 0.1109, 65.7)
+local A = colour.FromOKLCH(0.8264, 0.1109, 65.7):Brighten(0.1):HdrTonemap()
+print(A)
 
 colour_bar(A,A:Triadic())
 colour_bar(A,A:SplitComplement())

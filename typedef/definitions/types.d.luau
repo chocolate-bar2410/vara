@@ -633,6 +633,14 @@ declare extern type Colour4 with
         Finds the colours adjacent to the base colour's complement
     ]=]
     function SplitComplement(self): (Colour4,Colour4)
+    --[=[
+        @within Colour4
+        @method HdrTonemap
+        @return Itself.
+
+        Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
+    ]=]
+    function HdrTonemap(self): (Colour4,Colour4)
 end
 
 --[=[

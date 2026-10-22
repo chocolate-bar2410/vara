@@ -1,5 +1,7 @@
 use std::{ops::{Mul}};
 
+use mlua::AnyUserData;
+
 pub fn oklch_to_lin_rgba(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> (f32,f32,f32,f32){
     // convert oklch to oklab via polar coordinates
     let a = chroma * hue.to_radians().cos();
@@ -272,6 +274,20 @@ impl Colour4 {
             Colour4::from_oklch(l, c, compliment_a, self.alpha),
             Colour4::from_oklch(l, c, compliment_b, self.alpha)
         ))
+    }
+
+    #[lua(name="HdrTonemap")]
+    pub fn hdr_tonemap(this: AnyUserData ) -> mlua::Result<AnyUserData>{
+        
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+
+            colour.red /= colour.red + 1.0f32;
+            colour.green /= colour.green + 1.0f32;
+            colour.blue /= colour.blue + 1.0f32;
+        }
+
+        Ok(this)
     }
 
     // metamethods
