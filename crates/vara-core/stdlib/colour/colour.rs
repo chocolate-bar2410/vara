@@ -1,6 +1,6 @@
 use std::{ops::Mul};
 
-#[derive(mlua::UserData)]
+#[derive(mlua::UserData,Clone)]
 pub struct Colour4 {
     #[lua(name="Red")]
     red : f32,
@@ -155,6 +155,12 @@ impl Colour4 {
     pub fn luminance(&self) -> mlua::Result<f32>{
         Ok(self.red * 0.2126 + self.green * 0.7152 + self.blue * 0.0722)
     }
+
+    #[lua(name="Clone")]
+    pub fn clone_fn(&self) -> mlua::Result<Colour4>{
+        Ok(self.clone())
+    }
+
 
     // transforms
     #[lua(name="Greyscale")]

@@ -583,6 +583,14 @@ declare extern type Colour4 with
         Converts the colour to greyscale using luminance.
     ]=]
     function Greyscale(self): Colour4
+    --[=[
+        @within Colour4
+        @method Clone
+        @return A copy of the Colour4.
+
+        Creates a copy of the existing colour4 object.
+    ]=]
+    function Clone(self): Colour4
 end
 
 --[=[
