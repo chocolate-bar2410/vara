@@ -223,6 +223,24 @@ impl Colour4 {
         Ok(this)
     }
 
+    #[lua(name="Darken")]
+    pub fn darken(this : mlua::AnyUserData,lightness: f32) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+            let (l,chroma,hue,_) = colour.to_oklch()?;
+
+            let new_lightness = l - lightness;
+
+            let (red,green,blue,_) = oklch_to_lin_rgba(new_lightness,chroma,hue,colour.alpha);
+
+            colour.red = red;
+            colour.green = green;
+            colour.blue = blue;
+        }
+
+        Ok(this)
+    }
+
     // metamethods
     #[lua(meta,name="__tostring")]
     pub fn tostring(&self) -> mlua::Result<String>{

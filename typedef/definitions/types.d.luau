@@ -600,6 +600,15 @@ declare extern type Colour4 with
         Brightens the colour4 using the OKLAB colour space.
     ]=]
     function Brighten(self,lightness: number): Colour4
+    --[=[
+        @within Colour4
+        @method Darken
+        @param lightness The ammount to darken the colour4 by perceptually.
+        @return Itself.
+
+        Darkens the colour4 using the OKLAB colour space.
+    ]=]
+    function Darken(self,lightness: number): Colour4
 end
 
 --[=[
