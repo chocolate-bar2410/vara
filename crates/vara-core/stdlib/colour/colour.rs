@@ -1,4 +1,4 @@
-use std::{ops::{Div, Mul}};
+use std::{ops::{Mul}};
 
 pub fn oklch_to_lin_rgba(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> (f32,f32,f32,f32){
     // convert oklch to oklab via polar coordinates
@@ -239,6 +239,15 @@ impl Colour4 {
         }
 
         Ok(this)
+    }
+
+    // palletes
+    #[lua(name="Complementary")]
+    pub fn complementary(&self) -> mlua::Result<Self>{
+        let (l,c,h,_) = self.to_oklch()?;
+        let hue_complement = (h + 180.0).rem_euclid(360.0);
+
+        Ok(Colour4::from_oklch(l, c, hue_complement, self.alpha))
     }
 
     // metamethods

@@ -609,6 +609,14 @@ declare extern type Colour4 with
         Darkens the colour4 using the OKLAB colour space.
     ]=]
     function Darken(self,lightness: number): Colour4
+    --[=[
+        @within Colour4
+        @method Complementary
+        @return The complement colour.
+
+        Finds the colour directly opposite to the current colour4 on the colour circle.
+    ]=]
+    function Complementary(self): Colour4
 end
 
 --[=[
