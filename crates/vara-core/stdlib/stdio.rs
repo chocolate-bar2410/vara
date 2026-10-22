@@ -83,7 +83,7 @@ async fn read_async(context: mlua::Lua,chunk_size: Option<usize>) -> mlua::Resul
     while buffer.len() < size {
         match reciever.try_recv() {
             Ok(byte) => buffer.push(byte),
-            Err(_) => return context.create_string([])
+            Err(_) => break,
         }
     }
 
