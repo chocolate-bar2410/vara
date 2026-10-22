@@ -113,6 +113,42 @@ impl Colour4 {
         Ok((hue * 360.0,saturation,c_max,self.alpha))
     }
 
+     #[lua(name="ToOKLCH")]
+    pub fn to_oklch(&self) -> mlua::Result<(f32,f32,f32,f32)>{
+
+        let red = self.red.max(0.0);
+        let green = self.green.max(0.0);
+        let blue = self.blue.max(0.0);
+
+        let mut l = 0.4122214708f32 * red + 0.5363325363f32 * green + 0.0514459929f32 * blue;
+        let mut m = 0.2119034982f32 * red + 0.6806995451f32 * green + 0.1073969566f32 * blue;
+        let mut s = 0.0883024619f32 * red + 0.2817188376f32 * green + 0.6299787005f32 * blue;
+
+        l = l.cbrt();
+        m = m.cbrt();
+        s = s.cbrt();
+
+        let lightness = 0.2104542553f32 * l + 0.7936177850f32 * m - 0.0040720468f32 * s;
+        let a = 1.9779984951f32 * l - 2.4285922050f32 * m + 0.4505937099f32 * s;
+        let b = 0.0259040371f32 * l + 0.7827717662f32 * m - 0.8086757660f32 * s;
+
+        let epsilon = 1e-6;
+
+        let chroma = (a.powi(2) + b.powi(2)).sqrt();
+        let mut hue = b.atan2(a).to_degrees();
+
+        if hue < 0.0 {
+            hue += 360.0;
+        }
+
+        if chroma < epsilon {
+            hue = f32::NAN;
+        }
+
+
+        Ok((lightness,chroma,hue,self.alpha.clamp(0.0, 1.0)))
+    }
+
 }
 
 #[cfg(test)]
@@ -123,8 +159,16 @@ mod tests{
 
         let tolerance = 1e-4;
 
+        let mut count = 0;
+
         for(result,expected) in [(result.0,expected.0),(result.1,expected.1),(result.2,expected.2),(result.3,expected.3)]{
-            assert!((result - expected).abs() < tolerance,"{messsage}\nexpected {expected} got {result}")
+            if f32::is_nan(result) || f32::is_nan(expected){
+                assert!(f32::is_nan(result) && f32::is_nan(expected),"{messsage}\n{count} col expected {expected} got {result}");
+                continue;
+            }
+
+            assert!((result - expected).abs() < tolerance,"{messsage}\n{count} col expected {expected} got {result}");
+            count += 1;
         }
     }
 
@@ -196,6 +240,24 @@ mod tests{
 
         compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_hsva()?,(0.0, 0.0, 0.0,1.0),"below 0 colour");
         compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_hsva()?,(0.0, 0.0, 2.0,1.0),"hdr colour");
+
+        Ok(())
+    }
+
+    #[test]
+    fn oklch_conversion() -> Result<(),Box<dyn std::error::Error>> {
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_oklch()?,(0.5981,0.0,f32::NAN,1.0),"gray oklch");
+        compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_oklch()?,(1.0, 0.0, f32::NAN,1.0),"white oklch");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_oklch()?,(0.0, 0.0, f32::NAN,1.0),"black oklch");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(0.001, 0.002, 0.003,1.0).to_oklch()?,(0.0522,0.005,240.751,1.0),"near black oklch");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.999, 0.999, 0.999,1.0).to_oklch()?,(0.9992,0.0,f32::NAN,1.0),"near white oklch");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04045, 0.04045, 0.04045,1.0).to_oklch()?,(0.1462,0.0,f32::NAN,1.0),"below threshold");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.04046, 0.04046, 0.04046,1.0).to_oklch()?,(0.1463,0.0,f32::NAN,1.0),"above threshold");
+
+        compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_oklch()?,(0.0, 0.0, f32::NAN,1.0),"below 0 colour");
+        compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_oklch()?,(1.7046, 0.0,f32::NAN,1.0),"hdr colour");
 
         Ok(())
     }

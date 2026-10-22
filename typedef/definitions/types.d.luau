@@ -559,6 +559,14 @@ declare extern type Colour4 with
         Returns the colour as a tuple of HSVA values
     ]=]
     function ToHSVA(self): (number,number,number,number)
+    --[=[
+        @within Colour4
+        @method ToOKLCH
+        @return ansi code
+
+        Returns the colour as a tuple of OKLCH values
+    ]=]
+    function ToOKLCH(self): (number,number,number,number)
 end
 
 --[=[

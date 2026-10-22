@@ -62,4 +62,20 @@ module.FromHSVA = function(hue: number,saturation: number,value: number,alpha: n
     return nil :: unknown
 end
 
+--[=[
+    @within colourLib
+    @method FromOKLCH
+    @param lightness How light the colour is from 0 - 1.
+    @param chroma How pure the colour is from 0 - 0.37 (or 0.45)
+    @param hue Angle that represents the colour on the colour wheel in degrees.
+    @param alpha The transparency of the colour.
+    @return colour4 value.
+
+    Creates a new Colour4 from the perceptually even OKLCH colourspace, which is derived from OKLAB.
+]=]
+module.FromOKLCH = function(lightness: number,chroma: number,hue: number,alpha: number?) : Colour4
+    return nil :: unknown
+end
+
+
 return module

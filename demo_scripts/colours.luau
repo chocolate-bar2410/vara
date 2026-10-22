@@ -1,6 +1,6 @@
 --!strict
 local colour = require("@vara/colour")
 
-local A = colour.FromHSVA(320, 0.45, 0.85)
+local A = colour.New(0.5,0.5,0.5)
 
-print(("%.2f %.2f %.2f %.2f"):format(A:ToHSVA()))
+print(("%.2f %.2f %.2f %.2f"):format(A:ToOKLCH()))

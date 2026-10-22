@@ -43,7 +43,6 @@ pub fn from_hex(_: &mlua::Lua,hex_string:String) -> mlua::Result<colour::Colour4
     }
 }
 
-
 pub fn from_hsva(_: &mlua::Lua,(hue,saturation,value,alpha):(f32,f32,f32,Option<f32>)) -> mlua::Result<colour::Colour4>{
     let alpha = alpha.unwrap_or(1.0);
 
@@ -61,11 +60,36 @@ pub fn from_hsva(_: &mlua::Lua,(hue,saturation,value,alpha):(f32,f32,f32,Option<
     ))
 }
 
+pub fn from_oklch(_: &mlua::Lua,(lightness,chroma,hue,alpha):(f32,f32,f32,Option<f32>)) -> mlua::Result<colour::Colour4>{
+    let alpha = alpha.unwrap_or(1.0);
+
+    // convert oklch to oklab via polar coordinates
+    let a = chroma * hue.to_radians().cos();
+    let b = chroma * hue.to_radians().sin();
+
+    // convert from oklab -> lms
+    let mut l = lightness + 0.3963377774f32 * a + 0.2158037573f32 * b;
+    let mut m = lightness - 0.1055613458f32 * a - 0.0638541728f32 * b;
+    let mut s = lightness - 0.0894841775f32 * a - 1.2914855480f32 * b;
+
+    l = l.powi(3); 
+    m = m.powi(3); 
+    s = s.powi(3); 
+
+    // lms -> linear rgb
+    let red = 4.0767416621f32 * l - 3.3077115913f32 * m + 0.2309699292f32 * s;
+    let green = -1.2684380046f32 * l + 2.6097574011f32 * m - 0.3413193965f32 * s;
+    let blue = -0.0041960863f32 * l - 0.7034186147f32 * m + 1.7076147010f32 * s;
+
+    Ok(colour::Colour4::new(red, green, blue, alpha))
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
     .add_function("New", new)?
     .add_function("FromSRGBA", from_srgba)?
     .add_function("FromHex", from_hex)?
     .add_function("FromHSVA", from_hsva)?
+    .add_function("FromOKLCH", from_oklch)?
     .build_readonly()
 }
