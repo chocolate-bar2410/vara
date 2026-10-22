@@ -529,7 +529,7 @@ declare extern type Colour4 with
     --[=[
         @within Colour4
         @method ToAnsi
-        @return ansi code
+        @return ansi code.
 
         Returns the true colour ansi code for the corressponding rgb colour.
         the ansi code will be normalised to 0 -> 255.
@@ -538,7 +538,7 @@ declare extern type Colour4 with
     --[=[
         @within Colour4
         @method ToSRGBA
-        @return ansi code
+        @return srgba tuple.
 
         Returns the colour as a tuple of SRGBA values
     ]=]
@@ -546,7 +546,7 @@ declare extern type Colour4 with
     --[=[
         @within Colour4
         @method ToHex
-        @return ansi code
+        @return hex string.
 
         Returns the colour as a hex string
     ]=]
@@ -554,7 +554,7 @@ declare extern type Colour4 with
     --[=[
         @within Colour4
         @method ToHSVA
-        @return ansi code
+        @return hsva tuple.
 
         Returns the colour as a tuple of HSVA values
     ]=]
@@ -562,11 +562,27 @@ declare extern type Colour4 with
     --[=[
         @within Colour4
         @method ToOKLCH
-        @return ansi code
+        @return oklch tuple.
 
         Returns the colour as a tuple of OKLCH values
     ]=]
     function ToOKLCH(self): (number,number,number,number)
+    --[=[
+        @within Colour4
+        @method Luminance
+        @return The luminance of the colour.
+
+        Returns the colour as a tuple of OKLCH values
+    ]=]
+    function Luminance(self): number
+    --[=[
+        @within Colour4
+        @method Greyscale
+        @return Itself.
+
+        Converts the colour to greyscale using luminance.
+    ]=]
+    function Greyscale(self): Colour4
 end
 
 --[=[

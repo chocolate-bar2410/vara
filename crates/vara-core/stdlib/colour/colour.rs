@@ -23,6 +23,7 @@ impl Colour4 {
             alpha,
         }
     } 
+    // conversion methods
 
     #[lua(skip)]
     pub fn from_srgba(red : f32,green : f32,blue : f32,alpha : f32) -> Colour4{
@@ -113,7 +114,7 @@ impl Colour4 {
         Ok((hue * 360.0,saturation,c_max,self.alpha))
     }
 
-     #[lua(name="ToOKLCH")]
+    #[lua(name="ToOKLCH")]
     pub fn to_oklch(&self) -> mlua::Result<(f32,f32,f32,f32)>{
 
         let red = self.red.max(0.0);
@@ -149,6 +150,34 @@ impl Colour4 {
         Ok((lightness,chroma,hue,self.alpha.clamp(0.0, 1.0)))
     }
 
+    // other
+    #[lua(name="Luminance")]
+    pub fn luminance(&self) -> mlua::Result<f32>{
+        Ok(self.red * 0.2126 + self.green * 0.7152 + self.blue * 0.0722)
+    }
+
+    // transforms
+    #[lua(name="Greyscale")]
+    pub fn greyscale(this : mlua::AnyUserData) -> mlua::Result<mlua::AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+            let luminance = colour.luminance()?;
+
+            colour.red = luminance;
+            colour.green = luminance;
+            colour.blue = luminance;
+        }
+
+        Ok(this)
+    }
+
+    // metamethods
+    #[lua(meta,name="__tostring")]
+    pub fn tostring(&self) -> mlua::Result<String>{
+        Ok(format!("colour4 {} {} {} {}",self.red,self.green,self.blue,self.alpha).to_string())
+    }
+
+
 }
 
 #[cfg(test)]
@@ -175,7 +204,7 @@ mod tests{
     #[test]
     fn srgb_conversion() -> Result<(),Box<dyn std::error::Error>>{
         
-        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_srgba()?,(0.5, 0.5, 0.5,1.0),"gray srgba");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_srgba()?,(0.5, 0.5, 0.5,1.0),"grey srgba");
         compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_srgba()?,(1.0, 1.0, 1.0,1.0),"white srgba");
         compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_srgba()?,(0.0, 0.0, 0.0,1.0),"black srgba");
 
@@ -228,7 +257,7 @@ mod tests{
     }
     #[test]
     fn hsv_conversion() -> Result<(),Box<dyn std::error::Error>> {
-        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_hsva()?,(0.0,0.0,0.5,1.0),"gray hsva");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_hsva()?,(0.0,0.0,0.5,1.0),"grey hsva");
         compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_hsva()?,(0.0, 0.0, 1.0,1.0),"white hsva");
         compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_hsva()?,(0.0, 0.0, 0.0,1.0),"black hsva");
 
@@ -246,7 +275,7 @@ mod tests{
 
     #[test]
     fn oklch_conversion() -> Result<(),Box<dyn std::error::Error>> {
-        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_oklch()?,(0.5981,0.0,f32::NAN,1.0),"gray oklch");
+        compare_srgba_approx_eq(Colour4::from_srgba(0.5, 0.5, 0.5,1.0).to_oklch()?,(0.5981,0.0,f32::NAN,1.0),"grey oklch");
         compare_srgba_approx_eq(Colour4::from_srgba(1.0, 1.0, 1.0,1.0).to_oklch()?,(1.0, 0.0, f32::NAN,1.0),"white oklch");
         compare_srgba_approx_eq(Colour4::from_srgba(0.0, 0.0, 0.0,1.0).to_oklch()?,(0.0, 0.0, f32::NAN,1.0),"black oklch");
 
@@ -258,6 +287,16 @@ mod tests{
 
         compare_srgba_approx_eq(Colour4::from_srgba(-0.1, -0.1, -0.1,1.0).to_oklch()?,(0.0, 0.0, f32::NAN,1.0),"below 0 colour");
         compare_srgba_approx_eq(Colour4::from_srgba(2.0, 2.0, 2.0,1.0).to_oklch()?,(1.7046, 0.0,f32::NAN,1.0),"hdr colour");
+
+        Ok(())
+    }
+
+    #[test]
+    fn luminance() -> Result<(),Box<dyn std::error::Error>> {
+
+        assert_eq!(Colour4::new(0.5,0.5,0.5,1.0).luminance()?,0.5,"grey luminance");
+        assert_eq!(Colour4::new(1.0,1.0,1.0,1.0).luminance()?,1.0,"grey luminance");
+        assert_eq!(Colour4::new(0.0,0.0,0.0,1.0).luminance()?,0.0,"grey luminance");
 
         Ok(())
     }
