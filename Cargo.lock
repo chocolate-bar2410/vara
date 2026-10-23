@@ -4561,6 +4561,14 @@ dependencies = [
 ]
 
 [[package]]
+name = "vara_colour"
+version = "0.2.0"
+dependencies = [
+ "mlua",
+ "vara_util",
+]
+
+[[package]]
 name = "vara_core"
 version = "0.2.0"
 dependencies = [
@@ -4577,6 +4585,7 @@ dependencies = [
  "terminal_size",
  "toml",
  "vara_chrono",
+ "vara_colour",
  "vara_files",
  "vara_media",
  "vara_net",
@@ -4605,6 +4614,7 @@ dependencies = [
  "rusty_flac",
  "serde",
  "symphonia",
+ "vara_colour",
  "vara_files",
  "vara_util",
  "whoami",
