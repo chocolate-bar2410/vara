@@ -2,8 +2,8 @@ use crate::image_obj::Image;
 
 use std::f32::consts::PI;
 
-pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<u8>>{
-    let mut result : Vec<u8> = vec![0;(width * height * img.colour_channels as u32) as usize];
+pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<f32>>{
+    let mut result : Vec<f32> = vec![0.0;(width * height * img.colour_channels as u32) as usize];
     let channels = img.colour_channels as usize;
     
     for y in 0..height{
@@ -32,7 +32,7 @@ pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) ->
                 p01 * (1.0 - dx) * dy +
                 p11 * dx * dy;
 
-                result[(y as usize * width as usize + x as usize) * channels + cc] = value.round() as u8;
+                result[(y as usize * width as usize + x as usize) * channels + cc] = value;
             }
         }
     }
@@ -40,8 +40,8 @@ pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) ->
     Ok(result)
 }
 
-pub fn nearest_neighbour(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<u8>>{
-    let mut result : Vec<u8> = vec![0;(width * height * img.colour_channels as u32) as usize];
+pub fn nearest_neighbour(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<f32>>{
+    let mut result : Vec<f32> = vec![0.0;(width * height * img.colour_channels as u32) as usize];
     let channels = img.colour_channels as usize;
     
     for y in 0..height{
@@ -70,9 +70,9 @@ fn lanczos(a : f32,b : f32) -> f32 {
     if a < b { sinc(a) * sinc(a/b) } else { 0.0 }
 }
 
-pub fn lanczos3(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<u8>>{
+pub fn lanczos3(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<f32>>{
     let mut temp : Vec<f32> = vec![0.0;(width * img.height * img.colour_channels as u32) as usize];
-    let mut result : Vec<u8> = vec![0;(width * height * img.colour_channels as u32) as usize];
+    let mut result : Vec<f32> = vec![0.0;(width * height * img.colour_channels as u32) as usize];
     let channels = img.colour_channels as usize;
     
     let temp_row_stride = width as usize * channels;
@@ -138,7 +138,7 @@ pub fn lanczos3(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) ->
 
             let inv_weighted_sum = 1.0 / weighted_sum;
             for cc in 0..channels{
-                out_pixel[cc] = (sums[cc] * inv_weighted_sum).clamp(0.0, 255.0) as u8;
+                out_pixel[cc] = (sums[cc] * inv_weighted_sum).min(0.0);
             }
         }
     }

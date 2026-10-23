@@ -7,7 +7,7 @@ use crate::image_interpolation as interpolation;
 #[derive(Clone,mlua::UserData)]
 pub struct Image{
     #[lua(skip)]
-    pub data : Vec<u8>,
+    pub data : Vec<f32>,
     #[lua(get,name = "Width")]
     pub width : u32,
     #[lua(get,name = "Height")]
@@ -19,7 +19,7 @@ pub struct Image{
 #[mlua::userdata_impl]
 impl Image {
     #[lua(skip)]
-    pub fn new(data : Vec<u8>,width : u32,height : u32,colour_channels : u8) -> Self {
+    pub fn new(data : Vec<f32>,width : u32,height : u32,colour_channels : u8) -> Self {
         Self { 
             data: data,
             width: width,
@@ -123,7 +123,7 @@ impl Image {
             let channels = img.colour_channels as usize;
             
             for pixel in img.data.chunks_exact_mut(channels) {
-                let grey = ((0.2126 * pixel[0] as f32 + 0.7152 * pixel[1] as f32 + 0.0722 * pixel[2] as f32)) as u8;
+                let grey = 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2];
                 pixel[0] = grey;
                 pixel[1] = grey;
                 pixel[2] = grey;
@@ -147,7 +147,7 @@ impl Image {
         {
             let mut img = this.borrow_mut::<Image>()?;
 
-            let mut result : Vec<u8> = vec![0u8;img.data.len()];
+            let mut result : Vec<f32> = vec![0f32;img.data.len()];
             let half_kernel_width = (width / 2) as isize;
             let half_kernel_height = (height / 2) as isize;
 
@@ -171,7 +171,7 @@ impl Image {
                             }
                         }
 
-                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0f64,255.0f64) as u8;
+                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0f64,255.0f64) as f32;
                     }
 
                     if img.colour_channels != 4 {continue;}
@@ -200,16 +200,16 @@ impl Image {
                 let index = ((y * self.width + x) * self.colour_channels as u32) as usize;
 
                 for cc in 0..3 {
-                    let value_a = self.data[index + cc] as f64;
-                    let value_b = other.data[index + cc] as f64;
+                    let value_a = self.data[index + cc];
+                    let value_b = other.data[index + cc];
 
-                    let magnitude = value_a.hypot(value_b) as u8;
+                    let magnitude = value_a.hypot(value_b);
 
                     result.data[index + cc] = magnitude;
                 }
                 
                 if self.colour_channels != 4 {continue}
-                result.data[index + 3] = 255;
+                result.data[index + 3] = 1.0;
             }
         }
 
@@ -264,13 +264,13 @@ impl Image {
         let mut bytes = Vec::new();
 
         if self.colour_channels == 4 {
-            let image_buffer = image::ImageBuffer::<image::Rgba<u8>,Vec<u8>>::from_raw(self.width,self.height,self.data.clone())
-            .ok_or(format!("could not encode image to {format}"))
-            .map_err(|err| err.into_lua_err())?;
 
-            image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), img_format).map_err(|err| err.into_lua_err())?;
-        } else if self.colour_channels == 3 {
-            let image_buffer = image::ImageBuffer::<image::Rgb<u8>,Vec<u8>>::from_raw(self.width,self.height,self.data.clone())
+            let data : Vec<u8> = self.data.iter()
+                        .map(|&value| (value * 255.0) as u8 )
+                        .collect();
+
+
+            let image_buffer = image::ImageBuffer::<image::Rgba<u8>,Vec<u8>>::from_raw(self.width,self.height,data)
             .ok_or(format!("could not encode image to {format}"))
             .map_err(|err| err.into_lua_err())?;
 
@@ -288,6 +288,8 @@ impl Image {
     #[lua(getter,name = "Data")]
     pub fn get_data(&self,context: &mlua::Lua) -> mlua::Result<mlua::Buffer>{
 
-        Ok(context.create_buffer(&self.data)?)
+        let bytes: Vec<u8> = self.data.iter().flat_map(|&num| num.to_le_bytes()).collect();
+
+        context.create_buffer(bytes)
     }
 }

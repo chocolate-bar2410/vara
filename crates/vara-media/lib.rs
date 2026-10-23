@@ -1,5 +1,5 @@
 use std::{io::Cursor, path::PathBuf};
-use mlua::{ExternalError, IntoLua};
+use mlua::{ExternalError, ExternalResult, IntoLua};
 use symphonia::core::{formats::{TrackType, probe::Hint}, io::MediaSourceStream};
 
 use symphonia::core::errors::Error as symphonia_error;
@@ -44,8 +44,14 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
                 .map_err(|err| err.into_lua_err())?;
 
             let data = match format {
-                Some(image::ImageFormat::Jpeg) => img.to_rgb8().into_raw(),
-                _ => img.to_rgba8().into_raw(),
+                Some(image::ImageFormat::Jpeg) => img.to_rgb32f().into_raw(),
+                _ => {
+                    let rgba = img.to_rgba8();
+
+                    rgba.pixels()
+                        .flat_map(|p| p.0.iter().map(|&value| value as f32 / 255.0))
+                        .collect()
+                },
             };
 
             let colour_channels = match format {
@@ -56,7 +62,15 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
             Ok(image_obj::Image::new(data, img.width(), img.height(),colour_channels))
         },
         mlua::Value::Buffer(b) => {
-            let bytes = b.to_vec();
+            let bytes = b.to_vec()
+                .chunks_exact(4)
+                .map(|chunk| {
+                    let array : [u8;4] = chunk.try_into().into_lua_err()?;
+
+                    Ok(f32::from_le_bytes(array))
+                })
+                .collect::<mlua::Result<Vec<f32>>>()?;
+
             Ok(image_obj::Image::new(bytes, b.len() as u32,1,4))
         }
         _ => {
