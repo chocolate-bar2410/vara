@@ -249,8 +249,12 @@ impl Image {
         for pixel in self.data.chunks_exact(4){
             let [red,green,blue,alpha] = [pixel[0],pixel[1],pixel[2],pixel[3]];
 
+            let to_srgb = |value: f32| -> f32 {
+                if value <= 0.0031308 {value * 12.92} else {value.powf(1.0/2.4) * 1.055 - 0.055}
+            };
+
             let to_u8 = |value: f32| -> u8 {
-                (value.clamp(0.0, 1.0) * 255.0).round() as u8
+                (to_srgb(value).clamp(0.0, 1.0) * 255.0).round() as u8
             };
 
             match self.colour_channels {

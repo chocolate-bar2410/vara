@@ -43,7 +43,14 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
 
             let data = img.to_rgba32f()
                 .pixels()
-                .flat_map(|pixel| pixel.0)
+                .flat_map(|pixel| {
+                    [
+                        if pixel.0[0] <= 0.04045f32 {pixel.0[0] / 12.92f32} else {((pixel.0[0] + 0.055f32)/1.055).powf(2.4)},
+                        if pixel.0[1] <= 0.04045f32 {pixel.0[1] / 12.92f32} else {((pixel.0[1] + 0.055f32)/1.055).powf(2.4)},
+                        if pixel.0[2] <= 0.04045f32 {pixel.0[2] / 12.92f32} else {((pixel.0[2] + 0.055f32)/1.055).powf(2.4)},
+                        pixel.0[3]
+                    ]
+                })
                 .collect();
 
             let colour_channels = img.color().channel_count();
