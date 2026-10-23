@@ -3,6 +3,8 @@ use mlua::{AnyUserData, ExternalError};
 use crate::image_format::image_format_fromstring;
 use crate::image_interpolation as interpolation;
 
+use vara_colour::colour::Colour4;
+
 const RGBA_CHANNELS : u8 = 4;
 
 #[derive(Clone,mlua::UserData)]
@@ -232,6 +234,42 @@ impl Image {
             img.height = height;
         }
         Ok(this)
+    }
+
+    #[lua(name="GetPixel")]
+    pub fn get_pixel(&self,x: i64,y: i64) -> mlua::Result<Colour4>{
+
+        if x < 0 || y < 0 || x as u32 > self.width  || y as u32 > self.height  {
+            return Err(format!("position {} {} is out of bounds",x,y).into_lua_err());
+        }
+
+        let index = (y as u32 * self.width + x as u32) as usize * RGBA_CHANNELS as usize;
+
+        let red = self.data.get(index).ok_or("could not get red channel".into_lua_err())?;
+        let green = self.data.get(index + 1).ok_or("could not get green channel".into_lua_err())?;
+        let blue = self.data.get(index + 2).ok_or("could not get blue channel".into_lua_err())?;
+        let alpha = self.data.get(index + 3).ok_or("could not get alpha channel".into_lua_err())?;
+
+        Ok(Colour4::new(*red, *green, *blue, *alpha))
+    }
+
+    #[lua(name="SetPixel")]
+    pub fn set_pixel(&mut self,x: i64,y: i64,data: mlua::AnyUserData) -> mlua::Result<()>{
+
+        let colour = data.borrow::<Colour4>()?;
+
+        if x < 0 || y < 0 || x as u32 > self.width || y as u32 > self.height  {
+            return Err(format!("position {} {} is out of bounds",x,y).into_lua_err());
+        }
+
+        let index = (y as u32 * self.width + x as u32) as usize * RGBA_CHANNELS as usize;
+
+        *self.data.get_mut(index).ok_or("could not get red channel".into_lua_err())? = colour.red;
+        *self.data.get_mut(index + 1).ok_or("could not get green channel".into_lua_err())? = colour.green;
+        *self.data.get_mut(index + 2).ok_or("could not get blue channel".into_lua_err())? = colour.blue;
+        *self.data.get_mut(index + 3).ok_or("could not get alpha channel".into_lua_err())? = colour.alpha;
+
+        Ok(())
     }
 
     #[lua(name="Encode")]

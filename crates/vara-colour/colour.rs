@@ -28,13 +28,13 @@ pub fn oklch_to_lin_rgba(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> (f32
 #[derive(mlua::UserData,Clone)]
 pub struct Colour4 {
     #[lua(name="Red")]
-    red : f32,
+    pub red : f32,
     #[lua(name="Green")]
-    green : f32,
+    pub green : f32,
     #[lua(name="Blue")]
-    blue : f32,
+    pub blue : f32,
     #[lua(name="Alpha")]
-    alpha : f32,
+    pub alpha : f32,
 }
 
 #[mlua::userdata_impl]

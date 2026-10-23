@@ -17,8 +17,8 @@
     - [ ] media
         - [ ] image
             - [x] make data use 32 bit floats instead of 8 bit unsigned ints.
-            - [ ] set pixel
-            - [ ] get pixel
+            - [x] set pixel
+            - [x] get pixel
             - [ ] HDR
     - [ ] file system
         - [ ] watchers

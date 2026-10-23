@@ -170,6 +170,26 @@ declare extern type Image with
         Computes the gradient magnitude between your image and another image.
     ]=]
     function GradientMagnitude(self,other : Image) : Image
+    --[=[
+        @within Image
+        @method GetPixel
+        @param x
+        @param y
+        @return The colour of the pixel
+
+        Gets the pixel colour at the position (x,y)
+    ]=]
+    function GetPixel(self,x: number,y: number) : Colour4
+    --[=[
+        @within Image
+        @method SetPixel
+        @param x
+        @param y
+        @param colour The colour of the pixel.
+
+        Sets the pixel colour at the position (x,y) to the given colour.
+    ]=]
+    function SetPixel(self,x: number,y: number,colour: Colour4)
     function __tostring(self): string
 end
 
