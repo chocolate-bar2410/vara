@@ -35,7 +35,7 @@ impl Image {
         {
             let mut img = this.borrow_mut::<Image>()?;
 
-            if img.data.len() as u32 != width * height * img.colour_channels as u32 {
+            if img.data.len() as u32 != width * height * RGBA_CHANNELS as u32 {
                 return Err("image dimension does not properly match size params".into_lua_err())
             }
 
@@ -53,7 +53,7 @@ impl Image {
             let mut img = this.borrow_mut::<Image>()?;
 
             if let Some(channel) = colour_channel{
-                if channel > RGBA_CHANNELS{
+                if channel >= RGBA_CHANNELS{
                     return Err("colour channel provided doesn't exist".into_lua_err());
                 }
             }
@@ -88,7 +88,7 @@ impl Image {
             let mut img = this.borrow_mut::<Image>()?;
             
             if let Some(channel) = colour_channel{
-                if channel > RGBA_CHANNELS{
+                if channel >= RGBA_CHANNELS{
                     return Err("colour channel provided doesn't exist".into_lua_err());
                 }
             }
@@ -151,12 +151,12 @@ impl Image {
             let half_kernel_width = (width / 2) as isize;
             let half_kernel_height = (height / 2) as isize;
 
-            for y in 0..img.height - 1 {
-                for x in 0..img.width - 1 {
+            for y in 0..img.height {
+                for x in 0..img.width {
                     let output_pixel_index = (y * img.width + x) * RGBA_CHANNELS as u32;
 
                     for colour_channel in 0..3 {
-                        let mut weighted_sum = 0.0f64;
+                        let mut weighted_sum = 0.0f32;
 
                         for kernel_y in 0..height as isize {
                             for kernel_x in 0..width as isize {
@@ -167,11 +167,11 @@ impl Image {
                                 let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * RGBA_CHANNELS as isize + colour_channel;
                                 let kernel_weight = kernel[(kernel_y as usize * width) + kernel_x as usize];
 
-                                weighted_sum += img.data[input_pixel_index as usize] as f64 * kernel_weight;
+                                weighted_sum += img.data[input_pixel_index as usize] * kernel_weight as f32;
                             }
                         }
 
-                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0f64,255.0f64) as f32;
+                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0,1.0);
                     }
 
                     result[(output_pixel_index + 3) as usize] = img.data[(output_pixel_index + 3) as usize];
