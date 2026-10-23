@@ -30,7 +30,7 @@ pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
     
     let config = Configuration::empty()
         .with_bundle_configuration(
-            BundleConfiguration::new(BundleRequireMode::Luau(Default::default()))
+            BundleConfiguration::new(BundleRequireMode::Luau(Default::default())).with_exclude("@vara/**")
         )
         .with_generator(darklua_core::GeneratorParameters::default_dense())
         .with_rule(Box::new(darklua_core::rules::RemoveSpaces::default()) as Box<dyn darklua_core::rules::Rule>)
