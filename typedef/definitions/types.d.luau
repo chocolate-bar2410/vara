@@ -170,15 +170,6 @@ declare extern type Image with
         Computes the gradient magnitude between your image and another image.
     ]=]
     function GradientMagnitude(self,other : Image) : Image
-    --[=[
-        @within Image
-        @method RemoveAlpha
-        @return itself.
-
-        Removes the alpha channel of your image.
-        Treated as a no-op if the image does not have a alpha channel.
-    ]=]
-    function RemoveAlpha(self) : Image
     function __tostring(self): string
 end
 

@@ -216,28 +216,6 @@ impl Image {
         Ok(result)
     }
 
-    #[lua(name="RemoveAlpha")]
-    pub fn remove_alpha(this : AnyUserData)  -> mlua::Result<AnyUserData>{
-        {
-            let mut img = this.borrow_mut::<Image>()?;
-
-            if img.colour_channels != 4 {
-                return Ok(this);
-            }
-
-            let mut index = 0;
-            img.data.retain(|_|{
-                let keep = (index + 1) % 4 != 0;
-                index += 1;
-                keep
-            });
-
-            img.colour_channels = 3;
-        }
-
-        Ok(this)
-    }
-
     #[lua(name="Resize")]
     pub fn resize(this : AnyUserData,width : u32,height : u32,filter : Option<&str>)  -> mlua::Result<AnyUserData>{
         {
