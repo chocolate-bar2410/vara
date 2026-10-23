@@ -6,8 +6,11 @@ local terminal = require("@vara/terminal")
 local style = terminal.Style
 local colour = terminal.Colour
 
-local exit_text = "[ENTER] Quit"
+local exit_text = "[CTRL+C] Quit"
 local generate_text = "[SPACE] Generate"
+
+const MIN_WIDTH = 30
+const MIN_HEIGHT = 26
 
 const module = {}
 
@@ -17,6 +20,10 @@ module.current_pallete = {} :: {Colour4}
 module.pallete_string = ""
 
 module.resize_thread = (nil :: unknown) :: thread
+
+local get_length_ignore_ansi = function(str: string): number
+    return #str:gsub("\x1b%[[0-?]*[ -/]*[@-~]","")
+end
 
 module.init = function()
     terminal.EnterAltScreen()
@@ -41,8 +48,46 @@ module.exit = function()
     terminal.ExitAltScreen()
 end
 
+module.alt_render = function()
+    terminal.Clear()
+
+    local middle_x = module.screen_width // 2
+    local middle_y = module.screen_height // 2 - 2
+
+    local message = "Terminal size too small:"
+    local message_x = math.max(1,middle_x - get_length_ignore_ansi(message) // 2)
+
+    local height_colour = if module.screen_height < MIN_HEIGHT then colour.Red else colour.Green
+    local width_colour = if module.screen_width < MIN_WIDTH then colour.Red else colour.Green
+
+    local indicator = `width = {width_colour}{module.screen_width}{style.Reset} height = {height_colour}{module.screen_height}{style.Reset}`
+    local indicator_x = math.max(1,middle_x - get_length_ignore_ansi(indicator) // 2)
+
+    local requirement_message = `Needed dimensions are:`
+    local requirement_message_x = math.max(1,middle_x - get_length_ignore_ansi(requirement_message) // 2)
+    
+    local requirement = `width = {MIN_WIDTH} height = {MIN_HEIGHT}`
+    local requirement_x = math.max(1,middle_x - get_length_ignore_ansi(requirement) // 2)
+    
+    terminal.MoveCursor(message_x,middle_y)
+    io.Write(message)
+    terminal.MoveCursor(indicator_x,middle_y + 1)
+    io.Write(indicator)
+    terminal.MoveCursor(requirement_message_x,middle_y + 4)
+    io.Write(requirement_message)
+    terminal.MoveCursor(requirement_x,middle_y + 5)
+    io.Write(requirement)
+
+    io.Flush()
+end
+
 module.render = function()
     
+    if module.screen_width < MIN_WIDTH or module.screen_height < MIN_HEIGHT then
+        module.alt_render()
+        return
+    end
+
     io.Write("\x1b[?2026h")
     io.Flush()
     

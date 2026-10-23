@@ -9,7 +9,7 @@ tui.render()
 while true do
     local key = io.ReadAsync(1)
 
-    if key == string.char(13) then break end
+    if key == string.char(3) then break end
 
     if key == string.char(32) then
         local pallete = palletes.generate_pallete()
