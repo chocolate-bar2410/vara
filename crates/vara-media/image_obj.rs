@@ -3,6 +3,7 @@ use mlua::{AnyUserData, ExternalError};
 use crate::image_format::image_format_fromstring;
 use crate::image_interpolation as interpolation;
 
+const RGBA_CHANNELS : u8 = 4;
 
 #[derive(Clone,mlua::UserData)]
 pub struct Image{
@@ -52,7 +53,7 @@ impl Image {
             let mut img = this.borrow_mut::<Image>()?;
 
             if let Some(channel) = colour_channel{
-                if channel > img.colour_channels{
+                if channel > RGBA_CHANNELS{
                     return Err("colour channel provided doesn't exist".into_lua_err());
                 }
             }
@@ -62,13 +63,13 @@ impl Image {
 
             for y in 0..height {
                 for x in 0..width / 2 {
-                    let left = (y * width + x) * img.colour_channels as usize;
-                    let right = (y * width + (width - 1 - x)) * img.colour_channels as usize;
+                    let left = (y * width + x) * RGBA_CHANNELS as usize;
+                    let right = (y * width + (width - 1 - x)) * RGBA_CHANNELS as usize;
 
                     match colour_channel {
                         Some(channel) => img.data.swap(left + channel as usize,right + channel as usize),
                         None => {
-                            for c in 0..img.colour_channels as usize {
+                            for c in 0..RGBA_CHANNELS as usize {
                                 img.data.swap(left + c,right + c);
                             }
                         }
@@ -87,7 +88,7 @@ impl Image {
             let mut img = this.borrow_mut::<Image>()?;
             
             if let Some(channel) = colour_channel{
-                if channel > img.colour_channels{
+                if channel > RGBA_CHANNELS{
                     return Err("colour channel provided doesn't exist".into_lua_err());
                 }
             }
@@ -97,13 +98,13 @@ impl Image {
 
             for y in 0..height/ 2 {
                 for x in 0..width  {
-                    let top = (y * width + x) * img.colour_channels as usize;
-                    let bottom = ((height - 1 - y) * width + x) * img.colour_channels as usize;
+                    let top = (y * width + x) * RGBA_CHANNELS as usize;
+                    let bottom = ((height - 1 - y) * width + x) * RGBA_CHANNELS as usize;
 
                     match colour_channel {
                         Some(channel) => img.data.swap(top + channel as usize,bottom + channel as usize),
                         None => {
-                            for c in 0..img.colour_channels as usize {
+                            for c in 0..RGBA_CHANNELS as usize {
                                 img.data.swap(top + c,bottom + c);
                             }
                         }
@@ -120,9 +121,8 @@ impl Image {
 
         {
             let mut img = this.borrow_mut::<Image>()?;
-            let channels = img.colour_channels as usize;
             
-            for pixel in img.data.chunks_exact_mut(channels) {
+            for pixel in img.data.chunks_exact_mut(RGBA_CHANNELS as usize) {
                 let grey = 0.2126 * pixel[0] + 0.7152 * pixel[1] + 0.0722 * pixel[2];
                 pixel[0] = grey;
                 pixel[1] = grey;
@@ -153,7 +153,7 @@ impl Image {
 
             for y in 0..img.height - 1 {
                 for x in 0..img.width - 1 {
-                    let output_pixel_index = (y * img.width + x) * img.colour_channels as u32;
+                    let output_pixel_index = (y * img.width + x) * RGBA_CHANNELS as u32;
 
                     for colour_channel in 0..3 {
                         let mut weighted_sum = 0.0f64;
@@ -164,7 +164,7 @@ impl Image {
                                 let sampled_x : isize= (x as isize + kernel_x as isize - half_kernel_width).clamp(0, (img.width - 1) as isize);
                                 let sampled_y : isize = (y as isize + kernel_y as isize - half_kernel_height).clamp(0, (img.height - 1) as isize);
 
-                                let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * img.colour_channels as isize + colour_channel;
+                                let input_pixel_index = (sampled_y * img.width as isize + sampled_x) * RGBA_CHANNELS as isize + colour_channel;
                                 let kernel_weight = kernel[(kernel_y as usize * width) + kernel_x as usize];
 
                                 weighted_sum += img.data[input_pixel_index as usize] as f64 * kernel_weight;
@@ -174,7 +174,6 @@ impl Image {
                         result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0f64,255.0f64) as f32;
                     }
 
-                    if img.colour_channels != 4 {continue;}
                     result[(output_pixel_index + 3) as usize] = img.data[(output_pixel_index + 3) as usize];
                 }
             }
@@ -197,7 +196,7 @@ impl Image {
         for y in 0..self.height - 1 {
             for x in 0..self.width - 1 {
 
-                let index = ((y * self.width + x) * self.colour_channels as u32) as usize;
+                let index = ((y * self.width + x) * RGBA_CHANNELS as u32) as usize;
 
                 for cc in 0..3 {
                     let value_a = self.data[index + cc];
@@ -208,7 +207,6 @@ impl Image {
                     result.data[index + cc] = magnitude;
                 }
                 
-                if self.colour_channels != 4 {continue}
                 result.data[index + 3] = 1.0;
             }
         }
@@ -241,20 +239,17 @@ impl Image {
         let img_format = image_format_fromstring(&format)?;
         let mut bytes = Vec::new();
 
-        if self.colour_channels == 4 {
-
-            let data : Vec<u8> = self.data.iter()
-                        .map(|&value| (value * 255.0) as u8 )
-                        .collect();
+        let data : Vec<u8> = self.data.iter()
+                    .map(|&value| (value * 255.0) as u8 )
+                    .collect();
 
 
-            let image_buffer = image::ImageBuffer::<image::Rgba<u8>,Vec<u8>>::from_raw(self.width,self.height,data)
-            .ok_or(format!("could not encode image to {format}"))
-            .map_err(|err| err.into_lua_err())?;
+        let image_buffer = image::ImageBuffer::<image::Rgba<u8>,Vec<u8>>::from_raw(self.width,self.height,data)
+        .ok_or(format!("could not encode image to {format}"))
+        .map_err(|err| err.into_lua_err())?;
 
-            image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), img_format).map_err(|err| err.into_lua_err())?;
-        }
-
+        image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), img_format).map_err(|err| err.into_lua_err())?;
+        
         context.create_buffer(bytes)
     }
 

@@ -37,27 +37,16 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
             let reader = image::ImageReader::new(Cursor::new(bytes))
                 .with_guessed_format()?;
 
-            let format = reader.format();
-
             let img = reader
                 .decode()
                 .map_err(|err| err.into_lua_err())?;
 
-            let data = match format {
-                Some(image::ImageFormat::Jpeg) => img.to_rgb32f().into_raw(),
-                _ => {
-                    let rgba = img.to_rgba8();
+            let data = img.to_rgba32f()
+                .pixels()
+                .flat_map(|pixel| pixel.0)
+                .collect();
 
-                    rgba.pixels()
-                        .flat_map(|p| p.0.iter().map(|&value| value as f32 / 255.0))
-                        .collect()
-                },
-            };
-
-            let colour_channels = match format {
-                Some(image::ImageFormat::Jpeg) => 3,
-                _ => 4,
-            };
+            let colour_channels = img.color().channel_count();
 
             Ok(image_obj::Image::new(data, img.width(), img.height(),colour_channels))
         },
