@@ -82,7 +82,11 @@ impl Runtime {
 
 
     pub async fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-        self.vm.load(bytecode).exec_async().await?;
+        
+        let main = self.vm.load(&bytecode);
+
+        self.scheduler.push_thread_back(main, ())?;
+        smol::block_on(self.scheduler.run());
 
         Ok(())
     }
