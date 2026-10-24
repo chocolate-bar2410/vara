@@ -14,12 +14,12 @@
         - [x] notify method
     - [x] terminal drawing
     - [x] colours
-    - [ ] media
-        - [ ] image
+    - [x] media
+        - [x] image
             - [x] make data use 32 bit floats instead of 8 bit unsigned ints.
             - [x] set pixel
             - [x] get pixel
-            - [ ] HDR
+            - [x] HDR
     - [ ] file system
         - [ ] watchers
 - [ ] debugging
@@ -39,6 +39,10 @@
         - [ ] gpu
             - [ ] gpu picking
             - [ ] compute shaders
+    - [ ] media
+        - [ ] images
+            - [ ] difference of gaussians
+            - [ ] kuwahara filter
     - [ ] UI
         - [ ] layouts
         - [ ] UDim2
