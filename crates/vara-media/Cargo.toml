@@ -16,6 +16,8 @@ image = { version = "0.25.10", default-features = false, features = [
     "qoi",
     "webp",
     "tiff",
+    "hdr",
+    "exr"
 ] }
 mlua = { version = "0.12.1", features = [
     "async",

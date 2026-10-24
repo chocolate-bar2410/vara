@@ -258,7 +258,7 @@ impl Image {
 
         let colour = data.borrow::<Colour4>()?;
 
-        if x < 0 || y < 0 || x as u32 > self.width || y as u32 > self.height  {
+        if x < 0 || y < 0 || x as u32 >= self.width || y as u32 >= self.height  {
             return Err(format!("position {} {} is out of bounds",x,y).into_lua_err());
         }
 
@@ -272,6 +272,52 @@ impl Image {
         Ok(())
     }
 
+    #[lua(skip)]
+    fn encode_hdr(&self,context: &mlua::Lua,format : image::ImageFormat) -> mlua::Result<mlua::Buffer> {
+
+        if self.colour_channels < 3 {
+            return Err("cannot export hdr image with less than 3 channels".into_lua_err())
+        }
+
+        let mut bytes = Vec::new();
+
+        let mut data : Vec<f32> = Vec::with_capacity(self.width as usize * self.height as usize * self.colour_channels as usize);
+
+        for pixel in self.data.chunks_exact(4){
+            let [red,green,blue,alpha] = [pixel[0],pixel[1],pixel[2],pixel[3]];
+
+            match self.colour_channels {
+                3 => data.extend([red,green,blue]),
+                4 => data.extend([red,green,blue,alpha]),
+                _ => unreachable!()
+            }
+        }
+
+
+
+        match self.colour_channels {
+            3 => {
+                let image_buffer = image::ImageBuffer::<image::Rgb<f32>,Vec<f32>>::from_raw(self.width,self.height,data)
+                    .ok_or(format!("could not encode image to {format:?}"))
+                    .map_err(|err| err.into_lua_err())?;
+
+                image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), format).map_err(|err| err.into_lua_err())?;
+            },
+
+            4 => {
+                let image_buffer = image::ImageBuffer::<image::Rgba<f32>,Vec<f32>>::from_raw(self.width,self.height,data)
+                    .ok_or(format!("could not encode image to {format:?}"))
+                    .map_err(|err| err.into_lua_err())?;
+
+                image_buffer.write_to(&mut std::io::Cursor::new(&mut bytes), format).map_err(|err| err.into_lua_err())?;
+            }
+
+            _ => unreachable!()
+        };
+
+        context.create_buffer(bytes)
+    }
+
     #[lua(name="Encode")]
     pub fn encode(&self,context : &mlua::Lua,format : String) -> mlua::Result<mlua::Buffer>{
 
@@ -280,6 +326,11 @@ impl Image {
         }
 
         let img_format = image_format_fromstring(&format)?;
+
+        if img_format == image::ImageFormat::Hdr || img_format == image::ImageFormat::OpenExr {
+            return self.encode_hdr(context, img_format);
+        }
+
         let mut bytes = Vec::new();
 
         let mut data : Vec<u8> = Vec::with_capacity(self.width as usize * self.height as usize * self.colour_channels as usize);
@@ -292,14 +343,14 @@ impl Image {
             };
 
             let to_u8 = |value: f32| -> u8 {
-                (to_srgb(value).clamp(0.0, 1.0) * 255.0).round() as u8
+                (value.clamp(0.0, 1.0) * 255.0).round() as u8
             };
 
             match self.colour_channels {
                 1 => data.push(to_u8(red)),
-                2 => data.extend([to_u8(red),to_u8(alpha)]),
-                3 => data.extend([to_u8(red),to_u8(green),to_u8(blue)]),
-                4 => data.extend([to_u8(red),to_u8(green),to_u8(blue),to_u8(alpha)]),
+                2 => data.extend([to_u8(to_srgb(red)),to_u8(alpha)]),
+                3 => data.extend([to_u8(to_srgb(red)),to_u8(to_srgb(green)),to_u8(to_srgb(blue))]),
+                4 => data.extend([to_u8(to_srgb(red)),to_u8(to_srgb(green)),to_u8(to_srgb(blue)),to_u8(alpha)]),
                 _ => unreachable!()
             }
 

@@ -67,7 +67,7 @@ declare extern type DateTime with
 
 end
 
-type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI"
+type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI" | "HDR" | "EXR"
 type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
 
 

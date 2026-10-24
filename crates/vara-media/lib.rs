@@ -37,6 +37,10 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
             let reader = image::ImageReader::new(Cursor::new(bytes))
                 .with_guessed_format()?;
 
+            let format = reader.format();
+
+            let is_hdr = matches!(format,Some(image::ImageFormat::Hdr | image::ImageFormat::OpenExr));
+
             let img = reader
                 .decode()
                 .map_err(|err| err.into_lua_err())?;
@@ -44,6 +48,7 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
             let data = img.to_rgba32f()
                 .pixels()
                 .flat_map(|pixel| {
+                    if is_hdr {return pixel.0}
                     [
                         if pixel.0[0] <= 0.04045f32 {pixel.0[0] / 12.92f32} else {((pixel.0[0] + 0.055f32)/1.055).powf(2.4)},
                         if pixel.0[1] <= 0.04045f32 {pixel.0[1] / 12.92f32} else {((pixel.0[1] + 0.055f32)/1.055).powf(2.4)},
