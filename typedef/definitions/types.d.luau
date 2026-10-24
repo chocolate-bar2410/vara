@@ -651,7 +651,7 @@ declare extern type Colour4 with
 
         Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
     ]=]
-    function HdrTonemap(self): (Colour4,Colour4)
+    function HdrTonemap(self): Colour4
 end
 
 --[=[
