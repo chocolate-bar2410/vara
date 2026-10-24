@@ -56,8 +56,44 @@ pub fn hable(image: &mut Image,config: mlua::Table){
     }
 }
 
-pub fn uchimura(image: &mut Image,_config: mlua::Table){
-    for _pixel in image.data.chunks_exact_mut(RGBA_CHANNELS){
-    
+fn smoothstep(a: f32,b: f32,x: f32) -> f32{
+    let t = ((x - a) / (b - a)).clamp(0.0, 1.0);
+
+    t * t * (3.0 - 2.0 * t)
+}
+
+pub fn uchimura(image: &mut Image,config: mlua::Table){
+    let a = config.get::<f32>("Contrast").unwrap_or(1.0);
+    let m = config.get::<f32>("LinearSection").unwrap_or(0.22);
+    let l = config.get::<f32>("LinearLength").unwrap_or(0.4);
+    let c = config.get::<f32>("Toe").unwrap_or(1.33);
+    let b = config.get::<f32>("Pedestal").unwrap_or(0.0);
+
+    let exposure = config.get::<f32>("Exposure").unwrap_or(0.0); 
+    let p = config.get::<f32>("WhitePoint").unwrap_or(1.0);
+
+    for pixel in image.data.chunks_exact_mut(RGBA_CHANNELS){
+        for cc in 0..3 {
+
+            let x = pixel[cc] * 2.0f32.powf(exposure);
+
+            let l0 = ((p - m) * l) / a;
+
+            let s0 = m + l0;
+            let s1 = m + a * l0;
+            let c2 = (a * p) / (p - s1);
+            let cp = -c2/p;
+
+            let w0 = 1.0 - smoothstep(0.0,m,x);
+            let w2 = if x < s0 {0.0} else {1.0};
+            let w1 = 1.0 - w0 - w2;
+
+            let toe = m * (x/m).powf(c) + b;
+            let shoulder = p - (p - s1) * (cp * (x - s0)).exp();
+            let linear = m + a * (x - m);
+
+            pixel[cc] = toe * w0 + linear * w1 + shoulder * w2;
+        }
+
     }
 }

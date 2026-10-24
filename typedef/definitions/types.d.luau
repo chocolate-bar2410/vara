@@ -70,13 +70,6 @@ end
 type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI" | "HDR" | "EXR"
 type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
 
---[[
-    supported filters:
-    * REINHARD
-    * ACES
-    * HABLE
-    * AGX
-]]
 type ImageHdrConfig = 
     {Filter: "REINHARD",
         Exposure: number?
@@ -95,7 +88,16 @@ type ImageHdrConfig =
         Exposure: number?,
         WhitePoint: number?
     } 
-    | {Filter: "UCHIMARA"}
+    | {Filter: "UCHIMURA",
+        Contrast: number?,
+        LinearSection: number?,
+        LinearLength: number?,
+        Toe: number?,
+        Pedestal: number?,
+
+        Exposure: number?,
+        WhitePoint: number?
+    }
 
 --[=[
 	@class Image
@@ -226,7 +228,10 @@ declare extern type Image with
         This reduces the dynamic range from 0 - ∞ to 0 - 1.
         
         Filters supported:
-        * REINHARD - Maps hdr values directly to a asymtopic curve.
+        * REINHARD - Map to a asymtopic curve.
+        * ACES - Map to a ACES filmic curve
+        * HABLE - Modelled after the response of analog film.
+        * UCHIMURA - Map to a piecewise curve.
     ]=]
     function HdrTonemap(self,config: ImageHdrConfig) : Image
     function __tostring(self): string
