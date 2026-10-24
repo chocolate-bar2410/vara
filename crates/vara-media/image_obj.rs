@@ -173,7 +173,7 @@ impl Image {
                             }
                         }
 
-                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum.clamp(0.0,1.0);
+                        result[(output_pixel_index + colour_channel as u32) as usize] = weighted_sum;
                     }
 
                     result[(output_pixel_index + 3) as usize] = img.data[(output_pixel_index + 3) as usize];
@@ -195,8 +195,8 @@ impl Image {
     pub fn gradient_magnitude(&self,other : &Image) -> mlua::Result<Self>{
         let mut result = self.clone();
 
-        for y in 0..self.height - 1 {
-            for x in 0..self.width - 1 {
+        for y in 0..self.height {
+            for x in 0..self.width {
 
                 let index = ((y * self.width + x) * RGBA_CHANNELS as u32) as usize;
 
