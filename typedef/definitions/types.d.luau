@@ -70,6 +70,27 @@ end
 type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI" | "HDR" | "EXR"
 type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
 
+--[[
+    supported filters:
+    * REINHARD
+    * ACES
+    * HABLE
+    * AGX
+]]
+type ImageHdrConfig = {
+        Filter: "REINHARD",
+        Exposure: number?
+    } | {
+        Filter: "ACES",
+        A: number?,
+        B: number?,
+        C: number?,
+        D: number?,
+        E: number?,
+        Exposure: number?
+    } |
+    {Filter: "HABLE"} |
+    {Filter: "AGX"}
 
 --[=[
 	@class Image
@@ -190,6 +211,19 @@ declare extern type Image with
         Sets the pixel colour at the position (x,y) to the given colour.
     ]=]
     function SetPixel(self,x: number,y: number,colour: Colour4)
+    --[=[
+        @within Image
+        @method SetPixel
+        @param config
+        @return Itself.
+
+        Performs a hdr tonemapping algorithm on the image.
+        This reduces the dynamic range from 0 - ∞ to 0 - 1.
+        
+        Filters supported:
+        * REINHARD - Maps hdr values directly to a asymtopic curve.
+    ]=]
+    function HdrTonemap(self,config: ImageHdrConfig) : Image
     function __tostring(self): string
 end
 

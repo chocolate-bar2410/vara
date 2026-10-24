@@ -1,7 +1,7 @@
 use mlua::{AnyUserData, ExternalError};
 
 use crate::image_format::image_format_fromstring;
-use crate::image_interpolation as interpolation;
+use crate::{image_interpolation as interpolation, image_tonemap};
 
 use vara_colour::colour::Colour4;
 
@@ -271,6 +271,35 @@ impl Image {
 
         Ok(())
     }
+
+    #[lua(name="HdrTonemap")]
+    pub fn hdr_tonemap(this : AnyUserData,config : Option<mlua::Table>) -> mlua::Result<AnyUserData>{
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+
+            if config == None {
+                image_tonemap::reinhard(&mut image,0.0);
+            } else {
+                let Some(config) = config else {unreachable!()};
+
+                let filter = config.get::<String>("Filter")?;
+
+                match filter.to_ascii_uppercase().trim() {
+                    "ACES" => image_tonemap::aces(&mut image,config),
+                    "HABLE" => image_tonemap::hable(&mut image,config),
+                    "AGX" => image_tonemap::agx(&mut image,config),
+                    "REINHARD" | _ => {
+                        image_tonemap::reinhard(&mut image,config.get::<f32>("Exposure").unwrap_or(0.0))
+                    },
+                }
+            }
+
+        }
+
+
+
+        Ok(this)
+    } 
 
     #[lua(skip)]
     fn encode_hdr(&self,context: &mlua::Lua,format : image::ImageFormat) -> mlua::Result<mlua::Buffer> {

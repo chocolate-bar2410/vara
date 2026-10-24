@@ -11,6 +11,7 @@ use vara_files::file_obj::File as vara_file;
 mod image_obj;
 mod image_format;
 mod image_interpolation;
+mod image_tonemap;
 
 mod audio_obj;
 mod audio_interpolation;
