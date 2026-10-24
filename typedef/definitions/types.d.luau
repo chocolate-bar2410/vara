@@ -77,20 +77,25 @@ type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
     * HABLE
     * AGX
 ]]
-type ImageHdrConfig = {
-        Filter: "REINHARD",
+type ImageHdrConfig = 
+    {Filter: "REINHARD",
         Exposure: number?
-    } | {
-        Filter: "ACES",
-        A: number?,
-        B: number?,
-        C: number?,
-        D: number?,
-        E: number?,
+    } 
+    | {Filter: "ACES",
         Exposure: number?
-    } |
-    {Filter: "HABLE"} |
-    {Filter: "AGX"}
+    } 
+    | {Filter: "HABLE",
+        ShoulderStrength: number?,
+        LinearStrength: number?,
+        LinearAngle: number?,
+        ToeStrength: number?,
+        ToeNumerator: number?,
+        ToeDenominator: number?,
+
+        Exposure: number?,
+        WhitePoint: number?
+    } 
+    | {Filter: "UCHIMARA"}
 
 --[=[
 	@class Image

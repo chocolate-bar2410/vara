@@ -287,7 +287,7 @@ impl Image {
                 match filter.to_ascii_uppercase().trim() {
                     "ACES" => image_tonemap::aces(&mut image,config),
                     "HABLE" => image_tonemap::hable(&mut image,config),
-                    "AGX" => image_tonemap::agx(&mut image,config),
+                    "UCHIMURA" => image_tonemap::uchimura(&mut image,config),
                     "REINHARD" | _ => {
                         image_tonemap::reinhard(&mut image,config.get::<f32>("Exposure").unwrap_or(0.0))
                     },
