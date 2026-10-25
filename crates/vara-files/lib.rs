@@ -8,6 +8,7 @@ use vara_util::table_builder::TableBuilder;
 
 pub mod file_obj;
 mod directory;
+mod observer;
 
 pub fn read_file(path: &PathBuf) -> io::Result<String> {
     let mut file = fs::File::open(path)

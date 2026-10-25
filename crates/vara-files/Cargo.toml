@@ -13,6 +13,7 @@ mlua = { version = "0.12.1", features = [
     "serde",
     "macros",
 ] }
+notify = "8.2.1"
 
 vara_chrono = {path = "../vara-chrono"}
 vara_util = {path = "../vara-util"}
