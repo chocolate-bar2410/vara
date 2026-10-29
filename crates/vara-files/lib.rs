@@ -66,6 +66,6 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
         .add_function("Write", write_file_fn)?
         .add_function("File", |_: &mlua::Lua, path: PathBuf| file_obj::File::new(&path))?
         .add_function("Directory", |_: &mlua::Lua, path: PathBuf| directory::Directory::new(&path))?
-        .add_function("Observer", |_: &mlua::Lua, (path,recursive): (PathBuf,Option<bool>)| Ok(observer::FsObserver::new(path, recursive.unwrap_or(false))))?
+        .add_function("Observer", |context: &mlua::Lua, (path,recursive): (PathBuf,Option<bool>)| Ok(observer::FsObserver::new(context,path, recursive.unwrap_or(false))))?
         .build_readonly()
 }

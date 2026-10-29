@@ -4,8 +4,11 @@ local io = require("@vara/io")
 
 print("started watching file")
 
-repeat
-until io.ReadAsync(1) == string.char(13)
+local observer = fs.Observer("./demo_scripts/images")
+
+io.ReadLine()
+
+observer:Disconnect()
 
 print("stopped watching file")
 

@@ -4668,7 +4668,10 @@ dependencies = [
 name = "vara_files"
 version = "0.0.0"
 dependencies = [
+ "async-channel",
+ "futures-lite",
  "mlua",
+ "mlua-luau-scheduler",
  "notify",
  "vara_chrono",
  "vara_util",

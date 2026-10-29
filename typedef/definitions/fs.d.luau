@@ -125,4 +125,12 @@ declare extern type FsObserver with
     OnCreated : () -> ()
     OnModified : () -> ()
 
+    --[=[
+        @within FsObserver
+        @method Disconnect
+
+        Stops the observer from observing file events.    
+    ]=]
+    function Disconnect(self)
+
 end
