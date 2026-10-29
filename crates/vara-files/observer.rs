@@ -1,10 +1,7 @@
 use std::path::PathBuf;
 
-use crate::file_obj::File;
-
-
 #[derive(mlua::UserData)]
-struct FsObserver{
+pub struct FsObserver{
     #[lua(name="Path")]
     file_path: PathBuf,
     #[lua(name="Recursive")]
@@ -18,7 +15,7 @@ struct FsObserver{
 #[mlua::userdata_impl]
 impl FsObserver {
     #[lua(skip)]
-    pub fn from_file(file_path: PathBuf,recursive: bool) -> Self {
+    pub fn new(file_path: PathBuf,recursive: bool) -> Self {
         Self {
             file_path,
             recursive,

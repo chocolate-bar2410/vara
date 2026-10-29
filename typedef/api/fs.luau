@@ -66,4 +66,18 @@ function module.Directory(path: string): Directory
 	return nil :: unknown
 end
 
+
+--[=[
+	@within fs
+	@method Observer
+	@param path The path to a file or directory.
+	@param recursive Whether or not to observe file directories recursively.
+	@return A Observer object.
+
+	Creates a Observer object from a path string.
+]=]
+function module.Observer(path: string,recursive: boolean?): FsObserver
+	return nil :: unknown
+end
+
 return module

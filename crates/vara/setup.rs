@@ -17,6 +17,7 @@ const PATH_TYPEDEF: &str = include_str!("../../typedef/api/path.luau");
 const MAIN_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
 const NET_DEF: &str = include_str!("../../typedef/definitions/net.d.luau");
 const UI_DEF: &str = include_str!("../../typedef/definitions/ui.d.luau");
+const FS_DEF: &str = include_str!("../../typedef/definitions/fs.d.luau");
 
 pub async fn setup() -> Result<(), Box<dyn std::error::Error>>{
 
@@ -99,10 +100,11 @@ async fn write_vscode(contents : &mut serde_json::Value) -> Result<(), Box<dyn s
 
     let definition = String::from("luau-lsp.types.definitionFiles");
 
-    let paths : [(String,String);3] = [
+    let paths : [(String,String);4] = [
         (String::from("vara"),format!("~/.vara/.typedefs/{}/definitions/types.d.luau",version_string)),
         (String::from("vara/net"),format!("~/.vara/.typedefs/{}/definitions/net.d.luau",version_string)),
         (String::from("vara/ui"),format!("~/.vara/.typedefs/{}/definitions/ui.d.luau",version_string)),
+        (String::from("vara/fs"),format!("~/.vara/.typedefs/{}/definitions/fs.d.luau",version_string)),
     ];
 
     if let Some(serde_json::Value::Object(definition)) = contents.get_mut(&definition) {
@@ -177,5 +179,6 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     async_fs::write(typedef_directory.join("types").with_extension("d.luau"),MAIN_DEF).await?;
     async_fs::write(typedef_directory.join("net").with_extension("d.luau"),NET_DEF).await?;
     async_fs::write(typedef_directory.join("ui").with_extension("d.luau"),UI_DEF).await?;
+    async_fs::write(typedef_directory.join("fs").with_extension("d.luau"),FS_DEF).await?;
     Ok(())
 }
