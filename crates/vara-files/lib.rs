@@ -6,6 +6,8 @@ use std::path::PathBuf;
 
 use vara_util::table_builder::TableBuilder;
 
+use crate::observer::FsObserver;
+
 pub mod file_obj;
 mod directory;
 mod observer;
@@ -60,12 +62,52 @@ fn write_file_fn(_: &mlua::Lua,(path_string, data): (mlua::LuaString, mlua::Valu
     Ok(())
 }
 
+fn create_observer(context: &mlua::Lua, (data,recursive): (mlua::Value,Option<bool>)) -> mlua::Result<FsObserver>{
+
+    match data {
+        mlua::Value::String(pathstring) => {
+            let path = PathBuf::from(pathstring.to_string_lossy());
+            FsObserver::new(context,path, recursive.unwrap_or(false))
+        }
+
+        mlua::Value::UserData(userdata) => {
+
+            if userdata.is::<file_obj::File>(){
+                let file = userdata.borrow::<file_obj::File>()?;
+                let path = &file.path;
+                return FsObserver::new(context,path.to_path_buf(), recursive.unwrap_or(false));
+            }
+
+            if userdata.is::<directory::Directory>(){
+                let file = userdata.borrow::<directory::Directory>()?;
+                let path = &file.path;
+                return FsObserver::new(context,path.to_path_buf(), recursive.unwrap_or(false));
+            }
+
+            return Err(mlua::Error::FromLuaConversionError {
+                from: "userdata",
+                to: "string or buffer".to_string(),
+                message: Some("expected a string, file, or a directory".to_string()),
+            });
+        }
+
+
+        _ => {
+            return Err(mlua::Error::FromLuaConversionError {
+                from: data.type_name(),
+                to: "string or buffer".to_string(),
+                message: Some("expected a string, file, or a directory".to_string()),
+            });
+        }
+    }
+}
+
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     TableBuilder::new(context.clone())?
         .add_function("Read", read_file_fn)?
         .add_function("Write", write_file_fn)?
         .add_function("File", |_: &mlua::Lua, path: PathBuf| file_obj::File::new(&path))?
         .add_function("Directory", |_: &mlua::Lua, path: PathBuf| directory::Directory::new(&path))?
-        .add_function("Observer", |context: &mlua::Lua, (path,recursive): (PathBuf,Option<bool>)| Ok(observer::FsObserver::new(context,path, recursive.unwrap_or(false))))?
+        .add_function("Observer", create_observer)?
         .build_readonly()
 }

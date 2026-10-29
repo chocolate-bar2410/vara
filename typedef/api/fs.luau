@@ -76,7 +76,7 @@ end
 
 	Creates a Observer object from a path string.
 ]=]
-function module.Observer(path: string,recursive: boolean?): FsObserver
+function module.Observer(path: string | File | Directory,recursive: boolean?): FsObserver
 	return nil :: unknown
 end
 
