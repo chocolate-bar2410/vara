@@ -6,8 +6,12 @@ use std::{
 
 use mlua::ExternalResult;
 use mlua_luau_scheduler::LuaSpawnExt;
+
 use notify::{
-    EventKind, RecursiveMode, Watcher, event, recommended_watcher,
+    EventKind,
+    RecursiveMode,
+    Watcher,
+    recommended_watcher,
 };
 
 type CallbackSlot = Rc<RefCell<Option<mlua::RegistryKey>>>;
