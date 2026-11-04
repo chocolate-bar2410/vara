@@ -20,8 +20,8 @@
             - [x] set pixel
             - [x] get pixel
             - [x] HDR
-    - [ ] file system
-        - [ ] watchers
+    - [x] file system
+        - [x] watchers
 - [ ] debugging
     - [ ] custom print
         - [ ] tables
