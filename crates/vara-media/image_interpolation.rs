@@ -5,7 +5,7 @@ use std::f32::consts::PI;
 const RGBA_CHANNELS : usize = 4;
 
 pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<f32>>{
-    let mut result : Vec<f32> = vec![0.0;(width * height * img.colour_channels as u32) as usize];
+    let mut result : Vec<f32> = vec![0.0;(width * height * RGBA_CHANNELS as u32) as usize];
 
     for y in 0..height{
         for x in 0..width{
@@ -42,7 +42,7 @@ pub fn bilinear(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) ->
 }
 
 pub fn nearest_neighbour(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) -> mlua::Result<Vec<f32>>{
-    let mut result : Vec<f32> = vec![0.0;(width * height * img.colour_channels as u32) as usize];
+    let mut result : Vec<f32> = vec![0.0;(width * height * RGBA_CHANNELS as u32) as usize];
     
     for y in 0..height{
         for x in 0..width{
