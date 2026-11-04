@@ -104,6 +104,11 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             let path = args.path;
             let mut current = vara_runtime::Runtime::new(Vec::new())?;
             
+            match current.setup_test_library() {
+                Ok(()) => {},
+                Err(err) => return Err(format!("failed to setup testing libraries:\n{}",err).into()),
+            }
+
             match current.eval_test(&path).await {
                 Ok(()) => Ok(()),
                 Err(err) => Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),

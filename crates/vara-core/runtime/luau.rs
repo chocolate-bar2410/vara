@@ -87,6 +87,10 @@ impl Runtime {
         Ok(())
     }
 
+    pub fn setup_test_library(&mut self)-> Result<(), Box<dyn std::error::Error>> {
+        test::register_libraries(&self)?;
+        Ok(())
+    }
 
     pub async fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
         
@@ -151,7 +155,7 @@ impl Runtime {
         for pair in suite.pairs::<String,mlua::Function>() {
             let (name,test_fn) = pair?;
 
-            runner.evaluate(name, test_fn);
+            runner.evaluate(name, test_fn)?;
         }
 
         println!("{}",runner.get_result_output());

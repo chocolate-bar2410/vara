@@ -1,6 +1,7 @@
 use std::collections::hash_map::HashMap;
+use mlua::ExternalResult;
 
-use mlua::ExternalError;
+use crate::test::{unit};
 
 pub struct TestRunner{
     tests: u32,
@@ -22,32 +23,33 @@ impl TestRunner{
         }
     }
 
-    pub fn evaluate(&mut self,name: String,test: mlua::Function){
+    pub fn evaluate(&mut self,name: String,test: mlua::Function) -> mlua::Result<()>{
         self.tests += 1;
 
-        let result = test.call::<()>(());
-
-        match result {
-            Ok(_) => {
-                self.passed += 1;
-
-                self.message_map.insert(name.clone(), "passed.".to_string());
-                self.result_map.insert(name, true);
-            },
-            Err(err) => {
-
-                let message = match err{
-                    mlua::Error::RuntimeError(msg) => msg.lines().next().unwrap_or(&msg).to_string(),
-                    mlua::Error::CallbackError { cause, .. } => cause.to_string(),
-                    _ => err.to_string()
-                };
-
-                self.failed += 1;
-
-                self.message_map.insert(name.clone(), message);
-                self.result_map.insert(name, false);
-            }
+        {
+            let mut assert_engine = unit::get_assertion_engine()?;
+            assert_engine.reset();
         }
+
+        test.call::<()>(())?;
+
+        let assert_engine = unit::get_assertion_engine()?;
+
+        if !assert_engine.failed {
+            self.passed += 1;
+
+            self.message_map.insert(name.clone(), "passed.".to_string());
+            self.result_map.insert(name, true);
+        } else {
+            let first_record = assert_engine.assertions.get(0).ok_or_else(|| unreachable!()).into_lua_err()?;
+
+            self.failed += 1;
+
+            self.message_map.insert(name.clone(), first_record.message.clone());
+            self.result_map.insert(name, false);
+        }
+
+        Ok(())
     }
 
     pub fn get_result_output(&self) -> String {
