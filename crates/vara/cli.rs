@@ -1,6 +1,7 @@
 use clap::builder::styling;
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+use std::process::ExitCode;
 
 use vara_core::runtime::luau as vara_runtime;
 
@@ -71,7 +72,7 @@ struct TestArgs {
     path: PathBuf,
 }
 
-pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
+pub async fn run() -> Result<ExitCode, Box<dyn std::error::Error>> {
     let cli = CLI::parse();
 
     match cli.command {
@@ -81,22 +82,22 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             let mut current = vara_runtime::Runtime::new(trailing_args)?;
             
             match current.run(&path).await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
+                Ok(_) => {},
+                Err(err) => return Err(format!("file {} failed to run\n{}", path.display(), err).into()),
             }
         },
         Some(Commands::Setup) => {
             match setup::setup().await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(format!("failed to setup luaurc:\n{}",err).into())
+                Ok(()) => {},
+                Err(err) => return Err(format!("failed to setup luaurc:\n{}",err).into())
             }
         }
 
         Some(Commands::Compile(args)) => {
             let path = args.path;
             match compile::compile(&path).await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(format!("failed to compile:\n{}",err).into())
+                Ok(()) => {},
+                Err(err) => return Err(format!("failed to compile:\n{}",err).into())
             }
         }
 
@@ -110,11 +111,13 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             }
 
             match current.eval_test(&path).await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),
+                Ok(exit_code) => return Ok(exit_code),
+                Err(err) => return Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),
             }
         }
 
-        None => Ok(CLI::command().print_help()?),
-    }
+        None => CLI::command().print_help()?,
+    };
+
+    Ok(ExitCode::SUCCESS)
 }

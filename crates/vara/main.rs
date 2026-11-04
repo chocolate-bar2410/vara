@@ -35,7 +35,7 @@ fn main() -> ExitCode {
 
 
         match cli::run().await {
-            Ok(_) => ExitCode::SUCCESS,
+            Ok(exit_code) => exit_code,
             Err(err) => {
                 eprintln!("{err}");
                 ExitCode::FAILURE

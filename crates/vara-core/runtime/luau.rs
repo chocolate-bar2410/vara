@@ -1,6 +1,7 @@
 use mlua::{FromLua};
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
+use std::process::ExitCode;
 
 use crate::runtime::debug;
 use crate::{stdlib as vara_stdlib, test};
@@ -124,7 +125,7 @@ impl Runtime {
         Ok(())
     }
 
-    pub async fn eval_test(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn eval_test(&mut self, file_path: &PathBuf) -> Result<ExitCode, Box<dyn std::error::Error>> {
         let file_contents = vara_files::read_file(file_path)?;
 
         let module_path =
@@ -152,15 +153,20 @@ impl Runtime {
 
         let mut runner = test::TestRunner::new();
 
+        let mut failed = false;
+
         for pair in suite.pairs::<String,mlua::Function>() {
             let (name,test_fn) = pair?;
 
-            runner.evaluate(name, test_fn)?;
+            failed |= runner.evaluate(name, test_fn)?;
         }
 
         println!("{}",runner.get_result_output());
 
-        Ok(())
+        match failed {
+            true => Ok(ExitCode::FAILURE),
+            false => Ok(ExitCode::SUCCESS)
+        }
     }
 
 }
