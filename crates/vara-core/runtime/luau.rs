@@ -1,6 +1,7 @@
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
 
+use crate::runtime::debug;
 use crate::stdlib as vara_stdlib;
 use crate::runtime::require;
 
@@ -78,6 +79,9 @@ impl Runtime {
         runtime_global.set("url", VARA_URL)?;
 
         self.vm.globals().set("_RUNTIME", runtime_global)?;
+
+        self.vm.globals().set("print", self.vm.create_function(debug::print)?)?;
+        self.vm.globals().set("warn", self.vm.create_function(debug::warn)?)?;
 
         Ok(())
     }

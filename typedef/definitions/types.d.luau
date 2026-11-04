@@ -598,3 +598,9 @@ declare _RUNTIME: {
 
     read url: string
 }
+
+--[=[
+    @method warn
+    prints out a message as a warning.
+]=]
+declare function warn<T...>(...: T...)
