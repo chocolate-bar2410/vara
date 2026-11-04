@@ -22,6 +22,7 @@ fn to_print_string(_context: &mlua::Lua, params : mlua::MultiValue) -> mlua::Res
 
         match param {
             mlua::Value::Table(tab) => result += print_table(tab)?.as_str(),
+            mlua::Value::Buffer(buffer) => result += print_buffer(buffer)?.as_str(),
             _ => result += &param.to_string()?,
         }
     }
@@ -83,3 +84,49 @@ fn print_table_recursive(table: &mlua::Table,visited: &mut HashSet<*const std::f
     Ok(result)
 }
 
+fn print_buffer(buffer: &mlua::Buffer) -> mlua::Result<String>{
+    let mut result = String::new();
+    const MAX_WIDTH: usize = 16;
+    const BYTE_SECT_WIDTH: usize = 50;
+    const ENCODED_SECT_WIDTH: usize = 16;
+
+    let bytedump = buffer.to_vec();
+
+    let mut row = 0;
+    let mut bytes = String::new();
+    let mut encoded = String::new();
+
+    for (index,byte) in bytedump.iter().enumerate() {
+        if index > 0 && index % MAX_WIDTH == 0 {
+
+            result.push_str(&format!("{:08x?}  {}  | {} |\n",row,&bytes,&encoded));
+
+            bytes.clear();
+            encoded.clear();
+
+            row += MAX_WIDTH;
+        } else if index > 0 && index % MAX_WIDTH.div_ceil(2) == 0 {
+            bytes.push_str("  ");
+        }
+
+        bytes.push_str(&format!("{:02x?} ",byte));
+
+        if byte.is_ascii_alphabetic() {
+            encoded.push(*byte as char);
+        } else {
+            encoded.push('.')
+        };
+    }
+
+    println!("{} {}",bytes.len(),BYTE_SECT_WIDTH);
+
+    let padding_a = " ".repeat(BYTE_SECT_WIDTH - bytes.len());
+    let padding_b = " ".repeat(ENCODED_SECT_WIDTH - encoded.len());
+
+    result.push_str(&format!("{:08x?}  {}{}  | {}{} |",row,&bytes,&padding_a,&encoded,&padding_b));
+
+    bytes.clear();
+    encoded.clear();
+
+    Ok(result)
+} 

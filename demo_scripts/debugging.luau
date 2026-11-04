@@ -25,7 +25,7 @@ print(tab2)
 
 --// buffer printing
 
-local buffer1 = buffer.fromstring("hello world")
+local buffer1 = buffer.fromstring("hello world abcdefghijklmnopqrstuvvwxyz")
 print(buffer1)
 
 --// warn
