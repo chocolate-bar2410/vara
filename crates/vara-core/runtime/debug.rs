@@ -1,5 +1,7 @@
 use std::{collections::HashSet, ops::Add};
 
+use mlua::ObjectLike;
+
 pub fn print(_context: &mlua::Lua, params : mlua::MultiValue) -> mlua::Result<()>{
     println!("{}",to_print_string(_context,params)?);
     Ok(())
@@ -28,6 +30,13 @@ fn to_print_string(_context: &mlua::Lua, params : mlua::MultiValue) -> mlua::Res
 }
 
 fn print_table(table: &mlua::Table) -> mlua::Result<String>{
+
+    if let Some(meta) = table.metatable() {
+        if meta.contains_key("__tostring")? {
+            return table.to_string();
+        }
+    }
+
     let mut visited = HashSet::new();
 
     print_table_recursive(table, &mut visited,1)
