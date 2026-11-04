@@ -12,6 +12,17 @@ local tab1 = {
 
 print(tab1)
 
+local tab2 = {
+    foo = 123,
+    bar = 456,
+    hi = {
+        abc = "abc",
+        [123] = "hello"
+    }
+}
+
+print(tab2)
+
 --// buffer printing
 
 local buffer1 = buffer.fromstring("hello world")

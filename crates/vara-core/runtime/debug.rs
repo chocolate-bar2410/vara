@@ -55,12 +55,14 @@ fn print_table_recursive(table: &mlua::Table,visited: &mut HashSet<*const std::f
 
         result.push_str(&indent_str.repeat(depth));
 
-        match key {
-            _ => {                
-                result.push_str(&format!("[{}]: ",key.to_string()?))
-            },
-        }
+        let formatted = match key {
+            mlua::Value::String(_) => format!("\x1b[32m\"{}\"\x1b[0m",key.to_string()?),
+            mlua::Value::Number(_) | mlua::Value::Integer(_) => format!("\x1b[36m{}\x1b[0m",key.to_string()?),
+            _ => key.to_string()?
+        };
 
+        result.push_str(&format!("[{}]: ",formatted));
+        
         match value {
             mlua::Value::Table(tab) => {
                 let ptr = tab.to_pointer();
