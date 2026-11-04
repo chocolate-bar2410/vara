@@ -23,6 +23,13 @@ local tab2 = {
 
 print(tab2)
 
+local tab3 = { bar = 456}
+local tab4 = { bar = 456,tab = tab3}
+local tab5 = { foo = 123,hi = tab4, hello = tab4}
+
+tab3.tab = tab4
+print(tab5)
+
 --// buffer printing
 
 local buffer1 = buffer.fromstring("hello world abcdefghijklmnopqrstuvvwxyz")

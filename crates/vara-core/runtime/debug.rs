@@ -48,7 +48,7 @@ fn print_table_recursive(table: &mlua::Table,visited: &mut HashSet<*const std::f
 
     let indent_str = "  ";
 
-    result += &indent_str.repeat(depth - 1).add("{\n");
+    result += &"{\n";
 
     for pair in table.pairs::<mlua::Value,mlua::Value>() {
 
@@ -68,10 +68,11 @@ fn print_table_recursive(table: &mlua::Table,visited: &mut HashSet<*const std::f
             mlua::Value::Table(tab) => {
                 let ptr = tab.to_pointer();
                 if visited.contains(&ptr) {
-                    result.push_str("**CYCLICAL REFERENCE**")
+                    result.push_str("**CYCLICAL REFERENCE**,\n")
                 } else {
                     visited.insert(ptr);
                     result.push_str(&format!("{},\n",print_table_recursive(&tab,visited,depth + 1)?));
+                    visited.remove(&ptr);
                 }
             }
 
@@ -111,14 +112,12 @@ fn print_buffer(buffer: &mlua::Buffer) -> mlua::Result<String>{
 
         bytes.push_str(&format!("{:02x?} ",byte));
 
-        if byte.is_ascii_alphabetic() {
+        if byte.is_ascii_alphanumeric() {
             encoded.push(*byte as char);
         } else {
             encoded.push('.')
         };
     }
-
-    println!("{} {}",bytes.len(),BYTE_SECT_WIDTH);
 
     let padding_a = " ".repeat(BYTE_SECT_WIDTH - bytes.len());
     let padding_b = " ".repeat(ENCODED_SECT_WIDTH - encoded.len());
