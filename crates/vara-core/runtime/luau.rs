@@ -3,7 +3,7 @@ use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
 
 use crate::runtime::debug;
-use crate::stdlib as vara_stdlib;
+use crate::{stdlib as vara_stdlib, test};
 use crate::runtime::require;
 
 // omg lune thx so much :heart_eyes:
@@ -142,14 +142,19 @@ impl Runtime {
         let result = self.scheduler.get_thread_result(id)
             .ok_or_else(|| format!("{} does not return any values",file_path.display()))??;
 
-        let returned = result.into_iter().next().ok_or_else(|| format!("{} does not return any values",file_path.display()))?;
+        let return_value = result.into_iter().next().ok_or_else(|| format!("{} does not return any values",file_path.display()))?;
 
-        let suite = mlua::Table::from_lua(returned, &self.vm)?;
+        let suite = mlua::Table::from_lua(return_value, &self.vm)?;
 
-        let mut multi = mlua::MultiValue::new();
-        multi.push_back(mlua::Value::Table(suite));
+        let mut runner = test::TestRunner::new();
 
-        debug::print(&self.vm, multi)?;
+        for pair in suite.pairs::<String,mlua::Function>() {
+            let (name,test_fn) = pair?;
+
+            runner.evaluate(name, test_fn);
+        }
+
+        println!("{}",runner.get_result_output());
 
         Ok(())
     }

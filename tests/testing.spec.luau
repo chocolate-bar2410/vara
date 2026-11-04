@@ -3,7 +3,8 @@ local unit = require("@vara/test/unit")
 local module = {}
 
 function module.addition()
-    print("addition")
+    error("addition failed")
+    -- print("addition")
 end
 
 function module.subtraction()
