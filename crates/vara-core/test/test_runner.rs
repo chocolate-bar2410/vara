@@ -23,7 +23,7 @@ impl TestRunner{
         }
     }
 
-    pub fn evaluate(&mut self,name: String,test: mlua::Function) -> mlua::Result<()>{
+    pub fn evaluate(&mut self,name: String,test: mlua::Function) -> mlua::Result<bool>{
         self.tests += 1;
 
         {
@@ -38,7 +38,7 @@ impl TestRunner{
         if !assert_engine.failed {
             self.passed += 1;
 
-            self.message_map.insert(name.clone(), "passed.".to_string());
+            self.message_map.insert(name.clone(), "Passed.".to_string());
             self.result_map.insert(name, true);
         } else {
             let first_record = assert_engine.assertions.get(0).ok_or_else(|| unreachable!()).into_lua_err()?;
@@ -49,23 +49,27 @@ impl TestRunner{
             self.result_map.insert(name, false);
         }
 
-        Ok(())
+        Ok(assert_engine.failed)
     }
 
     pub fn get_result_output(&self) -> String {
-        let mut result = String::new();
+        self.result_map
+            .iter()
+            .map(|(key,passed)| {
+                let prefix = match passed {
+                    true => "\x1b[1;32mPASS\x1b[0m",
+                    false => "\x1b[1;31mFAIL\x1b[0m"
+                };
 
-        for key in self.result_map.keys() {
+                let unknown_message = &String::from("???");            
+                let message = self.message_map
+                .get(key)
+                    .map(String::as_str)
+                    .unwrap_or(unknown_message);
 
-            let passed = *self.result_map.get(key).unwrap_or(&false);
-            let prefix = if passed {"PASS"} else {"FAIL"};
-
-            let unknown_message = &String::from("???");            
-            let message = self.message_map.get(key).unwrap_or(unknown_message);
-
-            result.push_str(&format!("{} {} {}\n",prefix,key,message));
-        }
-
-        result
+                format!("{} {}: {}",prefix,key,message)
+            })
+            .collect::<Vec<String>>()
+            .join("\n")
     }
 }
