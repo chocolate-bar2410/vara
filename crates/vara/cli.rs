@@ -47,7 +47,9 @@ enum Commands {
     /// setups up vara
     Setup,
     /// compiles script into executable
-    Compile(CompileArgs)
+    Compile(CompileArgs),
+    /// runs tests
+    Test(TestArgs)
 }
 
 #[derive(clap::Args)]
@@ -60,6 +62,12 @@ struct RunArgs {
 #[derive(clap::Args)]
 
 struct CompileArgs {
+    path: PathBuf,
+}
+
+#[derive(clap::Args)]
+
+struct TestArgs {
     path: PathBuf,
 }
 
@@ -89,6 +97,16 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             match compile::compile(&path).await {
                 Ok(()) => Ok(()),
                 Err(err) => Err(format!("failed to compile:\n{}",err).into())
+            }
+        }
+
+        Some(Commands::Test(args)) => {
+            let path = args.path;
+            let mut current = vara_runtime::Runtime::new(Vec::new())?;
+            
+            match current.eval_test(&path).await {
+                Ok(()) => Ok(()),
+                Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
             }
         }
 

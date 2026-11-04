@@ -23,11 +23,11 @@
     - [x] file system
         - [x] watchers
 - [ ] debugging
-    - [ ] custom print
-        - [ ] tables
-        - [ ] buffers
+    - [x] custom print
+        - [x] tables
+        - [x] buffers
     - [ ] custom errors
-    - [ ] custom warns
+    - [x] custom warns
     - [ ] test
 
 ### v0.3.0

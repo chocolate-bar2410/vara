@@ -1,3 +1,4 @@
+use mlua::{FromLua, IntoLua};
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
 
@@ -118,4 +119,39 @@ impl Runtime {
 
         Ok(())
     }
+
+    pub async fn eval_test(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+        let file_contents = vara_files::read_file(file_path)?;
+
+        let module_path =
+            vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))
+                .map_err(|e| mlua::Error::external(format!("{e:?}")))?;
+
+        let main = self.vm
+            .load(file_contents.as_str())
+            .set_name(format!(
+                "{}{}",
+                vara_util::constants::FILE_CHUNK_PREFIX,
+                module_path
+            ));
+
+        let id = self.scheduler.push_thread_back(main, ())?;
+
+        smol::block_on(self.scheduler.run());
+
+        let result = self.scheduler.get_thread_result(id)
+            .ok_or_else(|| format!("test file {} does not return any values\n",file_path.display()))??;
+
+        let returned = result.into_iter().next().ok_or_else(|| format!("test file {} does not return any values\n",file_path.display()))?;
+
+        let suite = mlua::Table::from_lua(returned, &self.vm)?;
+
+        let mut multi = mlua::MultiValue::new();
+        multi.push_back(mlua::Value::Table(suite));
+
+        debug::print(&self.vm, multi)?;
+
+        Ok(())
+    }
+
 }
