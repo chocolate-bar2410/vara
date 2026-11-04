@@ -26,7 +26,6 @@
     - [x] custom print
         - [x] tables
         - [x] buffers
-    - [ ] custom errors
     - [x] custom warns
     - [ ] test
 

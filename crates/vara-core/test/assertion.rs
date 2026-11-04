@@ -24,6 +24,4 @@ impl AssertionEngine {
 
 pub struct AssertRecord {
     pub message: String,
-    pub expected: String,
-    pub actual: String,
 }
