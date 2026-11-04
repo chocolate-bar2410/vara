@@ -106,7 +106,7 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             
             match current.eval_test(&path).await {
                 Ok(()) => Ok(()),
-                Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
+                Err(err) => Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),
             }
         }
 

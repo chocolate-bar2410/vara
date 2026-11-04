@@ -1,4 +1,4 @@
-use mlua::{FromLua, IntoLua};
+use mlua::{FromLua};
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
 
@@ -140,9 +140,9 @@ impl Runtime {
         smol::block_on(self.scheduler.run());
 
         let result = self.scheduler.get_thread_result(id)
-            .ok_or_else(|| format!("test file {} does not return any values\n",file_path.display()))??;
+            .ok_or_else(|| format!("{} does not return any values",file_path.display()))??;
 
-        let returned = result.into_iter().next().ok_or_else(|| format!("test file {} does not return any values\n",file_path.display()))?;
+        let returned = result.into_iter().next().ok_or_else(|| format!("{} does not return any values",file_path.display()))?;
 
         let suite = mlua::Table::from_lua(returned, &self.vm)?;
 
