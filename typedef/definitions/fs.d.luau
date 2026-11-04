@@ -124,6 +124,7 @@ declare extern type FsObserver with
     read Path: string
     OnCreated : (paths: {string}) -> ()
     OnModified : (paths: {string}) -> ()
+    OnRemoved : (paths: {string}) -> ()
 
     --[=[
         @within FsObserver

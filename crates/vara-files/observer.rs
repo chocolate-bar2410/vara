@@ -28,6 +28,8 @@ pub struct FsObserver{
     #[lua(skip)]
     on_modified: CallbackSlot,
     #[lua(skip)]
+    on_removed: CallbackSlot,
+    #[lua(skip)]
     watcher: Option<notify::RecommendedWatcher>,
     #[lua(skip)]
     cancel: async_channel::Sender<()>,
@@ -75,12 +77,14 @@ impl FsObserver {
             recursive,
             on_created: Rc::new(RefCell::new(None)),
             on_modified: Rc::new(RefCell::new(None)),
+            on_removed: Rc::new(RefCell::new(None)),
             watcher: Some(watcher),
             cancel: cancel_tx
         };
 
         let created_slot = observer.on_created.clone();
         let modified_slot = observer.on_modified.clone();
+        let removed_slot = observer.on_removed.clone();
 
         let vm = context.clone();
 
@@ -111,6 +115,7 @@ impl FsObserver {
                 let slot = match event.kind{
                     EventKind::Create(_) => &created_slot,
                     EventKind::Modify(_) => &modified_slot,
+                    EventKind::Remove(_) => &removed_slot,
                     _ => continue,
                 };
 
@@ -157,6 +162,11 @@ impl FsObserver {
         get_callback(context,&self.on_modified)
     }
 
+    #[lua(getter,name="OnRemoved")]
+    fn get_on_removed(&self,context: &mlua::Lua) -> mlua::Result<Option<mlua::Function>> {
+        get_callback(context,&self.on_removed)
+    }
+
     // setters
 
     #[lua(setter,name="OnCreated")]
@@ -167,6 +177,11 @@ impl FsObserver {
     #[lua(setter,name="OnModified")]
     fn set_on_modified(&mut self,context: &mlua::Lua,callback_fn: mlua::Function) -> mlua::Result<()> {
         set_callback(context,&self.on_modified,callback_fn)
+    }
+
+    #[lua(setter,name="OnRemoved")]
+    fn set_on_removed(&mut self,context: &mlua::Lua,callback_fn: mlua::Function) -> mlua::Result<()> {
+        set_callback(context,&self.on_removed,callback_fn)
     }
 
 
