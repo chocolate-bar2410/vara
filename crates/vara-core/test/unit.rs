@@ -2,6 +2,7 @@ use std::sync::LazyLock;
 use std::sync::Mutex;
 
 use mlua::ExternalError;
+use mlua::ObjectLike;
 use vara_util::table_builder::TableBuilder;
 use crate::test::assertion::AssertRecord;
 
@@ -101,6 +102,37 @@ fn assert_not_throw(_: &mlua::Lua,(callback_fn,args) : (mlua::Function,mlua::Mul
     Ok(())
 }
 
+fn assert_table_eq(_: &mlua::Lua,(expected,actual) : (mlua::Table,mlua::Table)) -> mlua::Result<()>{
+
+    let result = vara_util::table_compare::compare_tables(&expected, &actual)?;
+
+    if !result {
+        let mut assert_mutex = ASSERTION_GLOBAL.lock().map_err(|_| "poisioned assertion engine mutex".into_lua_err())?;
+
+        assert_mutex.record_assert(AssertRecord {
+            message: format!("{} is equal to {}",expected.to_string()?,actual.to_string()?),
+        });
+    }
+
+    Ok(())
+}
+
+fn assert_table_neq(_: &mlua::Lua,(expected,actual) : (mlua::Table,mlua::Table)) -> mlua::Result<()>{
+
+    let result = vara_util::table_compare::compare_tables(&expected, &actual)?;
+
+    if result {
+        let mut assert_mutex = ASSERTION_GLOBAL.lock().map_err(|_| "poisioned assertion engine mutex".into_lua_err())?;
+
+        assert_mutex.record_assert(AssertRecord {
+            message: format!("{} is equal to {}",expected.to_string()?,actual.to_string()?),
+        });
+    }
+
+    Ok(())
+}
+
+
 pub fn get_assertion_engine() ->  mlua::Result<std::sync::MutexGuard<'static,AssertionEngine>> {
     let assert_mutex = ASSERTION_GLOBAL.lock().map_err(|_| "poisioned assertion engine mutex".into_lua_err())?;
 
@@ -115,5 +147,7 @@ pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table>{
     .add_function("AssertNotNil", assert_not_nil)?
     .add_function("AssertThrows", assert_throw)?
     .add_function("AssertDoesNotThrow", assert_not_throw)?
+    .add_function("AssertTableEquals", assert_table_eq)?
+    .add_function("AssertTableNotEquals", assert_table_neq)?
     .build_readonly()
 }

@@ -77,5 +77,29 @@ function module.AssertDoesNotThrow<T>(callback: () -> (),... : T)
     return nil :: unknown
 end
 
+--[=[
+    @within unit
+    @method AssertTableEquals
+    @param expected The table to be expected.
+    @param actual The table thats being compared.
+
+    Asserts if a table is equal to a expected table.
+]=]
+function module.AssertTableEquals<K,V>(expected: {[K]: V},actual: {[K]: V})
+    return nil :: unknown
+end
+
+--[=[
+    @within unit
+    @method AssertTableNotEquals
+    @param expected The table to be expected.
+    @param actual The table thats being compared.
+
+    Asserts if a table is not equal to a expected table.
+]=]
+function module.AssertTableNotEquals<K,V>(expected: {[K]: V},actual: {[K]: V})
+    return nil :: unknown
+end
+
 
 return module

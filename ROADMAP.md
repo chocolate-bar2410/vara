@@ -22,12 +22,15 @@
             - [x] HDR
     - [x] file system
         - [x] watchers
-- [ ] debugging
+- [x] debugging
     - [x] custom print
         - [x] tables
         - [x] buffers
     - [x] custom warns
-    - [ ] test
+    - [x] test
+        - [x] assertions
+            - [x] table equal
+            - [x] table not equal
 
 ### v0.3.0
 - [ ] standard library

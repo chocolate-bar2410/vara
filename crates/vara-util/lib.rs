@@ -1,5 +1,6 @@
 pub mod path;
 pub mod table_builder;
+pub mod table_compare;
 
 #[cfg(windows)]
 pub mod win_compat;
