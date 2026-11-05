@@ -4,9 +4,9 @@ use mlua::ExternalResult;
 use crate::test::{unit};
 
 pub struct TestRunner{
-    tests: u32,
-    passed: u32,
-    failed: u32,
+    pub tests: u32,
+    pub passed: u32,
+    pub failed: u32,
 
     message_map: HashMap<String,String>,
     result_map: HashMap<String,bool>
@@ -38,7 +38,7 @@ impl TestRunner{
         if !assert_engine.failed {
             self.passed += 1;
 
-            self.message_map.insert(name.clone(), "Passed.".to_string());
+            self.message_map.insert(name.clone(), "".to_string());
             self.result_map.insert(name, true);
         } else {
             let first_record = assert_engine.assertions.get(0).ok_or_else(|| unreachable!()).into_lua_err()?;
@@ -52,8 +52,8 @@ impl TestRunner{
         Ok(assert_engine.failed)
     }
 
-    pub fn get_result_output(&self) -> String {
-        self.result_map
+    pub fn get_result_output(&self,suite_name: &str) -> String {
+        let mut result = self.result_map
             .iter()
             .map(|(key,passed)| {
                 let prefix = match passed {
@@ -67,9 +67,18 @@ impl TestRunner{
                     .map(String::as_str)
                     .unwrap_or(unknown_message);
 
-                format!("{} {}: {}",prefix,key,message)
+                if *passed {
+                    return format!("{} {} > {}",prefix,suite_name,key);
+                }
+
+                format!("{} {} > {}: {}",prefix,suite_name,key,message)
             })
             .collect::<Vec<String>>()
-            .join("\n")
+            .join("\n");
+
+        result.push_str(&format!("\n\n{}{} pass\x1b[0m\n",if self.passed > 0 {"\x1b[32m"} else {"\x1b[31m"},self.passed));
+        result.push_str(&format!("{}{} fail\x1b[0m\n",if self.failed > 0 {"\x1b[31m"} else {"\x1b[2m"},self.failed));
+   
+        result
     }
 }

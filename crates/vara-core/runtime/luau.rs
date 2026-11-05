@@ -148,7 +148,16 @@ impl Runtime {
             .ok_or_else(|| format!("{} does not return any values",file_path.display()))??;
 
         let return_value = result.into_iter().next().ok_or_else(|| format!("{} does not return any values",file_path.display()))?;
-
+        
+        let suite_name = file_path
+            .as_path()
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or_default()
+            .split(".")
+            .next()
+            .unwrap_or_default();
+        
         let suite = mlua::Table::from_lua(return_value, &self.vm)?;
 
         let mut runner = test::TestRunner::new();
@@ -161,7 +170,7 @@ impl Runtime {
             failed |= runner.evaluate(name, test_fn)?;
         }
 
-        println!("{}",runner.get_result_output());
+        println!("{}",runner.get_result_output(suite_name));
 
         match failed {
             true => Ok(ExitCode::FAILURE),
