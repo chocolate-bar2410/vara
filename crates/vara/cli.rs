@@ -110,6 +110,13 @@ pub async fn run() -> Result<ExitCode, Box<dyn std::error::Error>> {
                 Err(err) => return Err(format!("failed to setup testing libraries:\n{}",err).into()),
             }
 
+            if path.is_dir() {
+                match current.eval_test_dir(&path).await {
+                    Ok(exit_code) => return Ok(exit_code),
+                    Err(err) => return Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),
+                }
+            }
+
             match current.eval_test(&path).await {
                 Ok(exit_code) => return Ok(exit_code),
                 Err(err) => return Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),

@@ -125,7 +125,48 @@ impl Runtime {
         Ok(())
     }
 
+    // testing
+
+    pub async fn eval_test_dir(&mut self, file_path: &PathBuf) -> Result<ExitCode, Box<dyn std::error::Error>> {
+        
+        let mut failed = false;
+        let mut suites = vec![file_path.clone()];
+
+        let mut pass = 0;
+        let mut fail = 0;
+
+        while let Some(path) = suites.pop() {
+            if path.is_dir() {
+
+                for entry in std::fs::read_dir(path)? {
+                    let entry = entry?;
+
+                    if !fast_glob::glob_match("*.spec.luau",&entry.path().file_name().unwrap_or_default().to_string_lossy().as_bytes()) {continue;}
+
+                    suites.push(entry.path());
+                }
+
+            } else {
+                if self.eval_test(&path).await? == ExitCode::FAILURE {
+                    failed = true;
+                    fail += 1;
+                } else {
+                    pass += 1;
+                };
+            };
+        }
+
+        println!("{}{} suites pass\x1b[0m",if pass > 0 {"\x1b[32m"} else {"\x1b[31m"},pass);
+        println!("{}{} suites fail\x1b[0m",if fail > 0 {"\x1b[31m"} else {"\x1b[2m"},fail);
+
+        match failed {
+            true => Ok(ExitCode::FAILURE),
+            false => Ok(ExitCode::SUCCESS)
+        }
+    }
+
     pub async fn eval_test(&mut self, file_path: &PathBuf) -> Result<ExitCode, Box<dyn std::error::Error>> {
+
         let file_contents = vara_files::read_file(file_path)?;
 
         let module_path =
@@ -157,7 +198,7 @@ impl Runtime {
             .split(".")
             .next()
             .unwrap_or_default();
-        
+
         let suite = mlua::Table::from_lua(return_value, &self.vm)?;
 
         let mut runner = test::TestRunner::new();
@@ -170,6 +211,7 @@ impl Runtime {
             failed |= runner.evaluate(name, test_fn)?;
         }
 
+        println!("\x1b[1mSUITE\x1b[0m {}",suite_name);
         println!("{}",runner.get_result_output(suite_name));
 
         match failed {
