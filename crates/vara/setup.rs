@@ -15,6 +15,8 @@ const UI_TYPEDEF: &str = include_str!("../../typedef/api/ui.luau");
 const PATH_TYPEDEF: &str = include_str!("../../typedef/api/path.luau");
 const COLOUR_TYPEDEF: &str = include_str!("../../typedef/api/colour.luau");
 
+const UNIT_TYPEDEF: &str = include_str!("../../typedef/api/test/unit.luau");
+
 const MAIN_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
 const NET_DEF: &str = include_str!("../../typedef/definitions/net.d.luau");
 const UI_DEF: &str = include_str!("../../typedef/definitions/ui.d.luau");
@@ -163,7 +165,17 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
         .join(version_string)
         .join("api");
 
+    let test_api_directory = UserDirs::new()
+        .ok_or("failed to load typedefs")?
+        .home_dir()
+        .join(".vara")
+        .join(".typedefs")
+        .join(version_string)
+        .join("api")
+        .join("test");
+
     async_fs::create_dir_all(&api_directory).await?;
+    async_fs::create_dir_all(&test_api_directory).await?;
     async_fs::create_dir_all(&typedef_directory).await?;
 
     async_fs::write(api_directory.join("serde").with_extension("luau"), SERDE_TYPEDEF).await?;
@@ -177,6 +189,8 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     async_fs::write(api_directory.join("ui").with_extension("luau"),UI_TYPEDEF).await?;
     async_fs::write(api_directory.join("path").with_extension("luau"),PATH_TYPEDEF).await?;
     async_fs::write(api_directory.join("colour").with_extension("luau"),COLOUR_TYPEDEF).await?;
+
+    async_fs::write(test_api_directory.join("unit").with_extension("luau"),UNIT_TYPEDEF).await?;
 
     async_fs::write(typedef_directory.join("types").with_extension("d.luau"),MAIN_DEF).await?;
     async_fs::write(typedef_directory.join("net").with_extension("d.luau"),NET_DEF).await?;
