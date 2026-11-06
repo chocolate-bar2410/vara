@@ -13,11 +13,11 @@ A object that sends http requests.
 
 ## properties
 
-<h3 markdown>Timeout<span class="API-type">: number</span></h3>
+<h3 markdown>Timeout<span class="API-type"> : number</span></h3>
 How long the http request lasts until it cancels.  
 Defaults to 30 seconds.
 
-<h3 markdown>Headers<span class="API-type">: {[string]: string}</span></h3>
+<h3 markdown>Headers<span class="API-type"> : {[string]: string}</span></h3>
 The header information provided to http requests.
 
 ---

@@ -13,16 +13,16 @@ A object that represents a http request.
 
 ## properties
 
-<h3 markdown>Method<span class="API-type">: HttpMethod</span></h3>
+<h3 markdown>Method<span class="API-type"> : HttpMethod</span></h3>
 The HTTP method associated with the request.
 
-<h3 markdown>Query<span class="API-type">: {[string]: string}</span></h3>
+<h3 markdown>Query<span class="API-type"> : {[string]: string}</span></h3>
 Query data for the request.
 
-<h3 markdown>Body<span class="API-type">: buffer</span></h3>
+<h3 markdown>Body<span class="API-type"> : buffer</span></h3>
 The body of the http request.
 
-<h3 markdown>Url<span class="API-type">: String</span></h3>
+<h3 markdown>Url<span class="API-type"> : String</span></h3>
 The url that the request is being sent to.
 
 ---
