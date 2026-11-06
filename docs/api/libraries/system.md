@@ -91,6 +91,21 @@ system.VirtualMemoryUsage() : number
 ```
 The ammount of virtual memory being used up by the process.
 
+<h3 markdown>Notify<span class="API-type"> -> () </span></h3>
+```luau
+system.Notify(
+    summary : string,
+    body : string,
+    name : string,
+    timeout : number
+)
+```
+Sends a desktop notification.
+
+!!! note
+    notifications on windows require your executable to have a AUMID to properly show your app name.
+    if there is no AUMID, windows will give the notification a generic app name.
+
 ---
 
 ## types

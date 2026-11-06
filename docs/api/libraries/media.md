@@ -32,6 +32,8 @@ media.Image = function(
 Creates a image from a File, pathstring or a raw buffer.  
 Creating a image from a raw buffer assumes the image is RGBA.
 
+Raw buffers are assumed to contain 32bit float RGBA values.
+
 <h3 markdown>Audio<span class="API-type"> -> Audio </span></h3>
 ```luau
 media.Audio = function(

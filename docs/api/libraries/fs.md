@@ -29,7 +29,7 @@ print(fileContents)
 fs.Write(
     path: string, 
     contents: buffer | string
-): ()
+)
 ```
 Writes `contents` into the file that `path` points to.
 
@@ -50,3 +50,13 @@ Creates a file object from a path string.
 fs.Directory(path: string): Directory
 ```
 Creates a directory object from a path string.
+
+<h3 markdown>Observer<span class="API-type"> -> Observer </span></h3>
+```luau
+fs.Observer(
+    path: string | File | Directory,
+    recursive: boolean?
+): FsObserver
+```
+
+Creates a Observer object from a path string.
