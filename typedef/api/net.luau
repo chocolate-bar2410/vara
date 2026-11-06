@@ -24,7 +24,7 @@ end
     @tag must_use
     @return HttpRequest
 
-    Creates a HTTP client.
+    Creates a HTTP request.
 ]=]
 module.HttpRequest = function(url: string) : HttpRequest
     return nil :: (unknown)
