@@ -51,7 +51,7 @@ fs.Directory(path: string): Directory
 ```
 Creates a directory object from a path string.
 
-<h3 markdown>Observer<span class="API-type"> -> Observer </span></h3>
+<h3 markdown>Observer<span class="API-type"> -> FsObserver </span></h3>
 ```luau
 fs.Observer(
     path: string | File | Directory,
@@ -59,4 +59,4 @@ fs.Observer(
 ): FsObserver
 ```
 
-Creates a Observer object from a path string.
+Creates a Observer object from a file, directory or path string.
