@@ -11,6 +11,10 @@ pub fn join(context: &mlua::Lua,paths: mlua::MultiValue) -> mlua::Result<String>
         .map(|value| 
             context.from_value::<String>(value)
         )
+        .filter(|value| match value{
+            Ok(string) => !string.is_empty(),
+            Err(_) => true,
+        })
         .collect();
 
     #[cfg(target_family = "unix")]
@@ -21,6 +25,18 @@ pub fn join(context: &mlua::Lua,paths: mlua::MultiValue) -> mlua::Result<String>
 }
 
 pub fn with_ext(_: &mlua::Lua,(path,ext): (String,String)) -> mlua::Result<String>{
+
+    if ext.is_empty() {
+        return match path.rsplit_once("."){
+            Some((stem,_)) => Ok(stem.to_string()),
+            None => Ok(path),
+        };
+    }
+
+    if path.is_empty() {
+        return Ok("".to_string());
+    }
+
     Ok(format!("{}.{}",path,ext))
 }
 
