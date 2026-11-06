@@ -14,10 +14,6 @@ Colour4 supports HDR, allowing colours channels to be greater than 1.
 
 ## properties
 
-<h3 markdown>TimeOffset<span class="API-type"> : number</span></h3>
-
-The UTC offset in hours.
-
 <h3 markdown>Red<span class="API-type"> : number</span></h3>
 The Red channel of the colour.
 
