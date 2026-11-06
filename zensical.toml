@@ -32,6 +32,7 @@ nav = [
         "api/objects/datetime.md",
         "api/objects/image.md",
         "api/objects/audio.md",
+        "api/objects/colour4.md",
       ]}
     ]},
   { "CLI" = [
