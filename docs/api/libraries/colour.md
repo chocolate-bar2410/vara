@@ -1,9 +1,9 @@
 ---
-icon: octicons/file-directory-16
+icon: octicons/paintbrush-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-file-directory-24:</span> 
+<span class="API-icon" markdown>:octicons-paintbrush-24:</span> 
 colour
 </h1>
 Vara's library for creating colours.

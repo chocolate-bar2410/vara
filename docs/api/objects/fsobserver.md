@@ -1,9 +1,9 @@
 ---
-icon: octicons/calendar-16
+icon: octicons/eye-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-calendar-24:</span> 
+<span class="API-icon" markdown>:octicons-eye-24:</span> 
 FsObserver
 </h1>
 

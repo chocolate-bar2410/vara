@@ -1,9 +1,9 @@
 ---
-icon: octicons/calendar-16
+icon: octicons/paintbrush-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-calendar-24:</span> 
+<span class="API-icon" markdown>:octicons-paintbrush-24:</span> 
 Colour4
 </h1>
 

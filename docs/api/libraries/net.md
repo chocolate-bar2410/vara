@@ -1,9 +1,9 @@
 ---
-icon: octicons/file-directory-16
+icon: octicons/globe-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-file-directory-24:</span> 
+<span class="API-icon" markdown>:octicons-globe-24:</span> 
 net
 </h1>
 Vara's library for networking and creating http clients.

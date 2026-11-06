@@ -1,9 +1,9 @@
 ---
-icon: octicons/terminal-16
+icon: octicons/command-palette-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-terminal-24:</span> 
+<span class="API-icon" markdown>:octicons-command-palette-24:</span> 
 io
 </h1>
 

@@ -1,9 +1,9 @@
 ---
-icon: octicons/calendar-16
+icon: octicons/server-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-calendar-24:</span> 
+<span class="API-icon" markdown>:octicons-server-24:</span> 
 HttpClient
 </h1>
 

@@ -1,9 +1,9 @@
 ---
-icon: octicons/file-directory-16
+icon: octicons/terminal-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-file-directory-24:</span> 
+<span class="API-icon" markdown>:octicons-terminal-24:</span> 
 terminal
 </h1>
 Vara's library for terminal manipulation.
