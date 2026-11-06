@@ -33,6 +33,9 @@ nav = [
         "api/objects/image.md",
         "api/objects/audio.md",
         "api/objects/colour4.md",
+        "api/objects/httpclient.md",
+        "api/objects/httprequest.md",
+        "api/objects/httpresponse.md",
       ]}
     ]},
   { "CLI" = [

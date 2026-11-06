@@ -2,7 +2,7 @@
 --[=[
 	@class HttpResponse
 
-    A object that sends http requests.
+    The result of a http request.
 ]=]
 declare extern type HttpResponse with
     read Status: number
@@ -18,12 +18,13 @@ type HttpMethod = "GET" | "POST" | "PUT" | "PATCH" | "DELETE" | "HEAD" | "OPTION
 --[=[
 	@class HttpRequest
 
-    A object that sends http requests.
+    A object that represents a http request.
 ]=]
 declare extern type HttpRequest with
     Method: HttpMethod
     Query: {[string]: string}
     Body: buffer
+    Url: string
     --[=[
         @within HttpRequest
         @method AddQuery
