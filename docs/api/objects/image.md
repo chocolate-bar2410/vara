@@ -8,6 +8,7 @@ Image
 </h1>
 
 An object representing a image.  
+Images support HDR colour, so values can range from 0 - ∞
 
 ---
 
@@ -15,7 +16,7 @@ An object representing a image.
 
 <h3 markdown>Data<span class="API-type"> : buffer</span></h3>
 
-The image data as a unsigned 8 bit interleaved buffer.  
+The image data as a unsigned 32 bit float interleaved buffer.  
 
 <h3 markdown>Width<span class="API-type"> : number</span></h3>
 
@@ -27,7 +28,7 @@ The height of the image in pixels.
 
 <h3 markdown>Channels<span class="API-type"> : number</span></h3>
 
-How many colour channels the image has.  
+How many colour channels the image will be exported with.
 
 ---
 
@@ -62,11 +63,12 @@ Image:Resize(
 
 Resizes the image to a new width & height.  
 Interpolation filters supported:
-Returns itself.  
-
+  
 * **NEAREST**  - nearest neighbour
 * **BILINEAR** - bilinear interpolation between 4 points
 * **LANCZOS3** - LANCZOS interpolation using 36 points
+
+Returns itself.
 
 <h3 markdown>Flip<span class="API-type"> -> Image </span></h3>
 ```luau
@@ -128,6 +130,41 @@ Removes the alpha channel of the image.
 Treated as a no-op if the image does not have a alpha channel.  
 Returns itself.  
 
+<h3 markdown>GetPixel<span class="API-type"> -> Colour4 </span></h3>
+```luau
+Image:GetPixel(
+    x: number,
+    y: number
+) : Colour4
+```
+Gets the pixel colour at the position (x,y)
+
+<h3 markdown>SetPixel<span class="API-type"> -> Colour4 </span></h3>
+```luau
+Image:SetPixel(
+    x: number,
+    y: number,
+    colour: Colour4
+)
+```
+Sets the pixel colour at the position (x,y) to the given colour.
+
+<h3 markdown>HdrTonemap<span class="API-type"> -> Image </span></h3>
+```luau
+Image:HdrTonemap(config: ImageHdrConfig) : Image
+```
+Performs a hdr tonemapping algorithm on the image.
+This reduces the dynamic range from 0 - ∞ to 0 - 1.
+
+Filters supported:  
+
+* **REINHARD** - Map to a asymtopic curve.  
+* **ACES** - Map to a ACES filmic curve  
+* **HABLE** - Modelled after the response of analog film.  
+* **UCHIMURA** - Map to a piecewise curve.  
+
+Returns itself.  
+
 ---
 
 ## metamethods
@@ -142,10 +179,42 @@ Converts the image into a string in the format `image [Width]x[Height]`
 
 <h3 markdown>ImageFormat</h3>
 ```luau
-type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI"
+type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI" | "HDR" | "EXR"
 ```
 
 <h3 markdown>ImageResizeFilter</h3>
 ```luau
 type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
+```
+
+<h3 markdown>ImageHdrConfig</h3>
+```luau
+type ImageHdrConfig = {
+    Filter: "REINHARD",
+    Exposure: number?
+} | {
+    Filter: "ACES",
+    Exposure: number?
+} | {
+    Filter: "HABLE",
+    ShoulderStrength: number?,
+    LinearStrength: number?,
+    LinearAngle: number?,
+    ToeStrength: number?,
+    ToeNumerator: number?,
+    ToeDenominator: number?,
+
+    Exposure: number?,
+    WhitePoint: number?
+} | {
+    Filter: "UCHIMURA",
+    Contrast: number?,
+    LinearSection: number?,
+    LinearLength: number?,
+    Toe: number?,
+    Pedestal: number?,
+
+    Exposure: number?,
+    WhitePoint: number?
+}
 ```
