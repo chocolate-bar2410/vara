@@ -70,7 +70,7 @@ end
     Concurrently runs each provided thread until atleast one of them is finished.
     Functions that are passed in get converted to threads.
 ]=]
-module.Race = function(...:( ) -> () | thread)
+module.Race = function(...:( ) -> () | thread): (...unknown)
     return nil :: unknown
 end
 

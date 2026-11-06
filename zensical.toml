@@ -23,6 +23,7 @@ nav = [
       "api/libraries/media.md",
       "api/libraries/colour.md",
       "api/libraries/net.md",
+      "api/libraries/task.md",
       ]},
       {"Objects" = [
         "api/objects/file.md",
