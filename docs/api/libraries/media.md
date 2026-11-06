@@ -25,18 +25,18 @@ fs.Write("./demo_scripts/images/basn2c16.qoi",image:Encode("QOI"))
 
 <h3 markdown>Image<span class="API-type"> -> Image </span></h3>
 ```luau
-media.Image = function(
+media.Image(
     data : buffer | string | File
 ) : Image
 ```
 Creates a image from a File, pathstring or a raw buffer.  
 Creating a image from a raw buffer assumes the image is RGBA.
 
-Raw buffers are assumed to contain 32bit float RGBA values.
+Raw buffers are assumed to contain 32 bit float RGBA values.
 
 <h3 markdown>Audio<span class="API-type"> -> Audio </span></h3>
 ```luau
-media.Audio = function(
+media.Audio(
     data : AudioConfigTable | string | File
 ) : Audio
 ```
