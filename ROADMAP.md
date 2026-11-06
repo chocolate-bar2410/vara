@@ -4,7 +4,7 @@
 - [ ] CLI
     - [x] build
         - [x] dependency bundling
-    - [ ] test
+    - [x] test
 - [ ] standard library
     - [x] networking
     - [x] task
