@@ -11,7 +11,7 @@ const CHRONO_TYPEDEF: &str = include_str!("../../typedef/api/chrono.luau");
 const MEDIA_TYPEDEF: &str = include_str!("../../typedef/api/media.luau");
 const NET_TYPEDEF: &str = include_str!("../../typedef/api/net.luau");
 const TASK_TYPEDEF: &str = include_str!("../../typedef/api/task.luau");
-const UI_TYPEDEF: &str = include_str!("../../typedef/api/ui.luau");
+// const UI_TYPEDEF: &str = include_str!("../../typedef/api/ui.luau");
 const PATH_TYPEDEF: &str = include_str!("../../typedef/api/path.luau");
 const COLOUR_TYPEDEF: &str = include_str!("../../typedef/api/colour.luau");
 
@@ -19,7 +19,7 @@ const UNIT_TYPEDEF: &str = include_str!("../../typedef/api/test/unit.luau");
 
 const MAIN_DEF: &str = include_str!("../../typedef/definitions/types.d.luau");
 const NET_DEF: &str = include_str!("../../typedef/definitions/net.d.luau");
-const UI_DEF: &str = include_str!("../../typedef/definitions/ui.d.luau");
+// const UI_DEF: &str = include_str!("../../typedef/definitions/ui.d.luau");
 const FS_DEF: &str = include_str!("../../typedef/definitions/fs.d.luau");
 
 pub async fn setup() -> Result<(), Box<dyn std::error::Error>>{
@@ -103,10 +103,10 @@ async fn write_vscode(contents : &mut serde_json::Value) -> Result<(), Box<dyn s
 
     let definition = String::from("luau-lsp.types.definitionFiles");
 
-    let paths : [(String,String);4] = [
+    let paths : [(String,String);3] = [
         (String::from("vara"),format!("~/.vara/.typedefs/{}/definitions/types.d.luau",version_string)),
         (String::from("vara/net"),format!("~/.vara/.typedefs/{}/definitions/net.d.luau",version_string)),
-        (String::from("vara/ui"),format!("~/.vara/.typedefs/{}/definitions/ui.d.luau",version_string)),
+        // (String::from("vara/ui"),format!("~/.vara/.typedefs/{}/definitions/ui.d.luau",version_string)),
         (String::from("vara/fs"),format!("~/.vara/.typedefs/{}/definitions/fs.d.luau",version_string)),
     ];
 
@@ -186,7 +186,7 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     async_fs::write(api_directory.join("media").with_extension("luau"),MEDIA_TYPEDEF).await?;
     async_fs::write(api_directory.join("net").with_extension("luau"),NET_TYPEDEF).await?;
     async_fs::write(api_directory.join("task").with_extension("luau"),TASK_TYPEDEF).await?;
-    async_fs::write(api_directory.join("ui").with_extension("luau"),UI_TYPEDEF).await?;
+    // async_fs::write(api_directory.join("ui").with_extension("luau"),UI_TYPEDEF).await?;
     async_fs::write(api_directory.join("path").with_extension("luau"),PATH_TYPEDEF).await?;
     async_fs::write(api_directory.join("colour").with_extension("luau"),COLOUR_TYPEDEF).await?;
 
@@ -194,7 +194,7 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
 
     async_fs::write(typedef_directory.join("types").with_extension("d.luau"),MAIN_DEF).await?;
     async_fs::write(typedef_directory.join("net").with_extension("d.luau"),NET_DEF).await?;
-    async_fs::write(typedef_directory.join("ui").with_extension("d.luau"),UI_DEF).await?;
+    // async_fs::write(typedef_directory.join("ui").with_extension("d.luau"),UI_DEF).await?;
     async_fs::write(typedef_directory.join("fs").with_extension("d.luau"),FS_DEF).await?;
     Ok(())
 }
