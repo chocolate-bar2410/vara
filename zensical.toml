@@ -25,6 +25,10 @@ nav = [
       "api/libraries/net.md",
       "api/libraries/task.md",
       "api/libraries/terminal.md",
+      {"Test" = [
+        "api/libraries/test/overview.md",
+        "api/libraries/test/unit.md"
+      ]}
       ]},
       {"Objects" = [
         "api/objects/file.md",
@@ -44,6 +48,7 @@ nav = [
     "cli/run.md",
     "cli/setup.md",
     "cli/compile.md",
+    "cli/test.md",
   ]}
 
 ]
