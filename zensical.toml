@@ -11,7 +11,10 @@ repo_name = "chocolate-bar2410/vara"
 # edit_uri = "edit/main/docs/"
 
 nav = [
-  { "home" = "index.md" },
+  { "Home" = "index.md" },
+  {"Tutorials" = [
+    "tutorials/index.md"
+  ]},
   { "API" = [
     "api/index.md",
     {"Libraries" = [
@@ -26,7 +29,7 @@ nav = [
       "api/libraries/task.md",
       "api/libraries/terminal.md",
       {"Test" = [
-        "api/libraries/test/overview.md",
+        "api/libraries/test/index.md",
         "api/libraries/test/unit.md"
       ]}
       ]},
