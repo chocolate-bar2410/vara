@@ -44,40 +44,40 @@ The file extension of the file.
 
 ## methods
 
-<h3 markdown>Read<span class="API-type"> -> number </span></h3>
+<h3 markdown>Read<span class="API-type"> -> buffer </span></h3>
 ```luau
 File:Read(): buffer
 ```
 Reads the file as a buffer of unsigned 8 bit integers.
 
-<h3 markdown>Write<span class="API-type"> -> number </span></h3>
+<h3 markdown>Write<span class="API-type"> -> File </span></h3>
 ```luau
 File:Write(contents : buffer) : File
 ```
 Writes the contents of the file. 
 Returns itself.
 
-<h3 markdown>Append<span class="API-type"> -> number </span></h3>
+<h3 markdown>Append<span class="API-type"> -> File </span></h3>
 ```luau
 File:Append(contents : buffer) : File
 ```
 Appends the given contents onto the end of the contents of the file.
 Returns itself.
 
-<h3 markdown>Delete<span class="API-type"> -> number </span></h3>
+<h3 markdown>Delete<span class="API-type"> -> () </span></h3>
 ```luau
 File:Delete()
 ```
 Deletes the file.
 
-<h3 markdown>Move<span class="API-type"> -> number </span></h3>
+<h3 markdown>Move<span class="API-type"> -> File </span></h3>
 ```luau
 File:Move(path: string) : File
 ```
 Moves the file to a different location.
 Returns itself.
 
-<h3 markdown>Copy<span class="API-type"> -> number </span></h3>
+<h3 markdown>Copy<span class="API-type"> -> File </span></h3>
 ```luau
 File:Copy(path: string) : File
 ```
