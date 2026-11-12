@@ -15,6 +15,7 @@ nav = [
   {"Tutorials" = [
     "tutorials/index.md",
     "tutorials/installation.md",
+    "tutorials/quickstart.md",
     "tutorials/io.md",
     "tutorials/filesystem.md",
     "tutorials/image.md",
