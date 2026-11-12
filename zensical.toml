@@ -71,6 +71,7 @@ extra_css = [
   "stylesheets/homepage.css",
   "stylesheets/theme.css",
   "stylesheets/colours.css",
+  "stylesheets/components.css",
 ]
 # extra_javascript = ["javascripts/extra.js"]
 

@@ -4,6 +4,24 @@ title: Welcome to Vara
 
 Vara is a specialised Luau runtime for building standalone applications.
 
+<div class="button-grid">
+    <a href="installation/" class="grid-button">
+        <div class="grid-button-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M4.75 17.25a.75.75 0 0 1 .75.75v2.25c0 .138.112.25.25.25h12.5a.25.25 0 0 0 .25-.25V18a.75.75 0 0 1 1.5 0v2.25A1.75 1.75 0 0 1 18.25 22H5.75A1.75 1.75 0 0 1 4 20.25V18a.75.75 0 0 1 .75-.75Z"></path><path d="M5.22 9.97a.749.749 0 0 1 1.06 0l4.97 4.969V2.75a.75.75 0 0 1 1.5 0v12.189l4.97-4.969a.749.749 0 1 1 1.06 1.06l-6.25 6.25a.749.749 0 0 1-1.06 0l-6.25-6.25a.749.749 0 0 1 0-1.06Z"></path></svg>
+        </div>
+        <div class="grid-button-title">Install vara</div>
+        <div class="grid-button-desc">Learn how to install and use with toolchain managers</div>
+    </a>
+    <a href="installation/" class="grid-button">
+        <div class="grid-button-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="m12.672.668 3.059 6.197 6.838.993a.75.75 0 0 1 .416 1.28l-4.948 4.823 1.168 6.812a.75.75 0 0 1-1.088.79L12 18.347l-6.116 3.216a.75.75 0 0 1-1.088-.791l1.168-6.811-4.948-4.823a.749.749 0 0 1 .416-1.279l6.838-.994L11.327.668a.75.75 0 0 1 1.345 0Z"></path></svg>
+        </div>
+        <div class="grid-button-title">Quickstart</div>
+        <div class="grid-button-desc">Quick tutorial to set up vara</div>
+    </a>
+</div>
+
+
 ## What is Vara
 
 At its core, Vara aims to provide everything needed to develop and distribute standalone software using Luau.
