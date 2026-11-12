@@ -35,3 +35,14 @@
     font-size: medium;
     color: var(--md-default-fg-color--light);
 }
+
+@media screen and (max-width: 80em) {
+    .button-grid{
+        flex-direction: column;
+        padding: 0 1rem;
+    }
+
+    .grid-button{
+        flex: 0 1 100px;
+    }
+}
