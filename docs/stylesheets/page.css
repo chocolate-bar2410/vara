@@ -31,3 +31,7 @@
         padding: 0 0vh;
     }
 }
+
+.md-typeset pre > code {
+    border-radius: 5px;
+}

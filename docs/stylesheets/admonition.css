@@ -4,7 +4,7 @@
 }
 .md-typeset :is(.admonition, details) {
     border-radius: 5px;
-    border: 2px solid var(--admonition-color) !important;
+    border: 1px solid var(--admonition-color) !important;
     background: rgb(from var(--admonition-color) r g b / 0.1) !important;
 }
 
