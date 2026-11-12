@@ -17,8 +17,9 @@ nav = [
     "tutorials/installation.md",
     "tutorials/io.md",
     "tutorials/filesystem.md",
-    "tutorials/terminal.md",
+    "tutorials/image.md",
     "tutorials/testing.md",
+    "tutorials/wip.md",
   ]},
   { "API" = [
     "api/index.md",
