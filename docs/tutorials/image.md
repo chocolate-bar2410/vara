@@ -10,13 +10,13 @@ Images in vara allow you to chain multiple transformations together, creating a 
 A image can either be created from a buffer or by decoding a image file.
 
 === "decoding"
-    ```luau
+    ```luau linenums="1"
     const media = require("@vara/media")
 
     local image = media.Image("example.png")
     ```
 === "from buffer"
-    ```luau
+    ```luau linenums="1"
     const media = require("@vara/media")
     const HEIGHT = 512
     const WIDTH = 512
@@ -35,7 +35,7 @@ Images store pixel data as interleaved, linear RGBA 32 bit floating point values
 
 To export this image, we first encode it to a set format, then save it as a file.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 fs.File("output.png"):Write(image:Encode("PNG"))
@@ -45,7 +45,7 @@ fs.File("output.png"):Write(image:Encode("PNG"))
 
 Multiple transformations can be applied on the same image as a chain, unless stated otherwise the method will mutate the image and return itself.
 
-```luau
+```luau linenums="1"
 const media = require("@vara/media")
 
 local image = media.Image("example.png")
@@ -70,7 +70,7 @@ This cause your image to become overexposed and loose information.
 We can solve this using tone mapping, this applies a curve that maps our image to a 0 - 1 range.
 Unlike clamping the image, this naturally adjusts our image to our required range.
 
-```luau
+```luau linenums="1"
 const media = require("@vara/media")
 local fs = require("@vara/fs")
 

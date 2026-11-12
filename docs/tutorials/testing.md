@@ -12,7 +12,7 @@ To create a test suite, simply create a module script with the `.spec.luau` file
 
 Every method of that module script will be recognised as a individual test.
 
-```luau
+```luau linenums="1"
 --// test.spec.luau
 const module = {}
 
@@ -35,7 +35,7 @@ Unit testing provides benefits such as:
 * **living documentation**  - Tests explicitly state how your code is supposed to behave.
 
 for example lets test this block of code
-```luau
+```luau linenums="1"
 function AddNumbers(A: number, B: number)
     return A + B
 end
@@ -43,7 +43,7 @@ end
 
 To do unit testing we can use the `@vara/test/unit` library.
 
-```luau
+```luau linenums="1"
 --// test.spec.luau
 const unit = require("@vara/test/unit")
 const module = {}

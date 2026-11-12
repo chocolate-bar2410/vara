@@ -7,7 +7,7 @@ Vara's file system library is designed to make managing files intuitive for appl
 ## Files
 Unlike other runtimes, [`files`](../api/objects/file.md) are objects that can be owned and used by our scripts.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 local my_file = fs.File("message.txt")
@@ -17,7 +17,7 @@ Reading and writing files can be done using the `Read` and `Write` methods.
 Note that in vara, files work with buffers not with strings.  
 This may be unorthodox but is really useful once you start working with binary files such as parquet or msgpack files.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 local my_file = fs.File("message.txt")
@@ -30,7 +30,7 @@ print(source)
 
 We can also append data onto files.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 local my_file = fs.File("log.txt")
@@ -44,7 +44,7 @@ This becomes very useful when we cannot output debug messages to the terminal.
 ## directories
 Like with files, [`directories`](../api/objects/directory.md) are also objects.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 local my_dir = fs.Directory("example_folder")
@@ -57,7 +57,7 @@ We can walk through a directory to get every file/directory inside it.
 !!! note
     Currently walking is none recursive, to recursively walk through a directory you will have to handle every directory you encounter.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 local my_dir = fs.Directory("example_folder")
@@ -74,7 +74,7 @@ Instead of polling our directory every few seconds, we can instead bind function
 
 We can do this by using the [`FsObserver`](../api/objects/fsobserver.md) object.
 
-```luau
+```luau linenums="1"
 const fs = require("@vara/fs")
 
 local my_dir = fs.Directory("example_folder")
@@ -85,7 +85,7 @@ local observer = fs.Observer(my_dir)
 Now lets make a program that automatically sorts files in our downloads folder.
 
 Lets first set up our folders.
-```luau
+```luau linenums="1"
 --// init.luau
 const fs = require("@vara/fs")
 const system = require("@vara/system") -- module for getting system info
@@ -99,7 +99,7 @@ local misc_dir = fs.Directory(path.Join(downloads.Path,"misc"))
 ```
 
 Lets also create a module script that we can use to assign different file extensions to different folders.
-```luau
+```luau linenums="1"
 --// extensions.luau
 const module = {}
 
@@ -120,7 +120,7 @@ return module
 
 we can now create a function that sorts our files
 
-```luau
+```luau linenums="1"
 --// init.luau
 local extensions = require("extensions")
 
@@ -151,7 +151,7 @@ end
 ```
 
 We can then bind that function to a file event.
-```luau
+```luau linenums="1"
 sort_files() -- to sort already existing files
 
 local observer = fs.Observer(downloads)

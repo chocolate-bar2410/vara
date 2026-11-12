@@ -5,7 +5,7 @@ title: Input & Output
 ## Reading Inputs
 The io library is designed to allow you to more control when reading and writing to the terminal.
 Lets create our first interractive script:
-```luau
+```luau linenums="1"
 const io = require("@vara/io")
 
 print("what is your name")
@@ -24,7 +24,7 @@ The above code may work, but maybe you want the user to write on the same line a
 This is where `io.Write` comes in.  
 
 If you run this script now, you'll notice that the message shows up after you sent a input.  
-```luau
+```luau linenums="1"
 const io = require("@vara/io")
 
 io.Write("what is your name:")
@@ -38,7 +38,7 @@ Adding newlines with `\n` automatically flushes the output, but we dont want to 
 
 This is where we can use `io.Flush`.
 
-```luau
+```luau linenums="1"
 const io = require("@vara/io")
 
 io.Write("what is your name:")
