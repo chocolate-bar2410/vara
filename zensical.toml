@@ -73,6 +73,7 @@ extra_css = [
   "stylesheets/theme.css",
   "stylesheets/colours.css",
   "stylesheets/components.css",
+  "stylesheets/admonition.css",
 ]
 # extra_javascript = ["javascripts/extra.js"]
 
