@@ -14,6 +14,7 @@ const TASK_TYPEDEF: &str = include_str!("../../typedef/api/task.luau");
 // const UI_TYPEDEF: &str = include_str!("../../typedef/api/ui.luau");
 const PATH_TYPEDEF: &str = include_str!("../../typedef/api/path.luau");
 const COLOUR_TYPEDEF: &str = include_str!("../../typedef/api/colour.luau");
+const TERMINAL_TYPEDEF: &str = include_str!("../../typedef/api/terminal.luau");
 
 const UNIT_TYPEDEF: &str = include_str!("../../typedef/api/test/unit.luau");
 
@@ -189,6 +190,7 @@ async fn generate_typedef() -> Result<(), Box<dyn std::error::Error>> {
     // async_fs::write(api_directory.join("ui").with_extension("luau"),UI_TYPEDEF).await?;
     async_fs::write(api_directory.join("path").with_extension("luau"),PATH_TYPEDEF).await?;
     async_fs::write(api_directory.join("colour").with_extension("luau"),COLOUR_TYPEDEF).await?;
+    async_fs::write(api_directory.join("terminal").with_extension("luau"),TERMINAL_TYPEDEF).await?;
 
     async_fs::write(test_api_directory.join("unit").with_extension("luau"),UNIT_TYPEDEF).await?;
 
