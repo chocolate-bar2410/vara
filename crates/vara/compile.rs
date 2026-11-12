@@ -98,11 +98,11 @@ pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
 
         async_fs::write(&output_path, &source).await?;
 
-        let mut permissions = std::fs::metadata(output_path)?.permissions();
+        let mut permissions = std::fs::metadata(&output_path)?.permissions();
         let current_mode = permissions.mode();
         permissions.set_mode(current_mode | 0o100);
 
-        std::fs::set_permissions(output_path, permissions);
+        std::fs::set_permissions(&output_path, permissions);
     }
     
 
