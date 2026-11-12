@@ -1,0 +1,21 @@
+[package]
+name = "vara_ui"
+edition = "2024"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+bytemuck = "1.25.2"
+glyphon = "0.12.0"
+mlua = { version = "0.12.1", features = [
+    "async",
+    "luau-jit",
+    "macros",
+] }
+pollster = "1.0.1"
+taffy = "0.15.0"
+
+vara_util = { path = "../vara-util" }
+wgpu = "30.0.1"
+winit = "0.30.13"

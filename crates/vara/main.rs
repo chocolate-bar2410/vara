@@ -14,11 +14,17 @@ fn main() -> ExitCode {
 
     async_io::block_on(async {
 
-        let (is_binary, contents) = compile::check().await;
+        let (is_binary, contents) = match compile::check().await {
+            Ok((bin,source)) => (bin,source),
+            Err(err) => {
+                eprintln!("failed to read executable {err}");
+                return ExitCode::FAILURE
+            }
+        };
 
         if is_binary {
 
-            return match compile::run_standalone(contents){
+            return match compile::run_standalone(contents).await{
                 Ok(_) => ExitCode::SUCCESS,
                 Err(err) => {
                     eprintln!("{err}");
@@ -29,7 +35,7 @@ fn main() -> ExitCode {
 
 
         match cli::run().await {
-            Ok(_) => ExitCode::SUCCESS,
+            Ok(exit_code) => exit_code,
             Err(err) => {
                 eprintln!("{err}");
                 ExitCode::FAILURE

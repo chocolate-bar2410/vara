@@ -1,19 +1,44 @@
+use mlua::{FromLua};
 use mlua::{Lua, LuaOptions, StdLib};
 use std::path::PathBuf;
+use std::process::ExitCode;
 
-use crate::stdlib as vara_stdlib;
+use crate::runtime::debug;
+use crate::{stdlib as vara_stdlib, test};
 use crate::runtime::require;
 
+// omg lune thx so much :heart_eyes:
+use mlua_luau_scheduler::Scheduler;
+use mlua_luau_scheduler::Functions;
+
+const VARA_VERSION: &str = env!("CARGO_PKG_VERSION");
+const VARA_URL: &str = "https://github.com/chocolate_bar2410/vara";
+
 pub struct Runtime {
-    vm: Lua,
-    args: Vec<String>
+    pub vm: Lua,
+    pub args: Vec<String>,
+    scheduler: Scheduler,
 }
 
 impl Runtime {
     pub fn new(args: Vec<String>) -> Result<Self, Box<dyn std::error::Error>> {
         let lua = Lua::new_with(StdLib::ALL, LuaOptions::default())?;
 
-        let mut runtime = Self { vm: lua,args: args };
+        let scheduler = Scheduler::new(lua.clone());
+
+        let async_fns = Functions::new(lua.clone())?;
+
+        let coroutine_lib = lua.globals().get::<mlua::Table>("coroutine")?;
+
+        // so these functions work with the task scheduler
+        coroutine_lib.set("resume",async_fns.resume.clone())?;
+        coroutine_lib.set("wrap",async_fns.wrap.clone())?;
+
+        let mut runtime = Self { 
+            vm: lua,
+            args,
+            scheduler,
+        };
 
         match runtime.setup_standard_library() {
             Ok(_) => Ok(runtime),
@@ -22,19 +47,22 @@ impl Runtime {
     }
 
     fn setup_standard_library(&mut self) -> Result<(), Box<dyn std::error::Error>> {
-        let io_lib = vara_stdlib::stdio::get_module(&self.vm)?;
-        let fs_lib = vara_files::get_module(&self.vm)?;
-        let serde_lib = vara_stdlib::serde::get_module(&self.vm)?;
-        let chrono_lib = vara_chrono::get_module(&self.vm)?;
-        let system_lib = vara_stdlib::system::get_module(&self.vm,&self.args)?;
-        let media_lib = vara_media::get_module(&self.vm)?;
 
-        self.vm.register_module("@vara/io", io_lib)?;
+        vara_stdlib::register_libaries(self)?;
+
+        let fs_lib = vara_files::get_module(&self.vm)?;
+        let chrono_lib = vara_chrono::get_module(&self.vm)?;
+        let media_lib = vara_media::get_module(&self.vm)?;
+        let net_lib = vara_net::get_module(&self.vm)?;
+        // let ui_lib = vara_ui::get_module(&self.vm)?;
+        let colour_lib = vara_colour::get_module(&self.vm)?;
+
         self.vm.register_module("@vara/fs", fs_lib)?;
-        self.vm.register_module("@vara/serde", serde_lib)?;
         self.vm.register_module("@vara/chrono", chrono_lib)?;
-        self.vm.register_module("@vara/system", system_lib)?;
         self.vm.register_module("@vara/media", media_lib)?;
+        self.vm.register_module("@vara/net", net_lib)?;
+        // self.vm.register_module("@vara/ui", ui_lib)?;
+        self.vm.register_module("@vara/colour", colour_lib)?;
 
         self.vm.globals().set(
             "require",
@@ -43,30 +71,153 @@ impl Runtime {
                 .map(mlua::Value::Function)?,
         )?;
 
+        let runtime_global = self.vm.create_table()?;
+        let version_tab = self.vm.create_table()?;
+
+        version_tab.set("display", VARA_VERSION)?;
+        
+        runtime_global.set("name", "vara")?;
+        runtime_global.set("version", version_tab)?;
+        runtime_global.set("url", VARA_URL)?;
+
+        self.vm.globals().set("_RUNTIME", runtime_global)?;
+
+        self.vm.globals().set("print", self.vm.create_function(debug::print)?)?;
+        self.vm.globals().set("warn", self.vm.create_function(debug::warn)?)?;
+
         Ok(())
     }
 
-
-    pub fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-        self.vm.load(bytecode).exec()?;
+    pub fn setup_test_library(&mut self)-> Result<(), Box<dyn std::error::Error>> {
+        test::register_libraries(&self)?;
         Ok(())
     }
 
-    pub fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
+    pub async fn run_bytecode(&self,bytecode : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
+        
+        let main = self.vm.load(&bytecode);
+
+        self.scheduler.push_thread_back(main, ())?;
+        smol::block_on(self.scheduler.run());
+
+        Ok(())
+    }
+
+    pub async fn run(&mut self, file_path: &PathBuf) -> Result<(), Box<dyn std::error::Error>> {
         let file_contents = vara_files::read_file(file_path)?;
 
         let module_path =
             vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))
                 .map_err(|e| mlua::Error::external(format!("{e:?}")))?;
 
-        self.vm
+        let main = self.vm
             .load(file_contents.as_str())
             .set_name(format!(
                 "{}{}",
                 vara_util::constants::FILE_CHUNK_PREFIX,
                 module_path
-            ))
-            .exec()?;
+            ));
+
+        self.scheduler.push_thread_back(main, ())?;
+
+        smol::block_on(self.scheduler.run());
+
         Ok(())
     }
+
+    // testing
+
+    pub async fn eval_test_dir(&mut self, file_path: &PathBuf) -> Result<ExitCode, Box<dyn std::error::Error>> {
+        
+        let mut failed = false;
+        let mut suites = vec![file_path.clone()];
+
+        let mut pass = 0;
+        let mut fail = 0;
+
+        while let Some(path) = suites.pop() {
+            if path.is_dir() {
+
+                for entry in std::fs::read_dir(path)? {
+                    let entry = entry?;
+
+                    if !fast_glob::glob_match("*.spec.luau",&entry.path().file_name().unwrap_or_default().to_string_lossy().as_bytes()) {continue;}
+
+                    suites.push(entry.path());
+                }
+
+            } else {
+                if self.eval_test(&path).await? == ExitCode::FAILURE {
+                    failed = true;
+                    fail += 1;
+                } else {
+                    pass += 1;
+                };
+            };
+        }
+
+        println!("{}{} suites pass\x1b[0m",if pass > 0 {"\x1b[32m"} else {"\x1b[31m"},pass);
+        println!("{}{} suites fail\x1b[0m",if fail > 0 {"\x1b[31m"} else {"\x1b[2m"},fail);
+
+        match failed {
+            true => Ok(ExitCode::FAILURE),
+            false => Ok(ExitCode::SUCCESS)
+        }
+    }
+
+    pub async fn eval_test(&mut self, file_path: &PathBuf) -> Result<ExitCode, Box<dyn std::error::Error>> {
+
+        let file_contents = vara_files::read_file(file_path)?;
+
+        let module_path =
+            vara_util::path::LuauModule::resolve(vara_util::path::LuauModule::strip(file_path))
+                .map_err(|e| mlua::Error::external(format!("{e:?}")))?;
+
+        let main = self.vm
+            .load(file_contents.as_str())
+            .set_name(format!(
+                "{}{}",
+                vara_util::constants::FILE_CHUNK_PREFIX,
+                module_path
+            ));
+
+        let id = self.scheduler.push_thread_back(main, ())?;
+
+        smol::block_on(self.scheduler.run());
+
+        let result = self.scheduler.get_thread_result(id)
+            .ok_or_else(|| format!("{} does not return any values",file_path.display()))??;
+
+        let return_value = result.into_iter().next().ok_or_else(|| format!("{} does not return any values",file_path.display()))?;
+        
+        let suite_name = file_path
+            .as_path()
+            .file_name()
+            .and_then(|name| name.to_str())
+            .unwrap_or_default()
+            .split(".")
+            .next()
+            .unwrap_or_default();
+
+        let suite = mlua::Table::from_lua(return_value, &self.vm)?;
+
+        let mut runner = test::TestRunner::new();
+
+        let mut failed = false;
+
+        for pair in suite.pairs::<String,mlua::Function>() {
+            let (name,test_fn) = pair?;
+
+            failed |= runner.evaluate(name, test_fn)?;
+        }
+
+        println!("\x1b[1mSUITE\x1b[0m {}",suite_name);
+        println!("{}",runner.get_result_output(suite_name));
+
+        match failed {
+            true => Ok(ExitCode::FAILURE),
+            false => Ok(ExitCode::SUCCESS)
+        }
+    }
+
 }

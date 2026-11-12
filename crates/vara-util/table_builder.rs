@@ -1,3 +1,5 @@
+use std::future::Future;
+
 pub struct TableBuilder {
     context: mlua::Lua,
     result: mlua::Table,
@@ -37,9 +39,23 @@ impl TableBuilder {
         A: mlua::FromLuaMulti,
         R: mlua::IntoLuaMulti,
         K: mlua::IntoLua,
-        F: Fn(&mlua::Lua, A) -> mlua::Result<R> + 'static,
+        F: Fn(&mlua::Lua, A) -> mlua::Result<R> + 'static + mlua::MaybeSend,
     {
         let luau_func = self.context.create_function(callback)?;
+        self.result.set(key, mlua::Value::Function(luau_func))?;
+        Ok(self)
+    }
+
+    pub fn add_async_function<A, R, K, F,Fut>(self, key: K, callback: F) -> mlua::Result<Self>
+    where
+        A: mlua::FromLuaMulti,
+        R: mlua::IntoLuaMulti,
+        K: mlua::IntoLua,
+        F: Fn(mlua::Lua, A) -> Fut + 'static + mlua::MaybeSend,
+        Fut: Future<Output = mlua::Result<R>> + 'static + mlua::MaybeSend
+    {
+        let luau_func = self.context.create_async_function(callback)?;
+
         self.result.set(key, mlua::Value::Function(luau_func))?;
         Ok(self)
     }

@@ -1,0 +1,48 @@
+.button-grid{
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.grid-button {
+    flex: 0 1 400px;
+    background-color: var(--md-default-bg-color--light);
+    padding: 0.75rem 1.5rem 1rem;
+
+    border-radius: 5px;
+    border: 2px solid var(--doc-border);
+
+    text-decoration: none !important;
+    color: inherit !important;
+}
+
+.grid-button:hover {
+    border: 2px solid var(--doc-accent);
+}
+
+.grid-button-icon {
+    font-weight: 600;
+    line-height: 2rem;
+    color: var(--doc-accent);
+}
+
+.grid-button-title{
+    font-weight: 600;
+    line-height: 2rem;
+}
+
+.grid-button-desc{
+    font-size: medium;
+    color: var(--md-default-fg-color--light);
+}
+
+@media screen and (max-width: 80em) {
+    .button-grid{
+        flex-direction: column;
+        padding: 0 1rem;
+    }
+
+    .grid-button{
+        flex: 0 1 100px;
+    }
+}

@@ -7,6 +7,8 @@ pub fn image_format_fromstring(value: &String) -> mlua::Result<image::ImageForma
         "BMP" => Ok(image::ImageFormat::Bmp),
         "QOI" => Ok(image::ImageFormat::Qoi),
         "TIFF" => Ok(image::ImageFormat::Tiff),
+        "HDR" => Ok(image::ImageFormat::Hdr),
+        "EXR" => Ok(image::ImageFormat::OpenExr),
         _ => Err(mlua::Error::FromLuaConversionError {
             from: "String",
             to: "ImageFormat".to_string(),

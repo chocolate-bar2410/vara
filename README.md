@@ -8,7 +8,9 @@ Vara is still at a v0.x stage, so necessary features are still being added and A
 * **standard library** - libraries for IO, file system access, serde etc.
 * **media processing** - APIs for processing images and audio files.
 * **system access** - Access information on the operating system, device details and user preferences.
+    * also allows you to send desktop notifications.
 * **native resource objects** - files, directories and other resources are encapsulated as luau objects with their own properties and methods.
+* **terminal manipulation** - control terminal functions like clearing, flushing, raw mode/alternative screen and cursor placement.
 
 ## Community
 If you have any questions, suggestions or just want to discuss this project, vara has a thread in the [roblox OSS](https://discord.gg/8XGfhF2R2) discord server.  

@@ -8,7 +8,7 @@ hide:
 <div class="homepage-inner" markdown>
 # Vara { .homepage-title } 
 
-Vara is a lightweight runtime that provides native system access, media processing and resource management.<br>
+Vara is a runtime that provides native system access, media processing and resource management.<br>
 Build applications without the overhead of web runtimes.<br><br>
 Turn luau into a language for desktop development.
 

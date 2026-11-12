@@ -15,7 +15,8 @@ Vara acts as a toolkit providing access to features developers would use when ma
 ## scope
 * **goals** - What vara aims to achieve.
     - inbuilt media file loading, exporting and usage
-    - minimal resource usage footprint
+    - a cohesive ecosystem for application building, APIs should be able to complement other libraries.
+    - desktop integration.
 
 * **future goals** - Features planned for a more developed vara
     - mobile SDK and tooling.

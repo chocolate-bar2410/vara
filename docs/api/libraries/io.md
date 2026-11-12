@@ -1,9 +1,9 @@
 ---
-icon: octicons/terminal-16
+icon: octicons/command-palette-16
 ---
 
 <h1 class = "API-header" markdown> 
-<span class="API-icon" markdown>:octicons-terminal-24:</span> 
+<span class="API-icon" markdown>:octicons-command-palette-24:</span> 
 io
 </h1>
 
@@ -46,3 +46,15 @@ Reads from stdin, with a optional chunkSize value for reading a certain ammount 
 io.ReadLine() : string
 ```
 Reads stdin until it reaches a new line.
+
+<h3 markdown> Flush <span class="API-type"> -> () </span></h3>
+```luau
+io.Flush()
+```
+directly flushes out stdout.
+
+<h3 markdown> ReadAsync <span class="API-type"> -> string </span></h3>
+```luau
+io.ReadAsync(chunkSize: number?) : string
+```
+Like `io.Read` but stdin is read asynchronously and is non blocking.

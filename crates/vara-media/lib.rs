@@ -1,5 +1,5 @@
 use std::{io::Cursor, path::PathBuf};
-use mlua::{ExternalError, IntoLua};
+use mlua::{ExternalError, ExternalResult, IntoLua};
 use symphonia::core::{formats::{TrackType, probe::Hint}, io::MediaSourceStream};
 
 use symphonia::core::errors::Error as symphonia_error;
@@ -11,6 +11,7 @@ use vara_files::file_obj::File as vara_file;
 mod image_obj;
 mod image_format;
 mod image_interpolation;
+mod image_tonemap;
 
 mod audio_obj;
 mod audio_interpolation;
@@ -39,24 +40,39 @@ fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_ob
 
             let format = reader.format();
 
+            let is_hdr = matches!(format,Some(image::ImageFormat::Hdr | image::ImageFormat::OpenExr));
+
             let img = reader
                 .decode()
                 .map_err(|err| err.into_lua_err())?;
 
-            let data = match format {
-                Some(image::ImageFormat::Jpeg) => img.to_rgb8().into_raw(),
-                _ => img.to_rgba8().into_raw(),
-            };
+            let data = img.to_rgba32f()
+                .pixels()
+                .flat_map(|pixel| {
+                    if is_hdr {return pixel.0}
+                    [
+                        if pixel.0[0] <= 0.04045f32 {pixel.0[0] / 12.92f32} else {((pixel.0[0] + 0.055f32)/1.055).powf(2.4)},
+                        if pixel.0[1] <= 0.04045f32 {pixel.0[1] / 12.92f32} else {((pixel.0[1] + 0.055f32)/1.055).powf(2.4)},
+                        if pixel.0[2] <= 0.04045f32 {pixel.0[2] / 12.92f32} else {((pixel.0[2] + 0.055f32)/1.055).powf(2.4)},
+                        pixel.0[3]
+                    ]
+                })
+                .collect();
 
-            let colour_channels = match format {
-                Some(image::ImageFormat::Jpeg) => 3,
-                _ => 4,
-            };
+            let colour_channels = img.color().channel_count();
 
             Ok(image_obj::Image::new(data, img.width(), img.height(),colour_channels))
         },
         mlua::Value::Buffer(b) => {
-            let bytes = b.to_vec();
+            let bytes = b.to_vec()
+                .chunks_exact(4)
+                .map(|chunk| {
+                    let array : [u8;4] = chunk.try_into().into_lua_err()?;
+
+                    Ok(f32::from_le_bytes(array))
+                })
+                .collect::<mlua::Result<Vec<f32>>>()?;
+
             Ok(image_obj::Image::new(bytes, b.len() as u32,1,4))
         }
         _ => {

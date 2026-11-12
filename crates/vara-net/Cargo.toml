@@ -1,0 +1,20 @@
+[package]
+name = "vara_net"
+edition = "2024"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+mlua = { version = "0.12.1", features = [
+    "async",
+    "luau-jit",
+    "macros",
+] }
+
+
+vara_util = { path = "../vara-util" }
+
+isahc = "2.0.2"
+http = "1.5.0"
+url = "2.5.8"

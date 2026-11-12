@@ -1,21 +1,71 @@
-use std::{env, path::PathBuf, sync::LazyLock};
+use std::{env, path::{Path, PathBuf}, sync::LazyLock};
 
+use darklua_core::{BundleConfiguration, Configuration, Options, Resources, rules::{bundle::BundleRequireMode}};
 use mlua::chunk::Compiler;
-use vara_files as vara_fs;
 
 use vara_core::runtime::luau as vara_runtime;
 
 pub static CURRENT_EXE : LazyLock<PathBuf> = LazyLock::new(|| env::current_exe().expect("failed to retrieve current exe"));
 
-const MAGIC : &[u8; 6]= b"$$VARA";
+const FORMAT_VERSION : u16 = 1;
 
-pub async fn compile(path : PathBuf) -> Result<(),Box<dyn std::error::Error>>{
+const MAGIC : &[u8; 8]= b"VARABYTE";
+
+const SIZE_BYTES : usize = std::mem::size_of::<u64>();
+const VERSION_BYTES : usize = std::mem::size_of::<u16>();
+const FOOTER_SIZE : usize = SIZE_BYTES + VERSION_BYTES + MAGIC.len();
+/*
+EXECUTABLE LAYOUT
+
+[RUNTIME][BYTECODE][BYTECODE_SIZE <8 bytes>][VERSION <2 bytes>][MAGIC <8 bytes>]
+*/
+
+pub async fn compile(path : &Path) -> Result<(),Box<dyn std::error::Error>>{
 
     if !path.exists(){
         return Err(format!("could not find file {}",path.display()).into());
     }
 
-    let file_contents = &vara_fs::read_file_as_binary(&path)?;
+    let resources = Resources::from_file_system();
+    
+    let config = Configuration::empty()
+        .with_bundle_configuration(
+            BundleConfiguration::new(BundleRequireMode::Luau(Default::default())).with_exclude("@vara/**")
+        )
+        .with_generator(darklua_core::GeneratorParameters::default_dense())
+        .with_rule(Box::new(darklua_core::rules::RemoveSpaces::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::RemoveUnusedVariable::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::RemoveUnusedIfBranch::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::RemoveUnusedWhile::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::RemoveComments::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::FilterAfterEarlyReturn::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::ComputeExpression::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::ConvertSquareRootCall::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::ConvertIndexToField::default()) as Box<dyn darklua_core::rules::Rule>)
+        .with_rule(Box::new(darklua_core::rules::RemoveEmptyDo::default()) as Box<dyn darklua_core::rules::Rule>);
+
+    let options = Options::new(path)
+        .with_configuration(config)
+        .with_output("__$VARA_bundled.luau");
+
+    let result = match darklua_core::process(&resources, options) {
+        Ok(_result) => _result,
+        Err(err) => return Err(format!("{}",err).into()),
+    };
+
+    let errors = result.collect_errors();
+    if !errors.is_empty() {
+        let error_message = errors.iter().map(|err| format!("{err}")).collect::<Vec<_>>().join("\n");
+
+        return Err(format!("darklua failed to bundle code:\n{error_message}").into());
+    }
+
+    let bundled = resources.get("__$VARA_bundled.luau").map_err(|_| "failed to get bundled contents from resources")?;
+
+    std::fs::remove_file("__$VARA_bundled.luau")?;
+
+    let file_contents = bundled.as_bytes().to_vec();
+
     let compiler = Compiler::new();
 
     let bytecode = compiler.compile(file_contents)?;
@@ -23,11 +73,10 @@ pub async fn compile(path : PathBuf) -> Result<(),Box<dyn std::error::Error>>{
     let mut metadata : Vec<u8> = Vec::new();
     metadata.extend_from_slice(&bytecode);
     metadata.extend_from_slice(&(bytecode.len() as u64).to_be_bytes());
+    metadata.extend_from_slice(&FORMAT_VERSION.to_be_bytes());
     metadata.extend_from_slice(MAGIC);
 
-    let mut source = async_fs::read(CURRENT_EXE.to_path_buf())
-        .await
-        .unwrap_or_default();
+    let mut source = async_fs::read(CURRENT_EXE.to_path_buf()).await?;
 
     source.extend_from_slice(&metadata);
 
@@ -37,27 +86,40 @@ pub async fn compile(path : PathBuf) -> Result<(),Box<dyn std::error::Error>>{
         .map(|s| s.to_string())
         .unwrap_or("program".to_string());
 
-    async_fs::write(format!("./{}.exe",filename), source).await?;
+    let dir = path.parent().ok_or("could not get the parent directory of source file")?;
+
+    #[cfg(windows)]
+    async_fs::write(dir.join(filename).with_extension("exe"), &source).await?;
+
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        let output_path = dir.join(filename);
+
+        async_fs::write(&output_path, &source).await?;
+
+        let mut permissions = std::fs::metadata(output_path)?.permissions();
+        let current_mode = permissions.mode();
+        permissions.set_mode(current_mode | 0o100);
+
+        std::fs::set_permissions(output_path, permissions);
+    }
+    
 
     println!("compiled {} successfully",path.display());
     Ok(())
 }
 
-pub async fn check() -> (bool,Vec<u8>){
+pub async fn check() -> std::io::Result<(bool,Vec<u8>)>{
     let contents = async_fs::read(CURRENT_EXE.to_path_buf())
-        .await
-        .unwrap_or_default();
+        .await?;
 
     let is_binary = contents.ends_with(MAGIC);
 
-    (is_binary,contents)
+    Ok((is_binary,contents))
 }
 
-pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
-    const SIZE_BYTES : usize = 8;
-    const MAGIC_BYTES : usize = 6;
-    const FOOTER_SIZE : usize = SIZE_BYTES + MAGIC_BYTES;
-
+pub async fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Error>> {
     if contents.len() < FOOTER_SIZE {
         return Err("standalone binary too small".into());
     }
@@ -66,10 +128,12 @@ pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Erro
         return Err("this is not a standalone binary".into());
     }
 
-    let size_start = contents.len() - FOOTER_SIZE;
-    let size_end = size_start + SIZE_BYTES;
+    let magic_start = contents.len() - MAGIC.len();
+    let version_start = magic_start - VERSION_BYTES;
 
-    let bytecode_bytesize : [u8;SIZE_BYTES] = contents[size_start..size_end].try_into()?;
+    let size_start = version_start - SIZE_BYTES;
+
+    let bytecode_bytesize : [u8;SIZE_BYTES] = contents[size_start..version_start].try_into()?;
 
     let bytecode_size = usize::try_from(u64::from_be_bytes(bytecode_bytesize))?;
 
@@ -83,7 +147,7 @@ pub fn run_standalone(contents : Vec<u8>) -> Result<(), Box<dyn std::error::Erro
     let args = env::args().skip(1).collect::<Vec<_>>();
     let runtime = vara_runtime::Runtime::new(args)?;
 
-    runtime.run_bytecode(bytecode)?;
+    runtime.run_bytecode(bytecode).await?;
 
     Ok(())
 }

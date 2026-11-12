@@ -5,8 +5,9 @@ const fs = require("@vara/fs")
 local height = 256
 local width = 256
 local channels = 4
+local bytedepth = 4
 
-local data = buffer.create(height * width * channels)
+local data = buffer.create(height * width * channels * bytedepth)
 const scale = 0.15
 
 local function perlin_noise(x: number,y: number,octaves: number,lacunarity: number,persistence: number)
@@ -20,12 +21,12 @@ local function perlin_noise(x: number,y: number,octaves: number,lacunarity: numb
 
         result += value * amplitude
         max_amplitude += amplitude
-        amplitude *= lacunarity
-        frequency *= persistence
+        amplitude *= persistence
+        frequency *= lacunarity
     end
 
     result /= max_amplitude
-    result = math.map(result,-1,1,0,0xFF)
+    result = math.map(result,-1,1,0,1)
     return result
 end
 
@@ -34,16 +35,16 @@ local offset = 0
 for y = 0,height - 1 do
     for x = 0,width - 1 do
 
-        local value = perlin_noise(x, y, 4, 2, 0.5)
+        local value = perlin_noise(x, y, 4, 0.5, 2)
 
         -- print(value,x,y)
 
-        buffer.writeu8(data,offset,value)
-        buffer.writeu8(data,offset + 1,value)
-        buffer.writeu8(data,offset + 2,value)
-        buffer.writeu8(data,offset + 3,255)
+        buffer.writef32(data,offset,value)
+        buffer.writef32(data,offset + 1 * bytedepth,value)
+        buffer.writef32(data,offset + 2 * bytedepth,value)
+        buffer.writef32(data,offset + 3 * bytedepth,1)
 
-        offset += 4
+        offset += 4 * bytedepth
     end
 end
 

@@ -17,6 +17,10 @@
     --md-primary-fg-color--dark:        var(--doc-bg-dark);
 
     --md-typeset-color:                 var(--doc-text);
+    --md-typeset-a-color:               var(--doc-accent);
+
+    --md-accent-fg-color:               var(--doc-accent);
+    --md-accent-fg-color--transparent:  rgb(from var(--doc-accent) r g b / 0.5);
 
     /* code blocks */
 
@@ -43,4 +47,10 @@
     --md-code-hl-number-color: var(--doc-purple);
     --md-code-hl-keyword-color: var(--doc-red);
     --md-code-hl-string-color: var(--doc-green);
+}
+
+::selection {
+    background-color: rgb(from var(--doc-accent) r g b / 0.7);
+    /* Change to your desired color */
+    color: var(--doc-text);
 }

@@ -1,6 +1,7 @@
 use clap::builder::styling;
 use clap::{CommandFactory, Parser, Subcommand};
 use std::path::PathBuf;
+use std::process::ExitCode;
 
 use vara_core::runtime::luau as vara_runtime;
 
@@ -47,7 +48,9 @@ enum Commands {
     /// setups up vara
     Setup,
     /// compiles script into executable
-    Compile(CompileArgs)
+    Compile(CompileArgs),
+    /// runs tests
+    Test(TestArgs)
 }
 
 #[derive(clap::Args)]
@@ -63,7 +66,13 @@ struct CompileArgs {
     path: PathBuf,
 }
 
-pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
+#[derive(clap::Args)]
+
+struct TestArgs {
+    path: PathBuf,
+}
+
+pub async fn run() -> Result<ExitCode, Box<dyn std::error::Error>> {
     let cli = CLI::parse();
 
     match cli.command {
@@ -72,23 +81,50 @@ pub async fn run() -> Result<(), Box<dyn std::error::Error>> {
             let trailing_args = args.args;
             let mut current = vara_runtime::Runtime::new(trailing_args)?;
             
-            match current.run(&path) {
-                Ok(()) => Ok(()),
-                Err(err) => Err(format!("file {} failed to run\n{}", path.display(), err).into()),
+            match current.run(&path).await {
+                Ok(_) => {},
+                Err(err) => return Err(format!("file {} failed to run\n{}", path.display(), err).into()),
             }
         },
         Some(Commands::Setup) => {
             match setup::setup().await {
-                Ok(()) => Ok(()),
-                Err(err) => Err(format!("failed to setup luaurc:\n{}",err).into())
+                Ok(()) => {},
+                Err(err) => return Err(format!("failed to setup luaurc:\n{}",err).into())
             }
         }
 
         Some(Commands::Compile(args)) => {
             let path = args.path;
-            compile::compile(path).await
+            match compile::compile(&path).await {
+                Ok(()) => {},
+                Err(err) => return Err(format!("failed to compile:\n{}",err).into())
+            }
         }
 
-        None => Ok(CLI::command().print_help()?),
-    }
+        Some(Commands::Test(args)) => {
+            let path = args.path;
+            let mut current = vara_runtime::Runtime::new(Vec::new())?;
+            
+            match current.setup_test_library() {
+                Ok(()) => {},
+                Err(err) => return Err(format!("failed to setup testing libraries:\n{}",err).into()),
+            }
+
+            if path.is_dir() {
+                match current.eval_test_dir(&path).await {
+                    Ok(exit_code) => return Ok(exit_code),
+                    Err(err) => return Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),
+                }
+            }
+
+            match current.eval_test(&path).await {
+                Ok(exit_code) => return Ok(exit_code),
+                Err(err) => return Err(format!("failed to run tests {}:\n{}", path.display(), err).into()),
+            }
+        }
+
+        None => CLI::command().print_help()?,
+    };
+
+    Ok(ExitCode::SUCCESS)
 }

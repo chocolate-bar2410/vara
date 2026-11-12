@@ -67,9 +67,37 @@ declare extern type DateTime with
 
 end
 
-type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI"
+type ImageFormat = "PNG" | "JPEG" | "WEBP" | "PNM" | "TIFF" | "BMP" | "QOI" | "HDR" | "EXR"
 type ImageResizeFilter = "NEAREST" | "BILINEAR" | "LANCZOS3"
 
+type ImageHdrConfig = 
+    {Filter: "REINHARD",
+        Exposure: number?
+    } 
+    | {Filter: "ACES",
+        Exposure: number?
+    } 
+    | {Filter: "HABLE",
+        ShoulderStrength: number?,
+        LinearStrength: number?,
+        LinearAngle: number?,
+        ToeStrength: number?,
+        ToeNumerator: number?,
+        ToeDenominator: number?,
+
+        Exposure: number?,
+        WhitePoint: number?
+    } 
+    | {Filter: "UCHIMURA",
+        Contrast: number?,
+        LinearSection: number?,
+        LinearLength: number?,
+        Toe: number?,
+        Pedestal: number?,
+
+        Exposure: number?,
+        WhitePoint: number?
+    }
 
 --[=[
 	@class Image
@@ -80,7 +108,7 @@ declare extern type Image with
     read Data: buffer
     read Width: number
     read Height: number
-    read Channels: number
+    Channels: number
     --[=[
         @within Image
         @method Encode
@@ -172,13 +200,40 @@ declare extern type Image with
     function GradientMagnitude(self,other : Image) : Image
     --[=[
         @within Image
-        @method RemoveAlpha
-        @return itself.
+        @method GetPixel
+        @param x
+        @param y
+        @return The colour of the pixel
 
-        Removes the alpha channel of your image.
-        Treated as a no-op if the image does not have a alpha channel.
+        Gets the pixel colour at the position (x,y)
     ]=]
-    function RemoveAlpha(self) : Image
+    function GetPixel(self,x: number,y: number) : Colour4
+    --[=[
+        @within Image
+        @method SetPixel
+        @param x
+        @param y
+        @param colour The colour of the pixel.
+
+        Sets the pixel colour at the position (x,y) to the given colour.
+    ]=]
+    function SetPixel(self,x: number,y: number,colour: Colour4)
+    --[=[
+        @within Image
+        @method SetPixel
+        @param config
+        @return Itself.
+
+        Performs a hdr tonemapping algorithm on the image.
+        This reduces the dynamic range from 0 - ∞ to 0 - 1.
+        
+        Filters supported:
+        * REINHARD - Map to a asymtopic curve.
+        * ACES - Map to a ACES filmic curve
+        * HABLE - Modelled after the response of analog film.
+        * UCHIMURA - Map to a piecewise curve.
+    ]=]
+    function HdrTonemap(self,config: ImageHdrConfig) : Image
     function __tostring(self): string
 end
 
@@ -231,7 +286,6 @@ declare extern type Audio with
         Clones your audio.
     ]=]
     function Clone(self): Audio  
-
     --[=[
         @within Audio
         @method Reverse
@@ -398,119 +452,155 @@ declare extern type Audio with
     function __tostring(self): string
 end
 
-
 --[=[
-	@class File
+	@class Colour4
 
-    An Object representing a file.
+    An Object representing a linear rgba colour.
+    Colour4 supports HDR, allowing colours channels to be greater than 1.
 ]=]
-declare extern type File with
-    read Path: string
-    read Size: number
-    read Created: DateTime
-    read Accessed: DateTime
-    read Modified: DateTime
-    read Exists: boolean
-    read Extension: boolean
-    --[=[
-        @within File
-        @method Read
-        @returns Contents of the file.
+declare extern type Colour4 with 
+    Red: number
+    Green: number
+    Blue: number
+    Alpha: number
 
-        Reads the contents of a file as returns it as a buffer.
-    ]=]
-    function Read(self): buffer
     --[=[
-        @within File
-        @method Write
-        @param contents The contents of the file.
-        @return Itself
+        @within Colour4
+        @method ToAnsi
+        @return ansi code.
 
-        Writes the given contents into a file.
+        Returns the true colour ansi code for the corressponding rgb colour.
+        the ansi code will be normalised to 0 -> 255.
     ]=]
-    function Write(self,contents : buffer) : File
+    function ToAnsi(self): string
     --[=[
-        @within File
-        @method Append
-        @param contents The contents of the file.
-        @return Itself
+        @within Colour4
+        @method ToSRGBA
+        @return srgba tuple.
 
-        Appends the given contents onto the end of a file.
-        If the file does not exist it will instead create a new file to append to.
+        Returns the colour as a tuple of SRGBA values
     ]=]
-    function Append(self,contents : buffer) : File
+    function ToSRGBA(self): (number,number,number,number)
     --[=[
-        @within File
-        @method Delete
+        @within Colour4
+        @method ToHex
+        @return hex string.
 
-        Deletes the file.
+        Returns the colour as a hex string
     ]=]
-    function Delete(self)
+    function ToHex(self): string
     --[=[
-        @within File
-        @method Move
-        @param path The path to move to.
-        @return Itself
-        
-        Moves the file to a different location.
-    ]=]
-    function Move(self,path: string) : File
-    --[=[
-        @within File
-        @method Copy
-        @param newPath The path to copy to.
-        @return The copy
-        
-        Copies the file to a new location.
-    ]=]
-    function Copy(self,path: string) : File
+        @within Colour4
+        @method ToHSVA
+        @return hsva tuple.
 
-    function __tostring(self): string
+        Returns the colour as a tuple of HSVA values
+    ]=]
+    function ToHSVA(self): (number,number,number,number)
+    --[=[
+        @within Colour4
+        @method ToOKLCH
+        @return oklch tuple.
+
+        Returns the colour as a tuple of OKLCH values
+    ]=]
+    function ToOKLCH(self): (number,number,number,number)
+    --[=[
+        @within Colour4
+        @method Luminance
+        @return The luminance of the colour.
+
+        Returns the colour as a tuple of OKLCH values
+    ]=]
+    function Luminance(self): number
+    --[=[
+        @within Colour4
+        @method Greyscale
+        @return Itself.
+
+        Converts the colour to greyscale using luminance.
+    ]=]
+    function Greyscale(self): Colour4
+    --[=[
+        @within Colour4
+        @method Clone
+        @return A copy of the Colour4.
+
+        Creates a copy of the existing colour4 object.
+    ]=]
+    function Clone(self): Colour4
+    --[=[
+        @within Colour4
+        @method Brighten
+        @param lightness The ammount to brighten the colour4 by perceptually.
+        @return Itself.
+
+        Brightens the colour4 using the OKLAB colour space.
+    ]=]
+    function Brighten(self,lightness: number): Colour4
+    --[=[
+        @within Colour4
+        @method Darken
+        @param lightness The ammount to darken the colour4 by perceptually.
+        @return Itself.
+
+        Darkens the colour4 using the OKLAB colour space.
+    ]=]
+    function Darken(self,lightness: number): Colour4
+    --[=[
+        @within Colour4
+        @method Complement
+        @return The complementary colour.
+
+        Finds the colour directly opposite to the base colour on the colour circle.
+    ]=]
+    function Complement(self): Colour4
+    --[=[
+        @within Colour4
+        @method Triadic
+        @return The other 2 triadic colours.
+
+        Finds the exact colours which form a equilateral triangle with the base colour on the colour circle.
+    ]=]
+    function Triadic(self): (Colour4,Colour4)
+    --[=[
+        @within Colour4
+        @method SplitComplement
+        @return The other 2 split complementary colours.
+
+        Finds the colours adjacent to the base colour's complement
+    ]=]
+    function SplitComplement(self): (Colour4,Colour4)
+    --[=[
+        @within Colour4
+        @method HdrTonemap
+        @return Itself.
+
+        Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
+    ]=]
+    function HdrTonemap(self): Colour4
 end
 
 --[=[
-	@class Directory
+    @class _RUNTIME
 
-    An Object representing a file directory.
+    _RUNTIME global to follow the [_RUNTIME](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf) spec.
+
+    @prop name The name of the runtime, vara.
+    @prop version Version information
+    @prop url The github repository for vara.
 ]=]
-declare extern type Directory with 
-    read Path: string
-    read Created: DateTime
-    read Accessed: DateTime
-    read Modified: DateTime
-    read Exists: boolean
-    --[=[
-        @within Directory
-        @method Make
-        @return Itself
-        
-        Creates a file directory where the directory object's path is located.
-    ]=]
-    function Make(self) : File
-    --[=[
-        @within Directory
-        @method Move
-        @param path The path to move to.
-        @return Itself
-        
-        Moves the directory to a different location.
-    ]=]
-    function Move(self,path: string) : File
-    --[=[
-        @within Directory
-        @method Delete
+declare _RUNTIME: {
+    read name: "vara",
+    read version: {
+        display: string
+    },
 
-        Deletes the file directory and all files inside it.
-    ]=]
-    function Delete(self)
-    --[=[
-        @within Directory
-        @method Walk
-        @return iterator
+    read url: string
+}
 
-        Returns an non recursive iterator that walks through every file and directory in that directory.
-    ]=]
-    function Walk(self) : () -> File | Directory
-
-    function __tostring(self): string
-end
+--[=[
+    @method warn
+    prints out a message as a warning.
+]=]
+declare function warn<T...>(...: T...)

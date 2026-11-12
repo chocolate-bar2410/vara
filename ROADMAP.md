@@ -2,21 +2,55 @@
 
 ### v0.2.0
 - [ ] CLI
-    - [ ] test
-    - [ ] build
-        - [ ] dependency bundling
+    - [x] build
+        - [x] dependency bundling
+    - [x] test
+- [ ] standard library
+    - [x] networking
+    - [x] task
+    - [x] UI
+    - [x] path
+    - [x] system
+        - [x] notify method
+    - [x] terminal drawing
+    - [x] colours
+    - [x] media
+        - [x] image
+            - [x] make data use 32 bit floats instead of 8 bit unsigned ints.
+            - [x] set pixel
+            - [x] get pixel
+            - [x] HDR
+    - [x] file system
+        - [x] watchers
+- [x] debugging
+    - [x] custom print
+        - [x] tables
+        - [x] buffers
+    - [x] custom warns
+    - [x] test
+        - [x] assertions
+            - [x] table equal
+            - [x] table not equal
+
+### v0.3.0
 - [ ] standard library
     - [ ] networking
-    - [ ] task
-    - [ ] UI
-    - [ ] path
+        - [ ] websockets?
+        - [ ] UDP?
     - [ ] system
-        - [ ] notify
-    - [ ] terminal drawing
-- [ ] debugging
-    - [ ] custom print
-        - [ ] tables
-        - [ ] buffers
-    - [ ] custom errors
-    - [ ] custom warns
-    - [ ] test
+        - [ ] gpu
+            - [ ] gpu picking
+            - [ ] compute shaders
+    - [ ] media
+        - [ ] images
+            - [ ] difference of gaussians
+            - [ ] kuwahara filter
+    - [ ] UI
+        - [ ] layouts
+        - [ ] UDim2
+        - [ ] component hierarchy
+        - [ ] events
+            - [ ] on resize
+            - [ ] on key pressed/release
+            - [ ] on click down/up
+            - [ ] on mouse move

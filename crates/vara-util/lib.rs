@@ -1,8 +1,12 @@
 pub mod path;
 pub mod table_builder;
+pub mod table_compare;
 
 #[cfg(windows)]
 pub mod win_compat;
+
+#[cfg(unix)]
+pub mod unix_compat;
 
 pub mod constants {
     pub const FILE_CHUNK_PREFIX: char = '@';

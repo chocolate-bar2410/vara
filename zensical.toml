@@ -11,7 +11,17 @@ repo_name = "chocolate-bar2410/vara"
 # edit_uri = "edit/main/docs/"
 
 nav = [
-  { "home" = "index.md" },
+  { "Home" = "index.md" },
+  {"Tutorials" = [
+    "tutorials/index.md",
+    "tutorials/installation.md",
+    "tutorials/quickstart.md",
+    "tutorials/io.md",
+    "tutorials/filesystem.md",
+    "tutorials/image.md",
+    "tutorials/testing.md",
+    "tutorials/wip.md",
+  ]},
   { "API" = [
     "api/index.md",
     {"Libraries" = [
@@ -21,13 +31,27 @@ nav = [
       "api/libraries/system.md",
       "api/libraries/chrono.md",
       "api/libraries/media.md",
+      "api/libraries/colour.md",
+      "api/libraries/net.md",
+      "api/libraries/task.md",
+      "api/libraries/terminal.md",
+      "api/libraries/path.md",
+      {"Test" = [
+        "api/libraries/test/index.md",
+        "api/libraries/test/unit.md"
+      ]}
       ]},
       {"Objects" = [
         "api/objects/file.md",
         "api/objects/directory.md",
+        "api/objects/fsobserver.md",
         "api/objects/datetime.md",
         "api/objects/image.md",
         "api/objects/audio.md",
+        "api/objects/colour4.md",
+        "api/objects/httpclient.md",
+        "api/objects/httprequest.md",
+        "api/objects/httpresponse.md",
       ]}
     ]},
   { "CLI" = [
@@ -35,6 +59,7 @@ nav = [
     "cli/run.md",
     "cli/setup.md",
     "cli/compile.md",
+    "cli/test.md",
   ]}
 
 ]
@@ -47,6 +72,8 @@ extra_css = [
   "stylesheets/homepage.css",
   "stylesheets/theme.css",
   "stylesheets/colours.css",
+  "stylesheets/components.css",
+  "stylesheets/admonition.css",
 ]
 # extra_javascript = ["javascripts/extra.js"]
 

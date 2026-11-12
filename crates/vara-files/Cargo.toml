@@ -1,12 +1,12 @@
 [package]
 name = "vara_files"
-version = "0.1.0"
 edition = "2024"
 
 [lib]
 path = "lib.rs"
 
 [dependencies]
+async-channel = "2.5.0"
 
 mlua = { version = "0.12.1", features = [
     "async",
@@ -14,6 +14,9 @@ mlua = { version = "0.12.1", features = [
     "serde",
     "macros",
 ] }
+notify = "8.2.1"
+mlua-luau-scheduler = "0.3.0"
 
 vara_chrono = {path = "../vara-chrono"}
 vara_util = {path = "../vara-util"}
+futures-lite = "2.6.1"

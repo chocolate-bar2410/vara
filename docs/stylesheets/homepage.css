@@ -25,7 +25,7 @@ h1.homepage-title {
     padding: 1rem 1.5rem;
     
     border-radius: 5px;
-    border: 1px solid var(--doc-border);
+    border: 2px solid var(--doc-border);
 }
 
 .homepage-code_example{
@@ -36,7 +36,7 @@ h1.homepage-title {
     padding: 0.75rem 1.5rem 1rem;
 
     border-radius: 5px;
-    border: 1px solid var(--doc-border);
+    border: 2px solid var(--doc-border);
 }
 
 .homepage-feature {
@@ -45,8 +45,8 @@ h1.homepage-title {
     padding: 0.75rem 1.5rem 1rem;
 
     border-radius: 5px;
-    border: 1px solid var(--doc-border);
-    background-image: var(--doc-gradient);
+    border: 2px solid var(--doc-border);
+    /* background-image: var(--doc-gradient); */
 }
 
 .feature-title {

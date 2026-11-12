@@ -1,6 +1,6 @@
 [package]
 name = "vara_core"
-version = "0.1.0"
+version = "0.2.0"
 edition = "2024"
 
 [lib]
@@ -24,8 +24,17 @@ serde_json = { version = "1.0.151", features = ["preserve_order"] }
 toml = { version = "1.1.6", features = ["preserve_order"] }
 
 whoami = "2.1.3"
+smol = "2.0.2"
 
 vara_util = { path = "../vara-util" }
 vara_files = { path = "../vara-files" }
 vara_chrono = { path = "../vara-chrono" }
 vara_media = { path = "../vara-media" }
+vara_colour = { path = "../vara-colour" }
+vara_net = { path = "../vara-net" } 
+# vara_ui = { path = "../vara-ui" } 
+mlua-luau-scheduler = "0.3.0"
+fast-glob = "1.1.2"
+notify-rust = "4.18.2"
+terminal_size = "0.4.4"
+

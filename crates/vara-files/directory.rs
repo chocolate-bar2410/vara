@@ -12,7 +12,7 @@ use std::cell::RefCell;
 #[derive(mlua::UserData)]
 pub struct Directory{
     #[lua(get,name = "Path")]
-    path: PathBuf
+    pub path: PathBuf
 }
 
 #[mlua::userdata_impl]
