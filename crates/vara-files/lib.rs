@@ -12,6 +12,8 @@ pub mod file_obj;
 mod directory;
 mod observer;
 
+pub use directory::Directory;
+
 pub fn read_file(path: &PathBuf) -> io::Result<String> {
     let mut file = fs::File::open(path)
         .expect(format!("Could not find file at path {}", path.display()).as_str());

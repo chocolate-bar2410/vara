@@ -1,13 +1,9 @@
 --!strict
+local fs = require("@vara/fs")
 local system = require("@vara/system")
 local task = require("@vara/task")
 
-local result = system.YesNoDialogue("Option", "This is an option",true) 
+local dir = fs.Directory(".")
 
-if result == true then 
-    print("yes")
-elseif result == false then
-    print("no")
-else
-    print("cancelled")
-end
+local file = system.PickFileDialogue("choose a file", dir, {})
+print(file)

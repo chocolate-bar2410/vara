@@ -223,4 +223,20 @@ function module.YesNoDialogue(title: string, description: string,cancellable: bo
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method PickFileDialogue
+	@param title The title of the popup message.
+	@param directory The starting directory of the dialogue.
+	@param filter Filters that determine what types of files can be chosen.
+	
+	Prompts the user to pick a file.
+
+	@return The file the user picks, returns nil if none was picked.
+]=]
+function module.PickFileDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : File?
+    return nil :: unknown
+end
+
+
 return module

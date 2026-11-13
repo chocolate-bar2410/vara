@@ -1,3 +1,5 @@
+use std::path::PathBuf;
+
 use mlua::ExternalError;
 use rfd::{MessageButtons, MessageDialogResult, MessageLevel};
 
@@ -67,5 +69,43 @@ pub async fn yes_no_dialogue(_: mlua::Lua,(title,description,cancellable,level):
         MessageDialogResult::No => Ok(Some(false)),
         MessageDialogResult::Cancel => Ok(None),
         _ => unreachable!()
+    }
+}
+
+pub async fn file_pick_dialog(_: mlua::Lua,(title,directory,filter): (String,Option<mlua::Value>,Option<mlua::Table>)) -> mlua::Result<Option<vara_files::file_obj::File>>{
+    
+    let mut file_dialog = rfd::AsyncFileDialog::new()
+    .set_title(title);
+
+
+    if let Some(mlua::Value::UserData(userdata)) = directory {
+
+        if !userdata.is::<vara_files::Directory>(){
+            return Err(mlua::Error::FromLuaConversionError { 
+                from: "userdata", 
+                to: "Directory".to_string(), 
+                message: Some("expected a Directory".to_string()) 
+            });
+        } 
+
+        let dir = userdata.borrow::<vara_files::Directory>()?;
+
+        file_dialog = file_dialog.set_directory(&dir.path);
+    }
+
+    
+    if let Some(filter) = filter {
+        for pair in filter.pairs::<String,Vec<String>>() {
+            let (key,value) = pair?;
+
+            file_dialog = file_dialog.add_filter(key, &value);
+        }
+    }
+
+    let file_handle = file_dialog.pick_file().await;
+
+    match file_handle {
+        Some(file_handle) => Ok(Some(vara_files::file_obj::File::new(&PathBuf::from(file_handle.path()))?)),
+        None => Ok(None)
     }
 }
