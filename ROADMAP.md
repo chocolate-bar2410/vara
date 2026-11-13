@@ -1,50 +1,27 @@
 ## todo
 
-### v0.2.0
-- [ ] CLI
-    - [x] build
-        - [x] dependency bundling
-    - [x] test
-- [ ] standard library
-    - [x] networking
-    - [x] task
-    - [x] UI
-    - [x] path
-    - [x] system
-        - [x] notify method
-    - [x] terminal drawing
-    - [x] colours
-    - [x] media
-        - [x] image
-            - [x] make data use 32 bit floats instead of 8 bit unsigned ints.
-            - [x] set pixel
-            - [x] get pixel
-            - [x] HDR
-    - [x] file system
-        - [x] watchers
-- [x] debugging
-    - [x] custom print
-        - [x] tables
-        - [x] buffers
-    - [x] custom warns
-    - [x] test
-        - [x] assertions
-            - [x] table equal
-            - [x] table not equal
-
 ### v0.3.0
 - [ ] standard library
-    - [ ] networking
-        - [ ] websockets?
-        - [ ] UDP?
     - [ ] system
         - [ ] gpu
             - [ ] gpu picking
             - [ ] compute shaders
+        - [ ] system dialog
+            - [ ] file choosing
     - [ ] media
         - [ ] images
-            - [ ] difference of gaussians
-            - [ ] kuwahara filter
+            - [ ] arithmetic
+        - [ ] videos
+    - [ ] colour
+        - [ ] RGB lerp
+        - [ ] OKLCH lerp
+        - [ ] arithmetic
+
+### v0.4.0
+- [ ] standard library
+    - [ ] networking
+        - [ ] websockets?
+        - [ ] UDP?
     - [ ] UI
         - [ ] layouts
         - [ ] UDim2
