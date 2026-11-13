@@ -1,5 +1,5 @@
 use mlua::ExternalError;
-use rfd::MessageLevel;
+use rfd::{MessageButtons, MessageDialogResult, MessageLevel};
 
 
 
@@ -26,4 +26,26 @@ pub async fn info_dialogue(_: mlua::Lua,(title,description,level): (String, Stri
 
     Ok(())
 }
+
+pub async fn ok_dialogue(_: mlua::Lua,(title,description,cancellable,level): (String, String,bool, Option<String>)) -> mlua::Result<bool>{
+    
+    let message_level = string_to_level(level.unwrap_or("INFO".to_string()))?;
+    
+    let buttons = if cancellable {MessageButtons::OkCancel} else {MessageButtons::Ok};
+    
+    let result = rfd::AsyncMessageDialog::new()
+    .set_title(title)
+    .set_description(description)
+    .set_level(message_level)
+    .set_buttons(buttons)
+    .show()
+    .await;  
+
+    match result {
+        MessageDialogResult::Ok => Ok(true),
+        MessageDialogResult::Cancel => Ok(false),
+        _ => Ok(false)
+    }
+}
+
 

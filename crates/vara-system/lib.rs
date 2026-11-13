@@ -131,5 +131,6 @@ pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::
         .add_function("VirtualMemoryUsage", get_virtual_memory_usage)?
         .add_function("Notify", notify)?
         .add_async_function("InfoDialogue", dialogue::info_dialogue)?
+        .add_async_function("OkDialogue", dialogue::ok_dialogue)?
         .build_readonly()
 }
