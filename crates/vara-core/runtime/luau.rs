@@ -56,7 +56,7 @@ impl Runtime {
         let net_lib = vara_net::get_module(&self.vm)?;
         // let ui_lib = vara_ui::get_module(&self.vm)?;
         let colour_lib = vara_colour::get_module(&self.vm)?;
-        let system_lib = vara_system::get_module(&self.vm)?;
+        let system_lib = vara_system::get_module(&self.vm,&self.args)?;
 
         self.vm.register_module("@vara/fs", fs_lib)?;
         self.vm.register_module("@vara/chrono", chrono_lib)?;
