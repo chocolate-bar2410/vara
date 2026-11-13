@@ -178,4 +178,17 @@ function module.Notify(summary : string,body : string,name : string,timeout : nu
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method InfoDialogue
+	@param title The title of the popup message.
+	@param description The main description of the popup message.
+	@param level What type of popup is shown.
+
+	Displays a system popup message.
+]=]
+function module.InfoDialogue(title: string, description: string,level: ("INFO" | "WARN" | "ERROR")?) : number
+    return nil :: unknown
+end
+
 return module
