@@ -207,4 +207,20 @@ function module.OkDialogue(title: string, description: string,cancellable: boole
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method YesNoDialogue
+	@param title The title of the popup message.
+	@param description The main description of the popup message.
+	@param cancellable Whether the dialogue can be cancelled.
+	@param level What type of popup is shown.
+	
+	Displays a native system option dialogue with yes, no and cancel options.
+
+	@return Whether or not the user pressed yes or no, if the user cancells it will return nil.
+]=]
+function module.YesNoDialogue(title: string, description: string,cancellable: boolean?,level: ("INFO" | "WARN" | "ERROR")?) : boolean?
+    return nil :: unknown
+end
+
 return module

@@ -44,8 +44,28 @@ pub async fn ok_dialogue(_: mlua::Lua,(title,description,cancellable,level): (St
     match result {
         MessageDialogResult::Ok => Ok(true),
         MessageDialogResult::Cancel => Ok(false),
-        _ => Ok(false)
+        _ => unreachable!()
     }
 }
 
+pub async fn yes_no_dialogue(_: mlua::Lua,(title,description,cancellable,level): (String, String,bool, Option<String>)) -> mlua::Result<Option<bool>>{
+    
+    let message_level = string_to_level(level.unwrap_or("INFO".to_string()))?;
+    
+    let buttons = if cancellable {MessageButtons::YesNoCancel} else {MessageButtons::YesNo};
+    
+    let result = rfd::AsyncMessageDialog::new()
+    .set_title(title)
+    .set_description(description)
+    .set_level(message_level)
+    .set_buttons(buttons)
+    .show()
+    .await;  
 
+    match result {
+        MessageDialogResult::Yes => Ok(Some(true)),
+        MessageDialogResult::No => Ok(Some(false)),
+        MessageDialogResult::Cancel => Ok(None),
+        _ => unreachable!()
+    }
+}

@@ -132,5 +132,6 @@ pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::
         .add_function("Notify", notify)?
         .add_async_function("InfoDialogue", dialogue::info_dialogue)?
         .add_async_function("OkDialogue", dialogue::ok_dialogue)?
+        .add_async_function("YesNoDialogue", dialogue::yes_no_dialogue)?
         .build_readonly()
 }
