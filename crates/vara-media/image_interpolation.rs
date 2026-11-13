@@ -137,7 +137,7 @@ pub fn lanczos3(img : &mlua::UserDataRefMut<Image>,width : u32, height : u32) ->
 
             let inv_weighted_sum = 1.0 / weighted_sum;
             for cc in 0..RGBA_CHANNELS{
-                out_pixel[cc] = (sums[cc] * inv_weighted_sum).min(0.0);
+                out_pixel[cc] = sums[cc] * inv_weighted_sum;
             }
         }
     }
