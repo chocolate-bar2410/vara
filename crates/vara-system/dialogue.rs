@@ -17,11 +17,12 @@ pub async fn info_dialogue(_: mlua::Lua,(title,description,level): (String, Stri
     let message_level = string_to_level(level.unwrap_or("INFO".to_string()))?;
     
     
-    rfd::MessageDialog::new()
+    rfd::AsyncMessageDialog::new()
     .set_title(title)
     .set_description(description)
     .set_level(message_level)
-    .show();    
+    .show()
+    .await;    
 
     Ok(())
 }
