@@ -3,9 +3,6 @@
 ### v0.3.0
 - [ ] standard library
     - [ ] system
-        - [ ] gpu
-            - [ ] gpu picking
-            - [ ] compute shaders
         - [ ] system dialog
             - [ ] file choosing
     - [ ] media
@@ -22,12 +19,9 @@
     - [ ] networking
         - [ ] websockets?
         - [ ] UDP?
+    - [ ] system
+        - [ ] gpu
+            - [ ] gpu picking
+            - [ ] compute shaders
     - [ ] UI
-        - [ ] layouts
-        - [ ] UDim2
-        - [ ] component hierarchy
-        - [ ] events
-            - [ ] on resize
-            - [ ] on key pressed/release
-            - [ ] on click down/up
-            - [ ] on mouse move
+        - [ ] switch to using floem
