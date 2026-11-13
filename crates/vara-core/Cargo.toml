@@ -7,9 +7,7 @@ edition = "2024"
 path = "lib.rs"
 
 [dependencies]
-dotenvy = "0.15.7"
 
-memory-stats = "1.2.0"
 mlua = { version = "0.12.1", features = [
     "async",
     "luau-jit",
@@ -32,9 +30,9 @@ vara_chrono = { path = "../vara-chrono" }
 vara_media = { path = "../vara-media" }
 vara_colour = { path = "../vara-colour" }
 vara_net = { path = "../vara-net" } 
+vara_system = { path = "../vara-system" } 
 # vara_ui = { path = "../vara-ui" } 
 mlua-luau-scheduler = "0.3.0"
 fast-glob = "1.1.2"
-notify-rust = "4.18.2"
 terminal_size = "0.4.4"
 
