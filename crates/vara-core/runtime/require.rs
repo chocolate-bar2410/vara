@@ -98,9 +98,12 @@ impl mlua::luau::Require for Resolver {
     }
 
     fn has_module(&self) -> bool {
-        let resolved = self.resolved.as_ref();
+        let Some(resolved) = self.resolved.as_ref() else {
+            println!("no resolved module");
+            return false;
+        };
 
-        resolved.is_some_and(|p| p.get_target().is_file())
+        resolved.get_target().is_file()
     }
 
     fn cache_key(&self) -> String {
