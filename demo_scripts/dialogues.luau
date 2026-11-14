@@ -5,5 +5,5 @@ local task = require("@vara/task")
 
 local dir = fs.Directory("demo_scripts/images")
 
-local file = system.LoadFilesDialogue("choose a file", dir, {})
+local file = system.SaveFileDialogue("choose a file", dir, {})
 print(file)

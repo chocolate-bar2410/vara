@@ -245,11 +245,26 @@ end
 	@param directory The starting directory of the dialogue.
 	@param filter Filters that determine what types of files can be chosen.
 	
-	Prompts the user to pick a file.
+	Prompts the user to pick multiple files.
 
 	@return The files the user picks, returns nil if none was picked.
 ]=]
 function module.LoadFilesDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : {File}?
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method SaveFileDialogue
+	@param title The title of the popup message.
+	@param directory The starting directory of the dialogue.
+	@param filter Filters that determine what types of files can be chosen.
+	
+	Prompts the user to save a file.
+
+	@return The file the user saved, returns nil if none was saved.
+]=]
+function module.SaveFileDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : File?
     return nil :: unknown
 end
 

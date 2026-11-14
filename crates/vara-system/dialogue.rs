@@ -133,3 +133,15 @@ pub async fn files_pick_dialog(_: mlua::Lua,(title,directory,filter): (String,Op
         None => Ok(None)
     }
 }
+
+pub async fn file_save_dialog(_: mlua::Lua,(title,directory,filter): (String,Option<mlua::Value>,Option<mlua::Table>)) -> mlua::Result<Option<vara_file>>{
+    
+    let file_dialog = setup_file_dialog(title, directory, filter)?;
+
+    let file_handle = file_dialog.save_file().await;
+
+    match file_handle {
+        Some(file_handle) => Ok(Some(vara_file::new(&PathBuf::from(file_handle.path()))?)),
+        None => Ok(None)
+    }
+}
