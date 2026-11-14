@@ -48,9 +48,10 @@ impl LuauFile {
         }
 
         if module.is_dir() {
-            let init = Path::new(super::constants::FILE_NAME_INIT);
+            let init = module.join(super::constants::FILE_NAME_INIT);
+
             for ext in super::constants::FILE_EXTENSIONS {
-                let candidate = append_extension(init, ext);
+                let candidate = append_extension(&init, ext);
                 if candidate.is_file() && found.replace(candidate).is_some() {
                     return Err(mlua::luau::NavigateError::Ambiguous);
                 }

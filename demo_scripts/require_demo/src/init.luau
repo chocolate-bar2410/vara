@@ -1,6 +1,6 @@
 --!strict
 -- for testing requires and compilation
-local config = require("@self/configs")
+local config = require("./configuration/configs")
 local _unused_variable
 
 print(config.hello)
