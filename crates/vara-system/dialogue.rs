@@ -3,7 +3,7 @@ use std::path::PathBuf;
 use mlua::ExternalError;
 use rfd::{MessageButtons, MessageDialogResult, MessageLevel};
 
-
+use vara_files::file_obj::File as vara_file;
 
 fn string_to_level(level: String) -> mlua::Result<MessageLevel>{
     return match level.as_str() {
@@ -72,11 +72,8 @@ pub async fn yes_no_dialogue(_: mlua::Lua,(title,description,cancellable,level):
     }
 }
 
-pub async fn file_pick_dialog(_: mlua::Lua,(title,directory,filter): (String,Option<mlua::Value>,Option<mlua::Table>)) -> mlua::Result<Option<vara_files::file_obj::File>>{
-    
-    let mut file_dialog = rfd::AsyncFileDialog::new()
-    .set_title(title);
-
+fn setup_file_dialog(title: String,directory: Option<mlua::Value>,filter: Option<mlua::Table>) -> mlua::Result<rfd::AsyncFileDialog>{
+    let mut file_dialog = rfd::AsyncFileDialog::new().set_title(title);
 
     if let Some(mlua::Value::UserData(userdata)) = directory {
 
@@ -102,10 +99,37 @@ pub async fn file_pick_dialog(_: mlua::Lua,(title,directory,filter): (String,Opt
         }
     }
 
+    Ok(file_dialog)
+}
+
+pub async fn file_pick_dialog(_: mlua::Lua,(title,directory,filter): (String,Option<mlua::Value>,Option<mlua::Table>)) -> mlua::Result<Option<vara_file>>{
+    
+    let file_dialog = setup_file_dialog(title, directory, filter)?;
+
     let file_handle = file_dialog.pick_file().await;
 
     match file_handle {
-        Some(file_handle) => Ok(Some(vara_files::file_obj::File::new(&PathBuf::from(file_handle.path()))?)),
+        Some(file_handle) => Ok(Some(vara_file::new(&PathBuf::from(file_handle.path()))?)),
+        None => Ok(None)
+    }
+}
+
+pub async fn files_pick_dialog(_: mlua::Lua,(title,directory,filter): (String,Option<mlua::Value>,Option<mlua::Table>)) -> mlua::Result<Option<Vec<vara_file>>>{
+    
+    let file_dialog = setup_file_dialog(title, directory, filter)?;
+
+    let files = file_dialog.pick_files().await;
+
+    match files {
+        Some(files) => {
+            let mut result = Vec::new();
+
+            for file_handle in files {
+                result.push(vara_file::new(&file_handle.path().to_path_buf())?);
+            }
+
+            Ok(Some(result))
+        },
         None => Ok(None)
     }
 }

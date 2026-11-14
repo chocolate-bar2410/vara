@@ -225,7 +225,7 @@ end
 
 --[=[
 	@within system
-	@method PickFileDialogue
+	@method LoadFileDialogue
 	@param title The title of the popup message.
 	@param directory The starting directory of the dialogue.
 	@param filter Filters that determine what types of files can be chosen.
@@ -234,9 +234,23 @@ end
 
 	@return The file the user picks, returns nil if none was picked.
 ]=]
-function module.PickFileDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : File?
+function module.LoadFileDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : File?
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method LoadFilesDialogue
+	@param title The title of the popup message.
+	@param directory The starting directory of the dialogue.
+	@param filter Filters that determine what types of files can be chosen.
+	
+	Prompts the user to pick a file.
+
+	@return The files the user picks, returns nil if none was picked.
+]=]
+function module.LoadFilesDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : {File}?
+    return nil :: unknown
+end
 
 return module
