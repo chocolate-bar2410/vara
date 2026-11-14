@@ -99,7 +99,6 @@ impl mlua::luau::Require for Resolver {
 
     fn has_module(&self) -> bool {
         let Some(resolved) = self.resolved.as_ref() else {
-            println!("no resolved module");
             return false;
         };
 
