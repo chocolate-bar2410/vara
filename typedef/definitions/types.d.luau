@@ -252,6 +252,24 @@ declare extern type Image with
         Applies a subtraction between the image and another image.
     ]=]
     function Subtract(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Multiply
+        @param Other The other image.
+        @return Itself.
+
+        Applies a Multiplication between the image and another image.
+    ]=]
+    function Multiply(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Divide
+        @param Other The other image.
+        @return Itself.
+
+        Applies a Division between the image and another image.
+    ]=]
+    function Divide(self,other: Image): Image
     function __tostring(self): string
 end
 

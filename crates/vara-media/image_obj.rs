@@ -342,6 +342,46 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name="Multiply")]
+    pub fn multiply(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
+
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] *= b[0];
+                a[1] *= b[1];
+                a[2] *= b[2];
+            }
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Divide")]
+    pub fn divide(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
+
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] /= b[0];
+                a[1] /= b[1];
+                a[2] /= b[2];
+            }
+        }
+
+        Ok(this)
+    }
+
     // exporting
 
     #[lua(skip)]
