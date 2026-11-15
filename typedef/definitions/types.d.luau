@@ -589,6 +589,7 @@ end
 declare extern type Clipboard with
     --[=[
         @within Clipboard
+        @method GetText
         @return Text data from the user's clipboard.
 
         Gets text data from the user's clipboard.
@@ -596,11 +597,28 @@ declare extern type Clipboard with
     function GetText(self): string?
     --[=[
         @within Clipboard
+        @method SetText
         @param Text The text being added to the clipboard.
 
         Places text onto the clipboard
     ]=]
     function SetText(self,text: string)
+    --[=[
+        @within Clipboard
+        @method GetImage
+        @return Image data from the user's clipboard.
+
+        Gets image data from the clipboard.
+    ]=]
+    function GetImage(self): Image
+    --[=[
+        @within Clipboard
+        @method SetImage
+        @param Image The image being added to the clipboard.
+
+        Places an image onto the clipboard
+    ]=]
+    function SetImage(self,image: Image)
 end
 
 
