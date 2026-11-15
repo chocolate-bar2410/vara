@@ -7,8 +7,8 @@
             - [x] file choosing
         - [x] clipboard
     - [ ] media
-        - [ ] images
-            - [ ] arithmetic
+        - [x] images
+            - [x] arithmetic
         - [ ] videos
     - [ ] colour
         - [ ] RGB lerp
