@@ -307,19 +307,15 @@ impl Image {
 
         {
             let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
 
-            for y in 0..image.height {
-                for x in 0..image.width {
-
-                    let index = ((y *image.width + x) * RGBA_CHANNELS as u32) as usize;
-
-                    for cc in 0..3 {
-                        let value_a =image.data[index + cc];
-                        let value_b = other.data[index + cc];
-
-                        image.data[index + cc] = value_a + value_b;
-                    }
-                }
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] += b[0];
+                a[1] += b[1];
+                a[2] += b[2];
             }
         }
 
@@ -331,19 +327,15 @@ impl Image {
 
         {
             let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
 
-            for y in 0..image.height {
-                for x in 0..image.width {
-
-                    let index = ((y *image.width + x) * RGBA_CHANNELS as u32) as usize;
-
-                    for cc in 0..3 {
-                        let value_a =image.data[index + cc];
-                        let value_b = other.data[index + cc];
-
-                        image.data[index + cc] = value_a - value_b;
-                    }
-                }
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] -= b[0];
+                a[1] -= b[1];
+                a[2] -= b[2];
             }
         }
 
