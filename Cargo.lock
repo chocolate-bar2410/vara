@@ -3474,6 +3474,7 @@ dependencies = [
  "notify-rust",
  "rfd",
  "vara_files",
+ "vara_media",
  "vara_util",
  "whoami",
 ]

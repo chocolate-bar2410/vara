@@ -11,6 +11,7 @@ mlua = { version = "0.12.1", features = ["async", "luau-jit", "vendored"] }
 
 vara_files = { path = "../vara-files" }
 vara_util = { path = "../vara-util" }
+vara_media = { path = "../vara-media" }
 dotenvy = "0.15.7"
 memory-stats = "1.2.0"
 notify-rust = "4.18.2"

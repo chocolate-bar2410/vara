@@ -16,6 +16,9 @@ mod image_tonemap;
 mod audio_obj;
 mod audio_interpolation;
 
+pub use image_obj::Image;
+pub use audio_obj::Audio;
+
 fn create_image(context : &mlua::Lua,data: mlua::Value) -> mlua::Result<image_obj::Image>{
     match data {
         mlua::Value::UserData(userdata) => {
