@@ -5,7 +5,7 @@
     - [ ] system
         - [x] system dialog
             - [x] file choosing
-        - [ ] clipboard
+        - [x] clipboard
     - [ ] media
         - [ ] images
             - [ ] arithmetic
