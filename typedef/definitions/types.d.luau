@@ -234,6 +234,24 @@ declare extern type Image with
         * UCHIMURA - Map to a piecewise curve.
     ]=]
     function HdrTonemap(self,config: ImageHdrConfig) : Image
+    --[=[
+        @within Image
+        @method Add
+        @param Other The other image.
+        @return Itself.
+
+        Applies an addition between the image and another image.
+    ]=]
+    function Add(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Subtract
+        @param Other The other image.
+        @return Itself.
+
+        Applies a subtraction between the image and another image.
+    ]=]
+    function Subtract(self,other: Image): Image
     function __tostring(self): string
 end
 

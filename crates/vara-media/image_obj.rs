@@ -301,6 +301,57 @@ impl Image {
         Ok(this)
     } 
 
+    // arithmetic
+    #[lua(name="Add")]
+    pub fn add(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+
+            for y in 0..image.height {
+                for x in 0..image.width {
+
+                    let index = ((y *image.width + x) * RGBA_CHANNELS as u32) as usize;
+
+                    for cc in 0..3 {
+                        let value_a =image.data[index + cc];
+                        let value_b = other.data[index + cc];
+
+                        image.data[index + cc] = value_a + value_b;
+                    }
+                }
+            }
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Subtract")]
+    pub fn sub(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+
+            for y in 0..image.height {
+                for x in 0..image.width {
+
+                    let index = ((y *image.width + x) * RGBA_CHANNELS as u32) as usize;
+
+                    for cc in 0..3 {
+                        let value_a =image.data[index + cc];
+                        let value_b = other.data[index + cc];
+
+                        image.data[index + cc] = value_a - value_b;
+                    }
+                }
+            }
+        }
+
+        Ok(this)
+    }
+
+    // exporting
+
     #[lua(skip)]
     fn encode_hdr(&self,context: &mlua::Lua,format : image::ImageFormat) -> mlua::Result<mlua::Buffer> {
 
