@@ -582,6 +582,22 @@ declare extern type Colour4 with
 end
 
 --[=[
+    @class Clipboard
+
+    An object that accesses the system's clipboard.
+]=]
+declare extern type Clipboard with
+    --[=[
+        @within Clipboard
+        @return Text data from the user's clipboard.
+
+        Gets text data from the user's clipboard.
+    ]=]
+    function GetText(self): string?
+end
+
+
+--[=[
     @class _RUNTIME
 
     _RUNTIME global to follow the [_RUNTIME](https://gist.github.com/Bottersnike/001470cbbb0cd63d9790a542ed5be1bf) spec.

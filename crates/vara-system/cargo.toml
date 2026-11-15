@@ -18,3 +18,4 @@ whoami = "2.1.3"
 
 mlua-luau-scheduler = "0.3.0"
 rfd = "0.18.0"
+arboard = "3.7.0"

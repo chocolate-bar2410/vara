@@ -6,6 +6,7 @@ use vara_util::table_builder::TableBuilder;
 use std::thread::available_parallelism as cpus_available;
 
 mod dialogue;
+mod clipboard;
 
 fn get_language_preferences(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     let lang_preference: whoami::LanguagePreferences = whoami::lang_prefs().unwrap_or_default();
@@ -136,5 +137,6 @@ pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::
         .add_async_function("LoadFileDialogue", dialogue::file_pick_dialog)?
         .add_async_function("LoadFilesDialogue", dialogue::files_pick_dialog)?
         .add_async_function("SaveFileDialogue", dialogue::file_save_dialog)?
+        .add_function("Clipboard",|_,()| clipboard::Clipboard::new())?
         .build_readonly()
 }

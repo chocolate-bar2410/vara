@@ -268,4 +268,16 @@ function module.SaveFileDialogue(title: string, directory: Directory,filter: {[s
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method Clipboard
+	
+	Creates a new clipboard object.
+
+	@return The clipboard object.
+]=]
+function module.Clipboard() : Clipboard
+    return nil :: unknown
+end
+
 return module
