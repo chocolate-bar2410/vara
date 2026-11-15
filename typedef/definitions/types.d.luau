@@ -594,6 +594,13 @@ declare extern type Clipboard with
         Gets text data from the user's clipboard.
     ]=]
     function GetText(self): string?
+    --[=[
+        @within Clipboard
+        @param Text The text being added to the clipboard.
+
+        Places text onto the clipboard
+    ]=]
+    function SetText(self,text: string)
 end
 
 

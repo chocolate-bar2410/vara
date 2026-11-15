@@ -21,4 +21,9 @@ impl Clipboard{
             Err(_) => Ok(None)
         }
     }
+
+    #[lua(name="SetText")]
+    pub fn set_text(&mut self,text: String) -> mlua::Result<()>{
+        self.handle.set_text(text).into_lua_err()
+    }
 }
