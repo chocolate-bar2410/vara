@@ -382,6 +382,22 @@ impl Image {
         Ok(this)
     }
 
+    #[lua(name="Pow")]
+    pub fn pow(this: AnyUserData,other: f32)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            for pixel in image.data.chunks_exact_mut(4){
+                pixel[0] = pixel[0].powf(other);
+                pixel[1] = pixel[1].powf(other);
+                pixel[2] = pixel[2].powf(other);
+            }
+        }
+
+        Ok(this)
+    }
+
     // exporting
 
     #[lua(skip)]
@@ -459,7 +475,7 @@ impl Image {
             };
 
             match self.colour_channels {
-                1 => data.push(to_u8(red)),
+                1 => data.push(to_u8(to_srgb(red))),
                 2 => data.extend([to_u8(to_srgb(red)),to_u8(alpha)]),
                 3 => data.extend([to_u8(to_srgb(red)),to_u8(to_srgb(green)),to_u8(to_srgb(blue))]),
                 4 => data.extend([to_u8(to_srgb(red)),to_u8(to_srgb(green)),to_u8(to_srgb(blue)),to_u8(alpha)]),

@@ -270,6 +270,15 @@ declare extern type Image with
         Applies a Division between the image and another image.
     ]=]
     function Divide(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Pow
+        @param Other The exponent.
+        @return Itself.
+
+        Raises the pixel data by a power of [other].
+    ]=]
+    function Pow(self,other: number): Image
     function __tostring(self): string
 end
 
