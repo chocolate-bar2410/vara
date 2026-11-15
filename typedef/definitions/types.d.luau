@@ -191,15 +191,6 @@ declare extern type Image with
     function Clone(self) : Image    
     --[=[
         @within Image
-        @method GradientMagnitude
-        @param other The other image.
-        @return The gradient magnitude between your two images.
-
-        Computes the gradient magnitude between your image and another image.
-    ]=]
-    function GradientMagnitude(self,other : Image) : Image
-    --[=[
-        @within Image
         @method GetPixel
         @param x
         @param y

@@ -191,31 +191,6 @@ impl Image {
         Ok(self.clone())
     }
 
-    #[lua(name="GradientMagnitude")]
-    pub fn gradient_magnitude(&self,other : &Image) -> mlua::Result<Self>{
-        let mut result = self.clone();
-
-        for y in 0..self.height {
-            for x in 0..self.width {
-
-                let index = ((y * self.width + x) * RGBA_CHANNELS as u32) as usize;
-
-                for cc in 0..3 {
-                    let value_a = self.data[index + cc];
-                    let value_b = other.data[index + cc];
-
-                    let magnitude = value_a.hypot(value_b);
-
-                    result.data[index + cc] = magnitude;
-                }
-                
-                result.data[index + 3] = 1.0;
-            }
-        }
-
-        Ok(result)
-    }
-
     #[lua(name="Resize")]
     pub fn resize(this : AnyUserData,width : u32,height : u32,filter : Option<&str>)  -> mlua::Result<AnyUserData>{
         {
