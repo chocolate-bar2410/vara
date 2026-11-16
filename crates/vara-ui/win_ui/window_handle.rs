@@ -1,6 +1,6 @@
 use windows::Win32::{Foundation::HWND, UI::WindowsAndMessaging::DestroyWindow};
 
-use crate::win_ui::destroy_queue;
+use crate::win_ui::DestroyQueue;
 
 #[derive(mlua::UserData)]
 pub struct UiWindow{
@@ -9,7 +9,7 @@ pub struct UiWindow{
     #[lua(skip)]
     pub id: usize,  
     #[lua(skip)]
-    destroy_queue: destroy_queue,
+    destroy_queue: DestroyQueue,
     #[lua(name="Destroyed")]
     destroyed: bool,
 }
@@ -17,7 +17,7 @@ pub struct UiWindow{
 #[mlua::userdata_impl]
 impl UiWindow {
     #[lua(skip)]
-    pub fn new(hwnd: HWND,id: usize,destroy_queue: destroy_queue) -> Self{
+    pub fn new(hwnd: HWND,id: usize,destroy_queue: DestroyQueue) -> Self{
         Self { 
             hwnd, 
             id, 

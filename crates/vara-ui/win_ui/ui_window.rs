@@ -1,5 +1,3 @@
-use std::{cell::RefCell, rc::Rc};
-
 use mlua::ExternalResult;
 use windows::{
     Win32::{
@@ -7,16 +5,16 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::window_handle::UiWindow;
+use crate::win_ui::{DestroyQueue, window_handle::UiWindow};
 
 pub struct UiWindowInternal{
     pub hwnd: HWND,
     pub id: usize,
-    destroy_queue: Rc<RefCell<Vec<usize>>>
+    destroy_queue: DestroyQueue
 }
 
 impl UiWindowInternal {
-    pub fn new(destroy_queue: Rc<RefCell<Vec<usize>>>,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR) -> mlua::Result<Box<Self>> {
+    pub fn new(destroy_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR) -> mlua::Result<Box<Self>> {
         unsafe{
             let mut window = Box::new(Self {
                 hwnd: HWND::default(),

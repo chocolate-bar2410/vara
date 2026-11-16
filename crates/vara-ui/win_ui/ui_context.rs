@@ -8,7 +8,7 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::{ui_window::UiWindowInternal, window_handle::UiWindow};
+use crate::win_ui::{DestroyQueue, ui_window::UiWindowInternal, window_handle::UiWindow};
 
 #[derive(mlua::UserData)]
 pub struct UiApplication{
@@ -19,7 +19,7 @@ pub struct UiApplication{
     #[lua(skip)]
     windows: HashMap<usize,Box<UiWindowInternal>>,
     #[lua(skip)]
-    destroy_queue: Rc<RefCell<Vec<usize>>>
+    destroy_queue: DestroyQueue
 }
 
 #[mlua::userdata_impl]
