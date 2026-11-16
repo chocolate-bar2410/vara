@@ -10,7 +10,15 @@ mod compile;
 
 fn main() -> ExitCode {
     #[cfg(windows)]
-    vara_util::win_compat::init();
+    {
+        match vara_util::win_compat::init(){
+            Ok(_) => {},
+            Err(err) => {
+                eprintln!("Failed to enable windows compatibility, {err}");
+                return ExitCode::FAILURE
+            }
+        };
+    }
 
     async_io::block_on(async {
 

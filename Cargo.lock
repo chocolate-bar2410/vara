@@ -3487,6 +3487,7 @@ dependencies = [
  "mlua",
  "path-clean",
  "termios",
+ "windows",
 ]
 
 [[package]]
