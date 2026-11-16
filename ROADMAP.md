@@ -12,7 +12,15 @@
     - [ ] compatibility
         - [ ] switch to using a dedicated windows crate instead of manual FFI
     - [ ] UI
-        - [ ] switch to using native ui
+        - [x] switch to using native ui
+        - [ ] windows
+            - [ ] callbacks
+                - [ ] on close
+                - [ ] on resize
+            - [ ] backgrounds
+            - [ ] icons
+        - [ ] buttons
+        - [ ] labels
     - [ ] colour
         - [ ] RGB lerp
         - [ ] OKLCH lerp
