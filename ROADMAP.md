@@ -9,7 +9,10 @@
     - [ ] media
         - [x] images
             - [x] arithmetic
-        - [ ] videos
+    - [ ] compatibility
+        - [ ] switch to using a dedicated windows crate instead of manual FFI
+    - [ ] UI
+        - [ ] switch to using native ui
     - [ ] colour
         - [ ] RGB lerp
         - [ ] OKLCH lerp
@@ -24,5 +27,3 @@
         - [ ] gpu
             - [ ] gpu picking
             - [ ] compute shaders
-    - [ ] UI
-        - [ ] switch to using floem
