@@ -84,6 +84,6 @@ impl UiWindowInternal {
     }
 
     pub fn gen_handle(&self) -> UiWindow {
-        UiWindow::new(self.hwnd, self.id, self.destroy_queue.clone(), self.close_queue.clone(),self.on_close.clone())
+        UiWindow::new(self.hwnd, self.id, self.close_queue.clone(),self.on_close.clone())
     }
 }
