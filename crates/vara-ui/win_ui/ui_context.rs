@@ -8,7 +8,7 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::ui_window::UiWindow;
+use crate::win_ui::{ui_window::UiWindowInternal, window_handle::UiWindow};
 
 #[derive(mlua::UserData)]
 pub struct UiApplication{
@@ -17,7 +17,7 @@ pub struct UiApplication{
     #[lua(skip)]
     instance: HINSTANCE,
     #[lua(skip)]
-    windows: HashMap<usize,Box<UiWindow>>,
+    windows: HashMap<usize,Box<UiWindowInternal>>,
     #[lua(skip)]
     destroy_queue: Rc<RefCell<Vec<usize>>>
 }
@@ -59,18 +59,20 @@ impl UiApplication {
     }
 
     #[lua(name="CreateWindow")]
-    fn create_window(&mut self,title: String) -> mlua::Result<usize> {
+    fn create_window(&mut self,title: String) -> mlua::Result<UiWindow> {
 
         let title = HSTRING::from(title);
 
-        let mut window = UiWindow::new(self.destroy_queue.clone(),self.instance, self.class_name,PCWSTR(title.as_ptr()))?;
+        let mut window = UiWindowInternal::new(self.destroy_queue.clone(),self.instance, self.class_name,PCWSTR(title.as_ptr()))?;
 
         let id = self.windows.len() + 1;
         window.id = id;
 
+        let handle = window.gen_handle();
+
         self.windows.insert(id, window);
 
-        Ok(id)
+        Ok(handle)
     }
 
     #[lua(name="Run")]
@@ -179,7 +181,7 @@ extern "system" fn window_proc(hwnd: HWND,msg: u32,wparam: WPARAM,lparam: LPARAM
             return DefWindowProcW(hwnd, msg, wparam, lparam);
         }
 
-        let window = &mut *(ptr as *mut UiWindow);
+        let window = &mut *(ptr as *mut UiWindowInternal);
 
         window.window_proc(hwnd,msg,wparam,lparam)
     }

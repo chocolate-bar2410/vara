@@ -7,28 +7,19 @@ use windows::{
     }, core::*
 };
 
+use crate::win_ui::window_handle::UiWindow;
 
-
-#[derive(mlua::UserData)]
-pub struct UiWindow{
-    #[lua(skip)]
-    hwnd: HWND,
-    #[lua(get)]
-    destroyed: bool,
-    #[lua(get)]
+pub struct UiWindowInternal{
+    pub hwnd: HWND,
     pub id: usize,
-    #[lua(skip)]
     destroy_queue: Rc<RefCell<Vec<usize>>>
 }
 
-#[mlua::userdata_impl]
-impl UiWindow {
-    #[lua(skip)]
+impl UiWindowInternal {
     pub fn new(destroy_queue: Rc<RefCell<Vec<usize>>>,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR) -> mlua::Result<Box<Self>> {
         unsafe{
             let mut window = Box::new(Self {
                 hwnd: HWND::default(),
-                destroyed: false,
                 id: 0,
                 destroy_queue
             });
@@ -45,7 +36,7 @@ impl UiWindow {
                 None,
                 None,
                 Some(instance),
-                Some(&mut *window as *mut UiWindow as *const _)
+                Some(&mut *window as *mut UiWindowInternal as *const _)
             ).into_lua_err()?;
 
             window.hwnd = hwnd;
@@ -54,7 +45,6 @@ impl UiWindow {
         }
     }
 
-    #[lua(infallible)]
     pub fn close(&self){
         unsafe{
             #[allow(unused)]
@@ -62,7 +52,6 @@ impl UiWindow {
         }
     }
 
-    #[lua(skip)]
     pub fn window_proc(&mut self,hwnd: HWND,msg: u32,wparam: WPARAM,lparam: LPARAM) -> LRESULT {
         unsafe{
             match msg  {
@@ -79,11 +68,8 @@ impl UiWindow {
                 }
 
                 WM_DESTROY => {
-                    if !self.destroyed {
-                        self.destroyed = true;
-                        self.destroy_queue.borrow_mut().push(self.id);
-                    }
-
+                    self.destroy_queue.borrow_mut().push(self.id);
+                    
                     return LRESULT(0)
                 }
 
@@ -95,5 +81,9 @@ impl UiWindow {
                 _ => DefWindowProcW(hwnd, msg, wparam, lparam),
             }
         }
+    }
+
+    pub fn gen_handle(&self) -> UiWindow {
+        UiWindow::new(self.hwnd, self.id, self.destroy_queue.clone())
     }
 }
