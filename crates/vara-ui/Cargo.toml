@@ -6,16 +6,15 @@ edition = "2024"
 path = "lib.rs"
 
 [dependencies]
-bytemuck = "1.25.2"
-glyphon = "0.12.0"
 mlua = { version = "0.12.1", features = [
     "async",
     "luau-jit",
-    "macros",
-] }
-pollster = "1.0.1"
-taffy = "0.15.0"
+    "mwindows = "
+]}
+
+winit = "0.30.13"
 
 vara_util = { path = "../vara-util" }
-wgpu = "30.0.1"
-winit = "0.30.13"
+
+[target.'cfg(windows)'.dependencies]
+windows = "0.62.2"
