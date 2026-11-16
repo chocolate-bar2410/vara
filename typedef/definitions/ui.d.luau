@@ -1,8 +1,8 @@
 --[=[
-	@class UiContext
+	@class UiApplication
 
-    Object that handles user interfaces.
+    Application object that handles user interfaces.
 ]=]
-declare extern type UiContext with
-
+declare extern type UiApplication with
+    function test(self)
 end

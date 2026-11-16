@@ -12,8 +12,6 @@ mlua = { version = "0.12.1", features = [
     "macros"
 ]}
 
-winit = "0.30.13"
-
 vara_util = { path = "../vara-util" }
 
 [target.'cfg(windows)'.dependencies]

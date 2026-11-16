@@ -10,9 +10,9 @@ const module = {}
 	@within ui
 	@method CreateContext
 	
-	Creates a new ui context
+	Creates a new ui application
 ]=]
-function module.CreateContext(): UiContext
+function module.CreateContext(): UiApplication
 	return nil :: unknown
 end
 
