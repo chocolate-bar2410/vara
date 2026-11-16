@@ -1,6 +1,9 @@
 --[=[
 	@class ui
 
+	WARNING: THIS LIBRARY IS WINDOWS ONLY, THIS API DOES NOT HAVE SUPPORT FOR LINUX OR MACOS YET.
+
+	Inbuilt library for creating native user interfaces.
 ]=]
 const module = {}
 --[=[
