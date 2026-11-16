@@ -4172,6 +4172,7 @@ name = "vara_ui"
 version = "0.0.0"
 dependencies = [
  "mlua",
+ "vara_util",
  "windows",
  "winit",
 ]
