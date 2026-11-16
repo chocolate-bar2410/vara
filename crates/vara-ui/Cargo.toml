@@ -13,6 +13,7 @@ mlua = { version = "0.12.1", features = [
 ]}
 
 vara_util = { path = "../vara-util" }
+mlua-luau-scheduler = "0.3.0"
 
 [target.'cfg(windows)'.dependencies]
 windows = {version = "0.62.2",features = [

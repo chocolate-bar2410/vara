@@ -5,21 +5,27 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::{DestroyQueue, window_handle::UiWindow};
+use crate::win_ui::{CallbackSlot, DestroyQueue, window_handle::UiWindow};
 
 pub struct UiWindowInternal{
     pub hwnd: HWND,
     pub id: usize,
-    destroy_queue: DestroyQueue
+    destroy_queue: DestroyQueue,
+    close_queue: DestroyQueue,
+    pub on_close: CallbackSlot,
+    pub close_pending: bool
 }
 
 impl UiWindowInternal {
-    pub fn new(destroy_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR) -> mlua::Result<Box<Self>> {
+    pub fn new(destroy_queue: DestroyQueue,close_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR,on_close: CallbackSlot) -> mlua::Result<Box<Self>> {
         unsafe{
             let mut window = Box::new(Self {
                 hwnd: HWND::default(),
                 id: 0,
-                destroy_queue
+                destroy_queue,
+                close_queue,
+                on_close,
+                close_pending: false
             });
 
             let hwnd = CreateWindowExW(
@@ -43,13 +49,6 @@ impl UiWindowInternal {
         }
     }
 
-    pub fn close(&self){
-        unsafe{
-            #[allow(unused)]
-            DestroyWindow(self.hwnd);
-        }
-    }
-
     pub fn window_proc(&mut self,hwnd: HWND,msg: u32,wparam: WPARAM,lparam: LPARAM) -> LRESULT {
         unsafe{
             match msg  {
@@ -61,7 +60,10 @@ impl UiWindowInternal {
                 },
 
                 WM_CLOSE => {
-                    self.close();
+                    if !self.close_pending{
+                        self.close_queue.borrow_mut().push(self.id);
+                        self.close_pending = true
+                    }
                     LRESULT(0)
                 }
 
@@ -82,6 +84,6 @@ impl UiWindowInternal {
     }
 
     pub fn gen_handle(&self) -> UiWindow {
-        UiWindow::new(self.hwnd, self.id, self.destroy_queue.clone())
+        UiWindow::new(self.hwnd, self.id, self.destroy_queue.clone(), self.close_queue.clone(),self.on_close.clone())
     }
 }

@@ -3485,6 +3485,7 @@ name = "vara_ui"
 version = "0.0.0"
 dependencies = [
  "mlua",
+ "mlua-luau-scheduler",
  "vara_util",
  "windows",
 ]

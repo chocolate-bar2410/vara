@@ -8,7 +8,7 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::{DestroyQueue, ui_window::UiWindowInternal, window_handle::UiWindow};
+use crate::win_ui::{CallbackSlot, DestroyQueue, ui_window::UiWindowInternal, window_handle::UiWindow};
 
 #[derive(mlua::UserData)]
 pub struct UiApplication{
@@ -19,7 +19,9 @@ pub struct UiApplication{
     #[lua(skip)]
     windows: HashMap<usize,Box<UiWindowInternal>>,
     #[lua(skip)]
-    destroy_queue: DestroyQueue
+    destroy_queue: DestroyQueue,
+    #[lua(skip)]
+    close_queue: DestroyQueue
 }
 
 #[mlua::userdata_impl]
@@ -53,7 +55,8 @@ impl UiApplication {
                 instance,
                 class_name,
                 windows: HashMap::new(),
-                destroy_queue: Rc::new(RefCell::new(Vec::new()))
+                destroy_queue: Rc::new(RefCell::new(Vec::new())),
+                close_queue: Rc::new(RefCell::new(Vec::new()))
             })
         }
     }
@@ -63,7 +66,9 @@ impl UiApplication {
 
         let title = HSTRING::from(title);
 
-        let mut window = UiWindowInternal::new(self.destroy_queue.clone(),self.instance, self.class_name,PCWSTR(title.as_ptr()))?;
+        let on_close = Rc::new(RefCell::new(None));
+
+        let mut window = UiWindowInternal::new(self.destroy_queue.clone(),self.close_queue.clone(),self.instance, self.class_name,PCWSTR(title.as_ptr()),on_close)?;
 
         let id = self.windows.len() + 1;
         window.id = id;
@@ -76,7 +81,7 @@ impl UiApplication {
     }
 
     #[lua(name="Run")]
-    fn run(&mut self) -> mlua::Result<()>{
+    async fn run(&mut self,context: &mlua::Lua) -> mlua::Result<()>{
         unsafe{
             let mut message = MSG::default();
 
@@ -89,6 +94,7 @@ impl UiApplication {
                 TranslateMessage(&message);
                 DispatchMessageW(&message);
 
+                self.process_closed(context).await?;
                 self.process_destroyed();
 
                 if self.windows.is_empty() {
@@ -111,6 +117,39 @@ impl UiApplication {
         for id in destroyed {
             self.windows.remove(&id);
         }
+    }
+
+    #[lua(skip)]
+    pub async fn process_closed(&mut self,context: &mlua::Lua) -> mlua::Result<()>{
+        let closed = {
+            let mut queue = self.close_queue.borrow_mut();
+            std::mem::take(&mut *queue)
+        };
+
+        for id in closed {
+            let Some(window) = self.windows.get_mut(&id) else {
+                unreachable!()
+            };
+
+            if let Some(close_fn) = get_callback(context, &window.on_close)? {
+                let should_close = close_fn.call_async::<Option<bool>>(()).await?;
+                
+                match should_close {
+                    Some(should_close) => if should_close{
+                        unsafe {
+                            DestroyWindow(window.hwnd).into_lua_err()?;
+                        }
+                    } else {
+                        window.close_pending = false;
+                    },
+                    None => unsafe {
+                        DestroyWindow(window.hwnd).into_lua_err()?;
+                    }
+                }
+            }
+        }
+
+        Ok(())
     }
 
     /*
@@ -184,5 +223,14 @@ extern "system" fn window_proc(hwnd: HWND,msg: u32,wparam: WPARAM,lparam: LPARAM
         let window = &mut *(ptr as *mut UiWindowInternal);
 
         window.window_proc(hwnd,msg,wparam,lparam)
+    }
+}
+
+fn get_callback(context: &mlua::Lua,slot: &CallbackSlot) -> mlua::Result<Option<mlua::Function>>{
+    let slot = slot.borrow();
+
+    match slot.as_ref() {
+        Some(key) => context.registry_value(key).map(Some),
+        None => Ok(None)
     }
 }
