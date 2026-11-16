@@ -1,4 +1,6 @@
 
+use std::{cell::RefCell, collections::HashMap, rc::Rc};
+
 use mlua::{ExternalError, ExternalResult};
 use windows::{
     Win32::{
@@ -6,21 +8,24 @@ use windows::{
     }, core::*
 };
 
-const BUTTON_ID : usize = 1001;
+use crate::win_ui::ui_window::UiWindow;
 
 #[derive(mlua::UserData)]
 pub struct UiApplication{
-
+    #[lua(skip)]
+    class_name: PCWSTR,
+    #[lua(skip)]
+    instance: HINSTANCE,
+    #[lua(skip)]
+    windows: HashMap<usize,Box<UiWindow>>,
+    #[lua(skip)]
+    destroy_queue: Rc<RefCell<Vec<usize>>>
 }
 
 #[mlua::userdata_impl]
 impl UiApplication {
     #[lua(skip)]
-    pub fn new() -> Self {
-        Self {}
-    }
-
-    fn test(&self) -> mlua::Result<()> {
+    pub fn new() -> mlua::Result<Self> {
         unsafe {
             let instance = GetModuleHandleW(None).into_lua_err()?.into();
 
@@ -44,6 +49,71 @@ impl UiApplication {
                 }
             }
 
+            Ok(Self {
+                instance,
+                class_name,
+                windows: HashMap::new(),
+                destroy_queue: Rc::new(RefCell::new(Vec::new()))
+            })
+        }
+    }
+
+    #[lua(name="CreateWindow")]
+    fn create_window(&mut self,title: String) -> mlua::Result<usize> {
+
+        let title = HSTRING::from(title);
+
+        let mut window = UiWindow::new(self.destroy_queue.clone(),self.instance, self.class_name,PCWSTR(title.as_ptr()))?;
+
+        let id = self.windows.len() + 1;
+        window.id = id;
+
+        self.windows.insert(id, window);
+
+        Ok(id)
+    }
+
+    #[lua(name="Run")]
+    fn run(&mut self) -> mlua::Result<()>{
+        unsafe{
+            let mut message = MSG::default();
+
+            loop {
+                let result = GetMessageW(&mut message,None,0,0);
+
+                if result.0 <= 0 {break;}
+
+                #[allow(unused)]
+                TranslateMessage(&message);
+                DispatchMessageW(&message);
+
+                self.process_destroyed();
+
+                if self.windows.is_empty() {
+                    break;
+                }
+            }
+
+        }
+
+        Ok(())
+    }
+
+    #[lua(skip)]
+    pub fn process_destroyed(&mut self){
+        let destroyed = {
+            let mut queue = self.destroy_queue.borrow_mut();
+            std::mem::take(&mut *queue)
+        };
+
+        for id in destroyed {
+            self.windows.remove(&id);
+        }
+    }
+
+    /*
+    fn test(&self) -> mlua::Result<()> {
+        unsafe {
             let hwnd = CreateWindowExW(
                 WINDOW_EX_STYLE::default(),
                 class_name,
@@ -88,43 +158,29 @@ impl UiApplication {
                 Some(instance),
                 None
             ).into_lua_err()?;
-
-            #[allow(unused)]
-            ShowWindow(hwnd, SW_SHOW);
-
-            let mut message = MSG::default();
-
-            while GetMessageW(&mut message,None,0,0).as_bool() {
-                let _ = TranslateMessage(&message);
-                DispatchMessageW(&message);
-            }
         }
         
         Ok(())
     }
+     */
 }
 
 extern "system" fn window_proc(hwnd: HWND,msg: u32,wparam: WPARAM,lparam: LPARAM) -> LRESULT{
     unsafe{
-        match msg {
-            WM_COMMAND => {
-                let control_id = wparam.0 & 0xffff;
-                let notification = (wparam.0 >> 16) & 0xffff;
+        if msg == WM_NCCREATE{
+            let create_struct = &*(lparam.0 as *const CREATESTRUCTW);
 
-                if control_id == BUTTON_ID && notification == BN_CLICKED as usize {
-                    println!("button clicked");
-                    return LRESULT(0);
-                }
-            
-                DefWindowProcW(hwnd, msg, wparam, lparam)
-            },
-
-            WM_DESTROY => {
-                PostQuitMessage(0);
-                LRESULT(0)
-            },
-
-            _ => DefWindowProcW(hwnd, msg, wparam, lparam),
+            SetWindowLongPtrW(hwnd, GWLP_USERDATA,create_struct.lpCreateParams as isize);
         }
+
+        let ptr = GetWindowLongPtrW(hwnd, GWLP_USERDATA);
+
+        if ptr == 0 {
+            return DefWindowProcW(hwnd, msg, wparam, lparam);
+        }
+
+        let window = &mut *(ptr as *mut UiWindow);
+
+        window.window_proc(hwnd,msg,wparam,lparam)
     }
 }

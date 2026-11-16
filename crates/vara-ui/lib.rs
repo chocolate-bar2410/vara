@@ -5,7 +5,7 @@ mod win_ui;
 
 #[cfg(windows)]
 pub fn create_ui_context(_: &mlua::Lua,():()) -> mlua::Result<win_ui::UiApplication>{
-    Ok(win_ui::UiApplication::new())
+    win_ui::UiApplication::new()
 }
 
 pub fn get_module(context : &mlua::Lua) -> mlua::Result<mlua::Table>{

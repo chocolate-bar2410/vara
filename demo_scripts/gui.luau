@@ -5,4 +5,7 @@ local ui = require("@vara/ui")
 
 local context = ui.CreateContext()
 
-context:test()
+context:CreateWindow("Hi guys")
+context:CreateWindow("こんにちは")
+
+context:Run()
