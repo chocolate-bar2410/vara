@@ -15,7 +15,7 @@
         - [x] switch to using native ui
         - [ ] windows
             - [ ] callbacks
-                - [ ] on close
+                - [x] on close
                 - [ ] on resize
             - [ ] backgrounds
             - [ ] icons
