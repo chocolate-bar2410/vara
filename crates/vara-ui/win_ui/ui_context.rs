@@ -66,7 +66,7 @@ impl UiApplication {
     }
 
     #[lua(name="CreateWindow")]
-    fn create_window(&mut self,title: String) -> mlua::Result<UiWindow> {
+    fn create_window(&mut self,title: String,min_size: Option<mlua::Vector>,max_size: Option<mlua::Vector>) -> mlua::Result<UiWindow> {
         let title = HSTRING::from(title);
 
         let on_close = Rc::new(RefCell::new(None));
@@ -78,6 +78,8 @@ impl UiApplication {
             self.instance, 
             self.class_name,
             PCWSTR(title.as_ptr()),
+            min_size.unwrap_or(mlua::Vector::zero()),
+            max_size.unwrap_or(mlua::Vector::zero())
         )?;
 
         let id = self.windows.len() + 1;

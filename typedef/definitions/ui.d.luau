@@ -12,7 +12,7 @@ declare extern type UiApplication with
 
         Creates a new window
     ]=]
-    function CreateWindow(self,title: string): UiWindow
+    function CreateWindow(self,title: string,min_size: vector?,max_size: vector?): UiWindow
     --[=[
         @within UiApplication
         @method Run

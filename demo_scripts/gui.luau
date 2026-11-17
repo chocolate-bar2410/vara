@@ -1,14 +1,10 @@
 --!strict
-local chrono = require("@vara/chrono")
 local system = require("@vara/system")
-local task = require("@vara/task")
 local ui = require("@vara/ui")
 
 local context = ui.CreateContext()
 
 local window_A = context:CreateWindow("こんにちは")
-
-
 
 window_A.OnClose = function()
     local should_exit = system.YesNoDialogue("Exiting app", "Are you sure you want to exit?")

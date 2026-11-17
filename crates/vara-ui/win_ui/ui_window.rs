@@ -14,11 +14,16 @@ pub struct UiWindowInternal{
     close_queue: DestroyQueue,
     pub close_pending: bool,
 
-    pub resized: bool
+    pub resized: bool,
+    
+    min_size_x: i32,
+    min_size_y: i32,
+    max_size_x: i32,
+    max_size_y: i32,
 }
 
 impl UiWindowInternal {
-    pub fn new(destroy_queue: DestroyQueue,close_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR) -> mlua::Result<Box<Self>> {
+    pub fn new(destroy_queue: DestroyQueue,close_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR,min_size: mlua::Vector,max_size: mlua::Vector) -> mlua::Result<Box<Self>> {
         unsafe{
             let mut window = Box::new(Self {
                 hwnd: HWND::default(),
@@ -27,6 +32,10 @@ impl UiWindowInternal {
                 close_queue,
                 close_pending: false,
                 resized: false,
+                min_size_x: min_size.x() as i32,
+                min_size_y: min_size.y() as i32,
+                max_size_x: max_size.x() as i32,
+                max_size_y: max_size.y() as i32,
             });
 
             let hwnd = CreateWindowExW(
@@ -62,7 +71,22 @@ impl UiWindowInternal {
 
                 WM_SIZE => {
                     self.resized = true;
-                    return LRESULT(0)
+                    LRESULT(0)
+                }
+
+                WM_GETMINMAXINFO => {
+                    if self.min_size_x == 0 || self.min_size_y == 0 || self.max_size_x == 0 || self.max_size_y == 0 {
+                        return DefWindowProcW(hwnd, msg, wparam, lparam);
+                    }
+
+                    let mmi = &mut *(lparam.0 as *mut MINMAXINFO);
+
+                    mmi.ptMinTrackSize.x = self.min_size_x;
+                    mmi.ptMinTrackSize.y = self.min_size_y;
+                    mmi.ptMaxTrackSize.x = self.max_size_x;
+                    mmi.ptMaxTrackSize.y = self.max_size_y;
+
+                    LRESULT(0)
                 }
 
                 WM_CLOSE => {
@@ -76,12 +100,12 @@ impl UiWindowInternal {
                 WM_DESTROY => {
                     self.destroy_queue.borrow_mut().push(self.id);
                     
-                    return LRESULT(0)
+                    LRESULT(0)
                 }
 
                 WM_NCDESTROY => {
                     SetWindowLongPtrW(hwnd, GWLP_USERDATA,0);
-                    return DefWindowProcW(hwnd, msg, wparam, lparam);
+                    DefWindowProcW(hwnd, msg, wparam, lparam)
                 }
 
                 _ => DefWindowProcW(hwnd, msg, wparam, lparam),
