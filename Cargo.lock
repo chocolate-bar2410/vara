@@ -3486,6 +3486,7 @@ version = "0.0.0"
 dependencies = [
  "mlua",
  "mlua-luau-scheduler",
+ "smol",
  "vara_util",
  "windows",
 ]

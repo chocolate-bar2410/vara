@@ -2,6 +2,7 @@
 use std::{cell::RefCell, collections::HashMap, rc::Rc};
 
 use mlua::{ExternalError, ExternalResult};
+use smol::Timer;
 use windows::{
     Win32::{
         Foundation::*, Graphics::Gdi::{COLOR_WINDOW, HBRUSH}, System::LibraryLoader::GetModuleHandleW, UI::WindowsAndMessaging::*,
@@ -82,26 +83,26 @@ impl UiApplication {
 
     #[lua(name="Run")]
     async fn run(&mut self,context: &mlua::Lua) -> mlua::Result<()>{
-        unsafe{
-            let mut message = MSG::default();
+        let mut message = MSG::default();
+
+        while !self.windows.is_empty() {
 
             loop {
-                let result = GetMessageW(&mut message,None,0,0);
+                let has_message = unsafe{PeekMessageW(&mut message,None,0,0,PM_REMOVE).as_bool()};
 
-                if result.0 <= 0 {break;}
+                if !has_message {break;}
 
-                #[allow(unused)]
-                TranslateMessage(&message);
-                DispatchMessageW(&message);
-
-                self.process_closed(context).await?;
-                self.process_destroyed();
-
-                if self.windows.is_empty() {
-                    break;
+                unsafe{
+                    #[allow(unused)]
+                    TranslateMessage(&message);
+                    DispatchMessageW(&message);
                 }
             }
 
+            self.process_closed(context).await?;
+            self.process_destroyed();
+
+            Timer::after(std::time::Duration::from_millis(10)).await;
         }
 
         Ok(())
