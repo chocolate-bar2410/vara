@@ -2,6 +2,8 @@ mod ui_context;
 mod ui_window;
 mod window_handle;
 
+mod event_manager;
+
 use std::{cell::RefCell, rc::Rc};
 
 pub use ui_context::UiApplication;

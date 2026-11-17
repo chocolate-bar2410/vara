@@ -5,27 +5,25 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::{CallbackSlot, DestroyQueue, window_handle::UiWindow};
+use crate::win_ui::DestroyQueue;
 
 pub struct UiWindowInternal{
     pub hwnd: HWND,
     pub id: usize,
     destroy_queue: DestroyQueue,
     close_queue: DestroyQueue,
-    pub on_close: CallbackSlot,
-    pub close_pending: bool
+    pub close_pending: bool,
 }
 
 impl UiWindowInternal {
-    pub fn new(destroy_queue: DestroyQueue,close_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR,on_close: CallbackSlot) -> mlua::Result<Box<Self>> {
+    pub fn new(destroy_queue: DestroyQueue,close_queue: DestroyQueue,instance: HINSTANCE,class_name: PCWSTR,title: PCWSTR) -> mlua::Result<Box<Self>> {
         unsafe{
             let mut window = Box::new(Self {
                 hwnd: HWND::default(),
                 id: 0,
                 destroy_queue,
                 close_queue,
-                on_close,
-                close_pending: false
+                close_pending: false,
             });
 
             let hwnd = CreateWindowExW(
@@ -59,6 +57,11 @@ impl UiWindowInternal {
                     DefWindowProcW(hwnd, msg, wparam, lparam)
                 },
 
+                WM_SIZE => {
+                    
+                    return LRESULT(0)
+                }
+
                 WM_CLOSE => {
                     if !self.close_pending{
                         self.close_queue.borrow_mut().push(self.id);
@@ -81,9 +84,5 @@ impl UiWindowInternal {
                 _ => DefWindowProcW(hwnd, msg, wparam, lparam),
             }
         }
-    }
-
-    pub fn gen_handle(&self) -> UiWindow {
-        UiWindow::new(self.hwnd, self.id, self.close_queue.clone(),self.on_close.clone())
     }
 }

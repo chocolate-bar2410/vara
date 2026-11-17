@@ -9,7 +9,7 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::{CallbackSlot, DestroyQueue, ui_window::UiWindowInternal, window_handle::UiWindow};
+use crate::win_ui::{DestroyQueue, event_manager::{EventManager, EventType}, ui_window::UiWindowInternal, window_handle::UiWindow};
 
 #[derive(mlua::UserData)]
 pub struct UiApplication{
@@ -22,7 +22,9 @@ pub struct UiApplication{
     #[lua(skip)]
     destroy_queue: DestroyQueue,
     #[lua(skip)]
-    close_queue: DestroyQueue
+    close_queue: DestroyQueue,
+    #[lua(skip)]
+    event_manager: Rc<RefCell<EventManager>>,
 }
 
 #[mlua::userdata_impl]
@@ -57,24 +59,39 @@ impl UiApplication {
                 class_name,
                 windows: HashMap::new(),
                 destroy_queue: Rc::new(RefCell::new(Vec::new())),
-                close_queue: Rc::new(RefCell::new(Vec::new()))
+                close_queue: Rc::new(RefCell::new(Vec::new())),
+                event_manager: Rc::new(RefCell::new(EventManager::new()))
             })
         }
     }
 
     #[lua(name="CreateWindow")]
     fn create_window(&mut self,title: String) -> mlua::Result<UiWindow> {
-
         let title = HSTRING::from(title);
 
         let on_close = Rc::new(RefCell::new(None));
+        let on_resize = Rc::new(RefCell::new(None));
 
-        let mut window = UiWindowInternal::new(self.destroy_queue.clone(),self.close_queue.clone(),self.instance, self.class_name,PCWSTR(title.as_ptr()),on_close)?;
+        let mut window = UiWindowInternal::new(
+            self.destroy_queue.clone(),
+            self.close_queue.clone(),
+            self.instance, 
+            self.class_name,
+            PCWSTR(title.as_ptr()),
+        )?;
 
         let id = self.windows.len() + 1;
         window.id = id;
 
-        let handle = window.gen_handle();
+        self.event_manager.borrow_mut().register(EventType::CLOSE, id, on_close)?;
+        self.event_manager.borrow_mut().register(EventType::RESIZE, id, on_resize)?;
+
+        let handle = UiWindow::new(
+            window.hwnd,
+            id,
+            self.close_queue.clone(),
+            self.event_manager.clone()
+        );
 
         self.windows.insert(id, window);
 
@@ -132,7 +149,7 @@ impl UiApplication {
                 unreachable!()
             };
 
-            if let Some(close_fn) = get_callback(context, &window.on_close)? {
+            if let Some(close_fn) = self.event_manager.borrow().get(context,EventType::CLOSE, window.id)? {
                 let should_close = close_fn.call_async::<Option<bool>>(()).await?;
                 
                 match should_close {
@@ -224,14 +241,5 @@ extern "system" fn window_proc(hwnd: HWND,msg: u32,wparam: WPARAM,lparam: LPARAM
         let window = &mut *(ptr as *mut UiWindowInternal);
 
         window.window_proc(hwnd,msg,wparam,lparam)
-    }
-}
-
-fn get_callback(context: &mlua::Lua,slot: &CallbackSlot) -> mlua::Result<Option<mlua::Function>>{
-    let slot = slot.borrow();
-
-    match slot.as_ref() {
-        Some(key) => context.registry_value(key).map(Some),
-        None => Ok(None)
     }
 }
