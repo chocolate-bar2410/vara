@@ -2,7 +2,7 @@ use std::{cell::RefCell, rc::Rc};
 
 use windows::Win32::{Foundation::HWND};
 
-use crate::win_ui::{CallbackSlot, DestroyQueue, event_manager::{EventManager, EventType}};
+use crate::win_ui::{DestroyQueue, event_manager::{EventManager, EventType}};
 
 #[derive(mlua::UserData)]
 pub struct UiWindow{

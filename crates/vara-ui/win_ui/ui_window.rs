@@ -13,6 +13,8 @@ pub struct UiWindowInternal{
     destroy_queue: DestroyQueue,
     close_queue: DestroyQueue,
     pub close_pending: bool,
+
+    pub resized: bool
 }
 
 impl UiWindowInternal {
@@ -24,6 +26,7 @@ impl UiWindowInternal {
                 destroy_queue,
                 close_queue,
                 close_pending: false,
+                resized: false,
             });
 
             let hwnd = CreateWindowExW(
@@ -58,7 +61,7 @@ impl UiWindowInternal {
                 },
 
                 WM_SIZE => {
-                    
+                    self.resized = true;
                     return LRESULT(0)
                 }
 

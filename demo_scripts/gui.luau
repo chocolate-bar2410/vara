@@ -8,14 +8,6 @@ local context = ui.CreateContext()
 
 local window_A = context:CreateWindow("こんにちは")
 
-local should_close = false
-
-local subroutine = coroutine.create(function()
-    while not should_close do
-        print("testing")
-        task.Sleep(0.1)
-    end
-end)
 
 
 window_A.OnClose = function()
@@ -24,7 +16,8 @@ window_A.OnClose = function()
     return should_exit
 end
 
-coroutine.resume(subroutine)
-context:Run()
+window_A.OnResize = function(width, height)
+    print(width,height)
+end
 
-should_close = true
+context:Run()

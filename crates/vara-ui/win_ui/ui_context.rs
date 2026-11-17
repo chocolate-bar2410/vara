@@ -119,6 +119,23 @@ impl UiApplication {
             self.process_closed(context).await?;
             self.process_destroyed();
 
+            for (_,window) in &mut self.windows {
+                if !window.resized {continue}
+                window.resized = false;
+
+                if let Some(resize_fn) = self.event_manager.borrow().get(context,EventType::RESIZE, window.id)? {
+
+                    let mut size = RECT::default();
+                    unsafe{GetClientRect(window.hwnd,&mut size).into_lua_err()?};
+
+                    let width : i32 = (size.right - size.left) as i32;
+                    let height : i32 = (size.bottom - size.top) as i32;
+
+                    resize_fn.call_async::<()>((width,height)).await?;
+                }
+                
+            }
+
             Timer::after(std::time::Duration::from_millis(10)).await;
         }
 

@@ -30,6 +30,7 @@ end
 declare extern type UiWindow with
     Destroyed: boolean
     OnClose: () -> boolean?
+    OnResize: (width: number,height: number) -> ()
     --[=[
         @within UiWindow
         @emthod Close
