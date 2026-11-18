@@ -8,11 +8,21 @@ declare extern type UiApplication with
         @within UiApplication
         @method CreateWindow
         @param title The title of the window.
-        @return The window create.
+        @return The window created.
 
-        Creates a new window
+        Creates a new window.
     ]=]
     function CreateWindow(self,title: string,min_size: vector?,max_size: vector?): UiWindow
+    --[=[
+        @within UiApplication
+        @method CreateButton
+        @param window Which window is the button being assigned to.
+        @param text Text displayed by the button.
+        @return The Button created.
+
+        Creates a new button.
+    ]=]
+    function CreateButton(self,window: UiWindow,text: string,position: vector?,size: vector?): ()
     --[=[
         @within UiApplication
         @method Run

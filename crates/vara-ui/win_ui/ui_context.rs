@@ -9,7 +9,7 @@ use windows::{
     }, core::*
 };
 
-use crate::win_ui::{DestroyQueue, event_manager::{EventManager, EventType}, ui_window::UiWindowInternal, window_handle::UiWindow};
+use crate::win_ui::{DestroyQueue, button::UiButton, event_manager::{EventManager, EventType}, ui_window::UiWindowInternal, window_handle::UiWindow};
 
 #[derive(mlua::UserData)]
 pub struct UiApplication{
@@ -98,6 +98,25 @@ impl UiApplication {
         self.windows.insert(id, window);
 
         Ok(handle)
+    }
+
+    #[lua(name="CreateButton")]
+    fn create_button(&mut self,window_userdata: mlua::AnyUserData,text: String,position: Option<mlua::Vector>, size: Option<mlua::Vector>) -> mlua::Result<()>{
+        let id = 1000;
+
+        {
+            let window = window_userdata.borrow::<UiWindow>()?;
+            let button = UiButton::new(
+                self.instance,
+                window.hwnd, 
+                id,
+                PCWSTR(HSTRING::from(text).as_ptr()),
+                position.unwrap_or(mlua::Vector::new(0.0,0.0,0.0)), 
+                size.unwrap_or(mlua::Vector::new(200.0,50.0,0.0))
+            );
+        }
+
+        Ok(())
     }
 
     #[lua(name="Run")]

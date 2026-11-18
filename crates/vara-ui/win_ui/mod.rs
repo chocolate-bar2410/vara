@@ -1,6 +1,7 @@
 mod ui_context;
 mod ui_window;
 mod window_handle;
+mod button;
 
 mod event_manager;
 

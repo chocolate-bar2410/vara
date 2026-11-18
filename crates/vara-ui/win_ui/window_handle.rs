@@ -7,13 +7,13 @@ use crate::win_ui::{DestroyQueue, event_manager::{EventManager, EventType}};
 #[derive(mlua::UserData)]
 pub struct UiWindow{
     #[lua(skip)]
-    hwnd: HWND,
+    pub hwnd: HWND,
     #[lua(skip)]
     pub id: usize,  
     #[lua(skip)]
     close_queue: DestroyQueue,
     #[lua(name="Destroyed")]
-    destroyed: bool,
+    pub destroyed: bool,
     #[lua(skip)]
     event_manager: Rc<RefCell<EventManager>>,
 }

@@ -16,4 +16,6 @@ window_A.OnResize = function(width, height)
     print(width,height)
 end
 
+context:CreateButton(window_A,"testing 123",vector.create(50,50))
+
 context:Run()
