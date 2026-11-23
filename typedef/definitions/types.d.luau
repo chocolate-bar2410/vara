@@ -615,6 +615,24 @@ declare extern type Colour4 with
         Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
     ]=]
     function HdrTonemap(self): Colour4
+    --[=[
+        @within Colour4
+        @method Mix
+        @param other The colour being mixed in.
+        @return Itself.
+
+        Mixes the colour with a target implace, returning itself.
+    ]=]
+    function Mix(self,other:Colour4): Colour4
+     --[=[
+        @within Colour4
+        @method OKLCHMix
+        @param other The colour being mixed in.
+        @return Itself.
+
+        Mixes the colour with a target implace within the OKLCH colour space, returning itself.
+    ]=]
+    function OKLCHMix(self,other:Colour4): Colour4
     function __tostring(self): string
     function __add(self,other: Colour4): Colour4
     function __sub(self,other: Colour4): Colour4

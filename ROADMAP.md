@@ -12,8 +12,8 @@
     - [ ] compatibility
         - [x] switch to using a dedicated windows crate instead of manual FFI
     - [ ] colour
-        - [ ] RGB lerp
-        - [ ] OKLCH lerp
+        - [x] RGB lerp
+        - [x] OKLCH lerp
         - [x] arithmetic
 
 ### v0.4.0

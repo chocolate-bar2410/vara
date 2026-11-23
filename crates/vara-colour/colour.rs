@@ -290,6 +290,46 @@ impl Colour4 {
         Ok(this)
     }
 
+    #[lua(name="Mix")]
+    pub fn mix(this: AnyUserData,other: &Colour4,t: f32) -> mlua::Result<AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+
+            colour.red = colour.red + t * (other.red - colour.red);
+            colour.green = colour.green + t * (other.green - colour.green);
+            colour.blue = colour.blue + t * (other.blue - colour.blue);
+            colour.alpha = colour.alpha + t * (other.alpha - colour.alpha);
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="OKLCHMix")]
+    pub fn oklch_mix(this: AnyUserData,other: &Colour4,t: f32) -> mlua::Result<AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+
+            let (lightness,chroma,hue,_) = colour.to_oklch()?;
+            let (other_lightness,other_chroma,other_hue,_) = other.to_oklch()?;
+
+            let lightness = lightness + t * (other_lightness - lightness);
+            let chroma = chroma + t * (other_chroma - chroma);
+            let alpha = colour.alpha + t * (other.alpha - colour.alpha);
+
+            let diff = (other_hue - hue + 180.0).rem_euclid(360.0) - 180.0;
+            let hue = (hue + diff * t + 360.0).rem_euclid(360.0);
+
+            let (red,green,blue,_) = oklch_to_lin_rgba(lightness, chroma, hue, alpha);
+
+            colour.red = red;
+            colour.green = green;
+            colour.blue = blue;
+            colour.alpha = alpha;
+        }
+
+        Ok(this)
+    }
+
     // metamethods
     #[lua(meta,name="__tostring")]
     pub fn tostring(&self) -> mlua::Result<String>{
