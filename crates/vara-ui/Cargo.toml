@@ -15,4 +15,4 @@ mlua = { version = "0.12.1", features = [
 vara_util = { path = "../vara-util" }
 mlua-luau-scheduler = "0.3.0"
 smol = "2.0.2"
-qtbridge = "0.4.1"
+gtk4 = "0.11.5"

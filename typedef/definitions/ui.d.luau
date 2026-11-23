@@ -1,8 +1,8 @@
 --[=[
-	@class QtContext
+	@class GtkContext
 
-    Application object that manages user interfaces using [qt](https://www.qt.io/https://www.qt.io/)
+    Application object that manages user interfaces using [gtk](https://gtk.org/)
 ]=]
-declare extern type QtContext with
+declare extern type GtkContext with
    
 end

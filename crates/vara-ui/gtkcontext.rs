@@ -4,7 +4,7 @@ pub struct QtContext{
 }
 
 #[mlua::userdata_impl]
-impl QtContext {
+impl GtkContext {
     #[lua(skip)]
     pub fn new() -> Self {
         Self{}
