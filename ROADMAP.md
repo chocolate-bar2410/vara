@@ -10,17 +10,7 @@
         - [x] images
             - [x] arithmetic
     - [ ] compatibility
-        - [ ] switch to using a dedicated windows crate instead of manual FFI
-    - [ ] UI
-        - [x] switch to using native ui
-        - [ ] windows
-            - [ ] callbacks
-                - [x] on close
-                - [ ] on resize
-            - [ ] backgrounds
-            - [ ] icons
-        - [ ] buttons
-        - [ ] labels
+        - [x] switch to using a dedicated windows crate instead of manual FFI
     - [ ] colour
         - [ ] RGB lerp
         - [ ] OKLCH lerp

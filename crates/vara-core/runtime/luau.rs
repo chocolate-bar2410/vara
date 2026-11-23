@@ -65,12 +65,6 @@ impl Runtime {
         self.vm.register_module("@vara/colour", colour_lib)?;
         self.vm.register_module("@vara/system", system_lib)?;
 
-        #[cfg(windows)]
-        {
-            let ui_lib = vara_ui::get_module(&self.vm)?;
-            self.vm.register_module("@vara/ui", ui_lib)?;
-        }
-
         self.vm.globals().set(
             "require",
             self.vm

@@ -29,7 +29,6 @@ vara_media = { path = "../vara-media" }
 vara_colour = { path = "../vara-colour" }
 vara_net = { path = "../vara-net" } 
 vara_system = { path = "../vara-system" } 
-vara_ui = { path = "../vara-ui" } 
 mlua-luau-scheduler = "0.3.0"
 fast-glob = "1.1.2"
 terminal_size = "0.4.4"
