@@ -14,7 +14,7 @@
     - [ ] colour
         - [ ] RGB lerp
         - [ ] OKLCH lerp
-        - [ ] arithmetic
+        - [x] arithmetic
 
 ### v0.4.0
 - [ ] standard library
