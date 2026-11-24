@@ -178,4 +178,106 @@ function module.Notify(summary : string,body : string,name : string,timeout : nu
     return nil :: unknown
 end
 
+--[=[
+	@within system
+	@method InfoDialogue
+	@param title The title of the popup message.
+	@param description The main description of the popup message.
+	@param level What type of popup is shown.
+
+	Displays a native system information dialogue.
+]=]
+function module.InfoDialogue(title: string, description: string,level: ("INFO" | "WARN" | "ERROR")?)
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method OkDialogue
+	@param title The title of the popup message.
+	@param description The main description of the popup message.
+	@param cancellable Whether the dialogue can be cancelled.
+	@param level What type of popup is shown.
+	
+	Displays a native system option dialogue with Ok and cancel options.
+
+	@return Whether or not the user pressed Ok, will always be true if no cancel option.
+]=]
+function module.OkDialogue(title: string, description: string,cancellable: boolean?,level: ("INFO" | "WARN" | "ERROR")?) : boolean
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method YesNoDialogue
+	@param title The title of the popup message.
+	@param description The main description of the popup message.
+	@param cancellable Whether the dialogue can be cancelled.
+	@param level What type of popup is shown.
+	
+	Displays a native system option dialogue with yes, no and cancel options.
+
+	@return Whether or not the user pressed yes or no, if the user cancells it will return nil.
+]=]
+function module.YesNoDialogue(title: string, description: string,cancellable: boolean?,level: ("INFO" | "WARN" | "ERROR")?) : boolean?
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method LoadFileDialogue
+	@param title The title of the popup message.
+	@param directory The starting directory of the dialogue.
+	@param filter Filters that determine what types of files can be chosen.
+	
+	Prompts the user to pick a file.
+
+	@return The file the user picks, returns nil if none was picked.
+]=]
+function module.LoadFileDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : File?
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method LoadFilesDialogue
+	@param title The title of the popup message.
+	@param directory The starting directory of the dialogue.
+	@param filter Filters that determine what types of files can be chosen.
+	
+	Prompts the user to pick multiple files.
+
+	@return The files the user picks, returns nil if none was picked.
+]=]
+function module.LoadFilesDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : {File}?
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method SaveFileDialogue
+	@param title The title of the popup message.
+	@param directory The starting directory of the dialogue.
+	@param filter Filters that determine what types of files can be chosen.
+	
+	Prompts the user to save a file.
+
+	@return The file the user saved, returns nil if none was saved.
+]=]
+function module.SaveFileDialogue(title: string, directory: Directory,filter: {[string]: {string}}) : File?
+    return nil :: unknown
+end
+
+--[=[
+	@within system
+	@method Clipboard
+	
+	Creates a new clipboard object.
+
+	@return The clipboard object.
+]=]
+function module.Clipboard() : Clipboard
+    return nil :: unknown
+end
+
 return module

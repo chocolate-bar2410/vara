@@ -3,31 +3,25 @@
 ### v0.3.0
 - [ ] standard library
     - [ ] system
-        - [ ] gpu
-            - [ ] gpu picking
-            - [ ] compute shaders
-        - [ ] system dialog
-            - [ ] file choosing
+        - [x] system dialog
+            - [x] file choosing
+        - [x] clipboard
     - [ ] media
-        - [ ] images
-            - [ ] arithmetic
-        - [ ] videos
+        - [x] images
+            - [x] arithmetic
+    - [ ] compatibility
+        - [x] switch to using a dedicated windows crate instead of manual FFI
     - [ ] colour
-        - [ ] RGB lerp
-        - [ ] OKLCH lerp
-        - [ ] arithmetic
+        - [x] RGB lerp
+        - [x] OKLCH lerp
+        - [x] arithmetic
 
 ### v0.4.0
 - [ ] standard library
     - [ ] networking
         - [ ] websockets?
         - [ ] UDP?
-    - [ ] UI
-        - [ ] layouts
-        - [ ] UDim2
-        - [ ] component hierarchy
-        - [ ] events
-            - [ ] on resize
-            - [ ] on key pressed/release
-            - [ ] on click down/up
-            - [ ] on mouse move
+    - [ ] system
+        - [ ] gpu
+            - [ ] gpu picking
+            - [ ] compute shaders

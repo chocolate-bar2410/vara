@@ -5,6 +5,9 @@ use vara_util::table_builder::TableBuilder;
 
 use std::thread::available_parallelism as cpus_available;
 
+mod dialogue;
+mod clipboard;
+
 fn get_language_preferences(context: &mlua::Lua) -> mlua::Result<mlua::Table> {
     let lang_preference: whoami::LanguagePreferences = whoami::lang_prefs().unwrap_or_default();
 
@@ -58,7 +61,6 @@ fn get_physical_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::
     Ok(usage.physical_mem.into_lua(context)?)
 }
 
-
 fn get_virtual_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::Value>{
     let Some(usage) = memory_stats::memory_stats() else {
        return Err("could not get memory usage".into_lua_err());
@@ -66,7 +68,6 @@ fn get_virtual_memory_usage(context : &mlua::Lua,_ : ()) -> mlua::Result<mlua::V
 
     Ok(usage.virtual_mem.into_lua(context)?)
 }
-
 
 fn notify(_: &mlua::Lua,(summary,body,name,timeout) : (String,String,String,u32)) -> mlua::Result<()>{
     Notification::new()
@@ -130,5 +131,12 @@ pub fn get_module(context: &mlua::Lua,args: &Vec<String>) -> mlua::Result<mlua::
         .add_function("PhysicalMemoryUsage", get_physical_memory_usage)?
         .add_function("VirtualMemoryUsage", get_virtual_memory_usage)?
         .add_function("Notify", notify)?
+        .add_async_function("InfoDialogue", dialogue::info_dialogue)?
+        .add_async_function("OkDialogue", dialogue::ok_dialogue)?
+        .add_async_function("YesNoDialogue", dialogue::yes_no_dialogue)?
+        .add_async_function("LoadFileDialogue", dialogue::file_pick_dialog)?
+        .add_async_function("LoadFilesDialogue", dialogue::files_pick_dialog)?
+        .add_async_function("SaveFileDialogue", dialogue::file_save_dialog)?
+        .add_function("Clipboard",|_,()| clipboard::Clipboard::new())?
         .build_readonly()
 }

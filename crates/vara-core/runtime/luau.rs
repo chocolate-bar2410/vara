@@ -54,15 +54,16 @@ impl Runtime {
         let chrono_lib = vara_chrono::get_module(&self.vm)?;
         let media_lib = vara_media::get_module(&self.vm)?;
         let net_lib = vara_net::get_module(&self.vm)?;
-        // let ui_lib = vara_ui::get_module(&self.vm)?;
+        
         let colour_lib = vara_colour::get_module(&self.vm)?;
+        let system_lib = vara_system::get_module(&self.vm,&self.args)?;
 
         self.vm.register_module("@vara/fs", fs_lib)?;
         self.vm.register_module("@vara/chrono", chrono_lib)?;
         self.vm.register_module("@vara/media", media_lib)?;
         self.vm.register_module("@vara/net", net_lib)?;
-        // self.vm.register_module("@vara/ui", ui_lib)?;
         self.vm.register_module("@vara/colour", colour_lib)?;
+        self.vm.register_module("@vara/system", system_lib)?;
 
         self.vm.globals().set(
             "require",

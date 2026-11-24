@@ -191,15 +191,6 @@ declare extern type Image with
     function Clone(self) : Image    
     --[=[
         @within Image
-        @method GradientMagnitude
-        @param other The other image.
-        @return The gradient magnitude between your two images.
-
-        Computes the gradient magnitude between your image and another image.
-    ]=]
-    function GradientMagnitude(self,other : Image) : Image
-    --[=[
-        @within Image
         @method GetPixel
         @param x
         @param y
@@ -234,6 +225,51 @@ declare extern type Image with
         * UCHIMURA - Map to a piecewise curve.
     ]=]
     function HdrTonemap(self,config: ImageHdrConfig) : Image
+    --[=[
+        @within Image
+        @method Add
+        @param Other The other image.
+        @return Itself.
+
+        Applies an addition between the image and another image.
+    ]=]
+    function Add(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Subtract
+        @param Other The other image.
+        @return Itself.
+
+        Applies a subtraction between the image and another image.
+    ]=]
+    function Subtract(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Multiply
+        @param Other The other image.
+        @return Itself.
+
+        Applies a Multiplication between the image and another image.
+    ]=]
+    function Multiply(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Divide
+        @param Other The other image.
+        @return Itself.
+
+        Applies a Division between the image and another image.
+    ]=]
+    function Divide(self,other: Image): Image
+    --[=[
+        @within Image
+        @method Pow
+        @param Other The exponent.
+        @return Itself.
+
+        Raises the pixel data by a power of [other].
+    ]=]
+    function Pow(self,other: number): Image
     function __tostring(self): string
 end
 
@@ -579,7 +615,72 @@ declare extern type Colour4 with
         Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
     ]=]
     function HdrTonemap(self): Colour4
+    --[=[
+        @within Colour4
+        @method Mix
+        @param other The colour being mixed in.
+        @return Itself.
+
+        Mixes the colour with a target implace, returning itself.
+    ]=]
+    function Mix(self,other:Colour4): Colour4
+     --[=[
+        @within Colour4
+        @method OKLCHMix
+        @param other The colour being mixed in.
+        @return Itself.
+
+        Mixes the colour with a target implace within the OKLCH colour space, returning itself.
+    ]=]
+    function OKLCHMix(self,other:Colour4): Colour4
+    function __tostring(self): string
+    function __add(self,other: Colour4): Colour4
+    function __sub(self,other: Colour4): Colour4
+    function __mul(self,other: Colour4): Colour4
+    function __div(self,other: Colour4): Colour4
+    function __eq(self,other: Colour4): boolean
 end
+
+--[=[
+    @class Clipboard
+
+    An object that accesses the system's clipboard.
+]=]
+declare extern type Clipboard with
+    --[=[
+        @within Clipboard
+        @method GetText
+        @return Text data from the user's clipboard.
+
+        Gets text data from the user's clipboard.
+    ]=]
+    function GetText(self): string?
+    --[=[
+        @within Clipboard
+        @method SetText
+        @param Text The text being added to the clipboard.
+
+        Places text onto the clipboard
+    ]=]
+    function SetText(self,text: string)
+    --[=[
+        @within Clipboard
+        @method GetImage
+        @return Image data from the user's clipboard.
+
+        Gets image data from the clipboard.
+    ]=]
+    function GetImage(self): Image
+    --[=[
+        @within Clipboard
+        @method SetImage
+        @param Image The image being added to the clipboard.
+
+        Places an image onto the clipboard
+    ]=]
+    function SetImage(self,image: Image)
+end
+
 
 --[=[
     @class _RUNTIME

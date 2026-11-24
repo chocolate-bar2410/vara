@@ -1,0 +1,22 @@
+[package]
+name = "vara_system"
+version = "0.0.0"
+edition = "2024"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+mlua = { version = "0.12.1", features = ["async", "luau-jit", "vendored"] }
+
+vara_files = { path = "../vara-files" }
+vara_util = { path = "../vara-util" }
+vara_media = { path = "../vara-media" }
+dotenvy = "0.15.7"
+memory-stats = "1.2.0"
+notify-rust = "4.18.2"
+whoami = "2.1.3"
+
+mlua-luau-scheduler = "0.3.0"
+rfd = "0.18.0"
+arboard = "3.7.0"

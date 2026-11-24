@@ -22,10 +22,10 @@ local gaussian = {
 
 local image = media.Image("demo_scripts/images/monarch.png"):Greyscale():Convolve(3, 3, gaussian)
 
-local image_x = image:Clone():Convolve(3,3,sobel_x_3x3)
-local image_y = image:Clone():Convolve(3,3,sobel_y_3x3)
+local image_x = image:Clone():Convolve(3,3,sobel_x_3x3):Pow(2)
+local image_y = image:Clone():Convolve(3,3,sobel_y_3x3):Pow(2)
 
-local result = image_x:GradientMagnitude(image_y)
+local result = image_x:Add(image_y):Pow(0.5)
 
 result.Channels = 1
 

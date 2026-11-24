@@ -52,6 +52,7 @@ nav = [
         "api/objects/httpclient.md",
         "api/objects/httprequest.md",
         "api/objects/httpresponse.md",
+        "api/objects/clipboard.md",
       ]}
     ]},
   { "CLI" = [

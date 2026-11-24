@@ -191,31 +191,6 @@ impl Image {
         Ok(self.clone())
     }
 
-    #[lua(name="GradientMagnitude")]
-    pub fn gradient_magnitude(&self,other : &Image) -> mlua::Result<Self>{
-        let mut result = self.clone();
-
-        for y in 0..self.height {
-            for x in 0..self.width {
-
-                let index = ((y * self.width + x) * RGBA_CHANNELS as u32) as usize;
-
-                for cc in 0..3 {
-                    let value_a = self.data[index + cc];
-                    let value_b = other.data[index + cc];
-
-                    let magnitude = value_a.hypot(value_b);
-
-                    result.data[index + cc] = magnitude;
-                }
-                
-                result.data[index + 3] = 1.0;
-            }
-        }
-
-        Ok(result)
-    }
-
     #[lua(name="Resize")]
     pub fn resize(this : AnyUserData,width : u32,height : u32,filter : Option<&str>)  -> mlua::Result<AnyUserData>{
         {
@@ -301,6 +276,105 @@ impl Image {
         Ok(this)
     } 
 
+    // arithmetic
+    #[lua(name="Add")]
+    pub fn add(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
+
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] += b[0];
+                a[1] += b[1];
+                a[2] += b[2];
+            }
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Subtract")]
+    pub fn sub(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
+
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] -= b[0];
+                a[1] -= b[1];
+                a[2] -= b[2];
+            }
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Multiply")]
+    pub fn multiply(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
+
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] *= b[0];
+                a[1] *= b[1];
+                a[2] *= b[2];
+            }
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Divide")]
+    pub fn divide(this: AnyUserData,other: &Image)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            if image.width != other.width || image.height != other.height {
+                return Err(format!("Image must have matching dimensions, {} x {} ≠ {} x {}",image.width,image.height,other.width,other.height).into_lua_err())
+            }
+
+            for(a,b) in image.data.chunks_exact_mut(4).zip(other.data.chunks_exact(4)){
+                a[0] /= b[0];
+                a[1] /= b[1];
+                a[2] /= b[2];
+            }
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="Pow")]
+    pub fn pow(this: AnyUserData,other: f32)-> mlua::Result<AnyUserData>{
+
+        {
+            let mut image = this.borrow_mut::<Image>()?;
+            
+            for pixel in image.data.chunks_exact_mut(4){
+                pixel[0] = pixel[0].powf(other);
+                pixel[1] = pixel[1].powf(other);
+                pixel[2] = pixel[2].powf(other);
+            }
+        }
+
+        Ok(this)
+    }
+
+    // exporting
+
     #[lua(skip)]
     fn encode_hdr(&self,context: &mlua::Lua,format : image::ImageFormat) -> mlua::Result<mlua::Buffer> {
 
@@ -376,7 +450,7 @@ impl Image {
             };
 
             match self.colour_channels {
-                1 => data.push(to_u8(red)),
+                1 => data.push(to_u8(to_srgb(red))),
                 2 => data.extend([to_u8(to_srgb(red)),to_u8(alpha)]),
                 3 => data.extend([to_u8(to_srgb(red)),to_u8(to_srgb(green)),to_u8(to_srgb(blue))]),
                 4 => data.extend([to_u8(to_srgb(red)),to_u8(to_srgb(green)),to_u8(to_srgb(blue)),to_u8(alpha)]),

@@ -106,6 +106,72 @@ Sends a desktop notification.
     notifications on windows require your executable to have a AUMID to properly show your app name.
     if there is no AUMID, windows will give the notification a generic app name.
 
+<h3 markdown>InfoDialogue<span class="API-type"> -> () </span></h3>
+```luau
+system.InfoDialogue(
+    title: string,
+    description: string,
+    level: ("INFO" | "WARN" | "ERROR")?
+)
+```
+Displays a native system information dialogue.
+
+<h3 markdown>OkDialogue<span class="API-type"> -> boolean </span></h3>
+```luau
+system.OkDialogue(
+    title: string,
+    description: string,
+    cancellable: boolean?,level: ("INFO" | "WARN" | "ERROR")?
+) : boolean
+```
+Displays a native system option dialogue with Ok and cancel options.
+
+<h3 markdown>YesNoDialogue<span class="API-type"> -> boolean? </span></h3>
+```luau
+system.YesNoDialogue(
+    title: string,
+    description: string,
+    cancellable: boolean?,level: ("INFO" | "WARN" | "ERROR")?
+) : boolean?
+```
+Displays a native system option dialogue with yes, no and cancel options.
+
+<h3 markdown>LoadFileDialogue<span class="API-type"> -> File? </span></h3>
+```luau
+system.LoadFileDialogue(
+    title: string,
+    directory: Directory,
+    filter: {[string]: {string}}
+) : File?
+```
+Prompts the user to pick a file.
+
+<h3 markdown>LoadFilesDialogue<span class="API-type"> -> {File}? </span></h3>
+```luau
+system.LoadFilesDialogue(
+    title: string,
+    directory: Directory,
+    filter: {[string]: {string}}
+) : {File}?
+```
+Prompts the user to pick multiple files.
+
+<h3 markdown>SaveFileDialogue<span class="API-type"> -> File? </span></h3>
+```luau
+system.SaveFileDialogue(
+    title: string,
+    directory: Directory,
+    filter: {[string]: {string}}
+) : File?
+```
+Prompts the user to save a file.
+
+<h3 markdown>Clipboard<span class="API-type"> -> Clipboard </span></h3>
+```luau
+system.Clipboard() : Clipboard
+```
+Creates a new clipboard object.
+
 ---
 
 ## types

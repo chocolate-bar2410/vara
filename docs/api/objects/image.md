@@ -113,14 +113,6 @@ Clone() : Image
 
 Clones the image, returning its copy.
 
-<h3 markdown>GradientMagnitude<span class="API-type"> -> Image </span></h3>
-```luau
-Image:GradientMagnitude(other : Image) : Image
-```
-
-Computes the gradient magnitude between the image and another image.  
-Returns itself.  
-
 <h3 markdown>RemoveAlpha<span class="API-type"> -> Image </span></h3>
 ```luau
 Image:RemoveAlpha() : Image
@@ -164,6 +156,36 @@ Filters supported:
 * **UCHIMURA** - Map to a piecewise curve.  
 
 Returns itself.  
+
+<h3 markdown>Add<span class="API-type"> -> Image </span></h3>
+```luau
+Image:Add(other: Image): Image
+```
+Applies an addition between the image and another image.
+
+<h3 markdown>Subtract<span class="API-type"> -> Image </span></h3>
+```luau
+Image:Subtract(other: Image): Image
+```
+Applies a subtraction between the image and another image.
+
+<h3 markdown>Multiply<span class="API-type"> -> Image </span></h3>
+```luau
+Image:Multiply(other: Image): Image
+```
+Applies a Multiplication between the image and another image.
+
+<h3 markdown>Divide<span class="API-type"> -> Image </span></h3>
+```luau
+Image:Divide(other: Image): Image
+```
+Applies a Division between the image and another image.
+
+<h3 markdown>Pow<span class="API-type"> -> Image </span></h3>
+```luau
+Image:Pow(other: number): Image
+```
+Raises the pixel data by a power of the value given.
 
 ---
 

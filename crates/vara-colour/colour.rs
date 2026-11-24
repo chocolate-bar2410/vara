@@ -1,6 +1,6 @@
 use std::{ops::{Mul}};
 
-use mlua::AnyUserData;
+use mlua::{AnyUserData, ExternalError};
 
 pub fn oklch_to_lin_rgba(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> (f32,f32,f32,f32){
     // convert oklch to oklab via polar coordinates
@@ -25,7 +25,7 @@ pub fn oklch_to_lin_rgba(lightness: f32,chroma: f32,hue: f32,alpha: f32) -> (f32
 
 }
 
-#[derive(mlua::UserData,Clone)]
+#[derive(Clone,mlua::UserData)]
 pub struct Colour4 {
     #[lua(name="Red")]
     pub red : f32,
@@ -290,13 +290,110 @@ impl Colour4 {
         Ok(this)
     }
 
+    #[lua(name="Mix")]
+    pub fn mix(this: AnyUserData,other: &Colour4,t: f32) -> mlua::Result<AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+
+            colour.red = colour.red + t * (other.red - colour.red);
+            colour.green = colour.green + t * (other.green - colour.green);
+            colour.blue = colour.blue + t * (other.blue - colour.blue);
+            colour.alpha = colour.alpha + t * (other.alpha - colour.alpha);
+        }
+
+        Ok(this)
+    }
+
+    #[lua(name="OKLCHMix")]
+    pub fn oklch_mix(this: AnyUserData,other: &Colour4,t: f32) -> mlua::Result<AnyUserData>{
+        {
+            let mut colour = this.borrow_mut::<Colour4>()?;
+
+            let (lightness,chroma,hue,_) = colour.to_oklch()?;
+            let (other_lightness,other_chroma,other_hue,_) = other.to_oklch()?;
+
+            let lightness = lightness + t * (other_lightness - lightness);
+            let chroma = chroma + t * (other_chroma - chroma);
+            let alpha = colour.alpha + t * (other.alpha - colour.alpha);
+
+            let diff = (other_hue - hue + 180.0).rem_euclid(360.0) - 180.0;
+            let hue = (hue + diff * t + 360.0).rem_euclid(360.0);
+
+            let (red,green,blue,_) = oklch_to_lin_rgba(lightness, chroma, hue, alpha);
+
+            colour.red = red;
+            colour.green = green;
+            colour.blue = blue;
+            colour.alpha = alpha;
+        }
+
+        Ok(this)
+    }
+
     // metamethods
     #[lua(meta,name="__tostring")]
     pub fn tostring(&self) -> mlua::Result<String>{
         Ok(format!("colour4 {} {} {} {}",self.red,self.green,self.blue,self.alpha).to_string())
     }
 
+    #[lua(meta,name="__add")]
+    pub fn meta_add(&self,other: &Colour4) -> mlua::Result<Colour4>{
+        
+        Ok(Self { 
+            red: self.red + other.red, 
+            green: self.green + other.green, 
+            blue: self.blue + other.blue, 
+            alpha: (self.alpha + other.alpha).clamp(0.0, 1.0)
+        })
+    }
 
+    #[lua(meta,name="__sub")]
+    pub fn meta_sub(&self,other: &Colour4) -> mlua::Result<Colour4>{
+        
+        Ok(Self { 
+            red: self.red - other.red, 
+            green: self.green - other.green, 
+            blue: self.blue - other.blue, 
+            alpha: (self.alpha - other.alpha).clamp(0.0, 1.0)
+        })
+    }
+
+    #[lua(meta,name="__mul")]
+    pub fn meta_mul(&self,other: &Colour4) -> mlua::Result<Colour4>{
+        
+        Ok(Self { 
+            red: self.red * other.red, 
+            green: self.green * other.green, 
+            blue: self.blue * other.blue, 
+            alpha: (self.alpha * other.alpha).clamp(0.0, 1.0)
+        })
+    }
+
+    #[lua(meta,name="__div")]
+    pub fn meta_div(&self,other: &Colour4) -> mlua::Result<Colour4>{
+        if other.red == 0.0 
+        || other.green == 0.0 
+        || other.blue == 0.0 
+        || other.alpha == 0.0 {
+            return Err("tried to divide colour with colour with zero channel.".into_lua_err());
+        }
+
+        Ok(Self { 
+            red: self.red / other.red, 
+            green: self.green / other.green, 
+            blue: self.blue / other.blue, 
+            alpha: (self.alpha / other.alpha).clamp(0.0, 1.0)
+        })
+    }
+
+    #[lua(meta,name="__eq")]
+    pub fn meta_eq(&self,other: &Colour4) -> mlua::Result<bool>{
+
+        Ok(self.red == other.red 
+        && self.green == other.green 
+        && self.blue == other.blue 
+        && self.alpha == other.alpha)
+    }
 }
 
 #[cfg(test)]
