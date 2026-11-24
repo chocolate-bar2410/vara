@@ -118,6 +118,17 @@ Colour4:HdrTonemap(): Colour4
 ```
 Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
 
+<h3 markdown>Mix<span class="API-type"> -> Colour4 </span></h3>
+```luau
+Colour4:Mix(other: Colour4): Colour4
+```
+Mixes the colour with a target implace, returning itself.
+
+<h3 markdown>OKLCHMix<span class="API-type"> -> Colour4 </span></h3>
+```luau
+Colour4:OKLCHMix(other: Colour4): Colour4
+```
+Mixes the colour with a target implace within the OKLCH colour space, returning itself.
 
 ---
 
@@ -126,3 +137,18 @@ Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
 <h3 markdown>__tostring<span class="API-type"> -> string </span></h3>
 
 Converts the image into a string in the format `colour4 [Red] [Green] [Blue] [Alpha]`
+
+<h3 markdown>__add<span class="API-type"> -> Colour4 </span></h3>
+Returns the result of adding the colour channels of two Colour4 objects as a new Colour4.
+
+<h3 markdown>__sub<span class="API-type"> -> Colour4 </span></h3>
+Returns the result of subtracting the colour channels of two Colour4 objects as a new Colour4.
+
+<h3 markdown>__mul<span class="API-type"> -> Colour4 </span></h3>
+Returns the result of multiplying the colour channels of two Colour4 objects as a new Colour4.
+
+<h3 markdown>__div<span class="API-type"> -> Colour4 </span></h3>
+Returns the result of dividing the colour channels of two Colour4 objects as a new Colour4.
+
+<h3 markdown>__eq<span class="API-type"> -> boolean </span></h3>
+Returns whether the colour channels of two Colour4 objects match.
