@@ -113,14 +113,6 @@ Clone() : Image
 
 Clones the image, returning its copy.
 
-<h3 markdown>GradientMagnitude<span class="API-type"> -> Image </span></h3>
-```luau
-Image:GradientMagnitude(other : Image) : Image
-```
-
-Computes the gradient magnitude between the image and another image.  
-Returns itself.  
-
 <h3 markdown>RemoveAlpha<span class="API-type"> -> Image </span></h3>
 ```luau
 Image:RemoveAlpha() : Image
