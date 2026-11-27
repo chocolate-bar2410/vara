@@ -46,14 +46,14 @@ Encodes the audio into a certain audio format.
 
 <h3 markdown>Clone<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Clone(self): Audio  
+Image:Clone(): Audio  
 ```
 
 Clones your audio.
 
 <h3 markdown>Reverse<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Reverse(self): Audio  
+Image:Reverse(): Audio  
 ```
 
 Reverses the audio data.
