@@ -3331,7 +3331,7 @@ dependencies = [
 
 [[package]]
 name = "vara"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "async-fs",
  "async-io",
@@ -3365,7 +3365,7 @@ dependencies = [
 
 [[package]]
 name = "vara_core"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "fast-glob",
  "mlua",
