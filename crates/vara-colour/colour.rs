@@ -309,8 +309,16 @@ impl Colour4 {
         {
             let mut colour = this.borrow_mut::<Colour4>()?;
 
-            let (lightness,chroma,hue,_) = colour.to_oklch()?;
-            let (other_lightness,other_chroma,other_hue,_) = other.to_oklch()?;
+            let (lightness,chroma,mut hue,_) = colour.to_oklch()?;
+            let (other_lightness,other_chroma,mut other_hue,_) = other.to_oklch()?;
+
+            if f32::is_nan(hue){
+                hue = 0.0f32;
+            }
+
+            if f32::is_nan(other_hue){
+                other_hue = 0.0f32;
+            }
 
             let lightness = lightness + t * (other_lightness - lightness);
             let chroma = chroma + t * (other_chroma - chroma);
