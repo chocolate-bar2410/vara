@@ -623,7 +623,7 @@ declare extern type Colour4 with
 
         Mixes the colour with a target implace, returning itself.
     ]=]
-    function Mix(self,other:Colour4): Colour4
+    function Mix(self,other:Colour4,t: number): Colour4
      --[=[
         @within Colour4
         @method OKLCHMix
@@ -632,7 +632,7 @@ declare extern type Colour4 with
 
         Mixes the colour with a target implace within the OKLCH colour space, returning itself.
     ]=]
-    function OKLCHMix(self,other:Colour4): Colour4
+    function OKLCHMix(self,other:Colour4,t: number): Colour4
     function __tostring(self): string
     function __add(self,other: Colour4): Colour4
     function __sub(self,other: Colour4): Colour4

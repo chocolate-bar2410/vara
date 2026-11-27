@@ -120,13 +120,19 @@ Applies a reinhard HDR tonemap filter to normalise colour channels to 0 -> 1.
 
 <h3 markdown>Mix<span class="API-type"> -> Colour4 </span></h3>
 ```luau
-Colour4:Mix(other: Colour4): Colour4
+Colour4:Mix(
+    other: Colour4,
+    t: Number
+): Colour4
 ```
 Mixes the colour with a target implace, returning itself.
 
 <h3 markdown>OKLCHMix<span class="API-type"> -> Colour4 </span></h3>
 ```luau
-Colour4:OKLCHMix(other: Colour4): Colour4
+Colour4:OKLCHMix(
+    other: Colour4,
+    t: Number
+): Colour4
 ```
 Mixes the colour with a target implace within the OKLCH colour space, returning itself.
 
