@@ -212,10 +212,30 @@ impl Image {
     }
 
     #[lua(name="GetPixel")]
-    pub fn get_pixel(&self,x: i64,y: i64) -> mlua::Result<Colour4>{
+    pub fn get_pixel(&self,x: mlua::Value,y: mlua::Value) -> mlua::Result<Colour4>{
 
-        if x < 0 || y < 0 || x as u32 > self.width  || y as u32 > self.height  {
-            return Err(format!("position {} {} is out of bounds",x,y).into_lua_err());
+        let x = match x{
+            mlua::Value::Integer(n) => n,
+            mlua::Value::Number(n) => return Err(format!("{} x {} is not an integer coordinate",n,y.to_string()?).into_lua_err()),
+            _ => return Err(mlua::Error::FromLuaConversionError { 
+                from: x.type_name(), 
+                to: "number".to_string(), 
+                message: Some(format!("expected a number got a {}",x.type_name())) 
+            })
+        };
+
+        let y = match y{
+            mlua::Value::Integer(n) => n,
+            mlua::Value::Number(n) => return Err(format!("{} x {} is not an integer coordinate",x,n).into_lua_err()),
+            _ => return Err(mlua::Error::FromLuaConversionError { 
+                from: y.type_name(), 
+                to: "number".to_string(), 
+                message: Some(format!("expected a number got a {}",y.type_name())) 
+            })
+        };
+
+        if x < 0 || y < 0 || x as u32 >= self.width || y as u32 >= self.height  {
+            return Err(format!("position {} x {} is out of bounds",x,y).into_lua_err());
         }
 
         let index = (y as u32 * self.width + x as u32) as usize * RGBA_CHANNELS as usize;
@@ -229,9 +249,27 @@ impl Image {
     }
 
     #[lua(name="SetPixel")]
-    pub fn set_pixel(&mut self,x: i64,y: i64,data: mlua::AnyUserData) -> mlua::Result<()>{
+    pub fn set_pixel(&mut self,x: mlua::Value,y: mlua::Value,colour: &Colour4) -> mlua::Result<()>{
 
-        let colour = data.borrow::<Colour4>()?;
+        let x = match x{
+            mlua::Value::Integer(n) => n,
+            mlua::Value::Number(n) => return Err(format!("{} x {} is not an integer coordinate",n,y.to_string()?).into_lua_err()),
+            _ => return Err(mlua::Error::FromLuaConversionError { 
+                from: x.type_name(), 
+                to: "number".to_string(), 
+                message: Some(format!("expected a number got a {}",x.type_name())) 
+            })
+        };
+
+        let y = match y{
+            mlua::Value::Integer(n) => n,
+            mlua::Value::Number(n) => return Err(format!("{} x {} is not an integer coordinate",x,n).into_lua_err()),
+            _ => return Err(mlua::Error::FromLuaConversionError { 
+                from: y.type_name(), 
+                to: "number".to_string(), 
+                message: Some(format!("expected a number got a {}",y.type_name())) 
+            })
+        };
 
         if x < 0 || y < 0 || x as u32 >= self.width || y as u32 >= self.height  {
             return Err(format!("position {} {} is out of bounds",x,y).into_lua_err());
