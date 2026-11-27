@@ -437,46 +437,41 @@ impl Audio {
 
     #[lua(name="Append")]
     pub fn append(this : mlua::AnyUserData,
-        other : mlua::AnyUserData,
+        other : &Audio,
         start : Option<f32>,
         stop : Option<f32>,
         crossfade : Option<f32>
     ) -> mlua::Result<mlua::AnyUserData>{
         {
-            let other_audio = {
-                let other_ref = other.borrow::<Audio>()?;
-
-                other_ref.clone()
-            };
             let mut audio = this.borrow_mut::<Audio>()?;
             
-            if audio.sample_rate != other_audio.sample_rate {
+            if audio.sample_rate != other.sample_rate {
                 return Err("cannot append audio with an audio of a different sample rate".into_lua_err())
             }
 
-            if audio.channels != other_audio.channels {
+            if audio.channels != other.channels {
                 return Err("cannot append audio with an audio with a different ammount of channels".into_lua_err())
             }
 
-            let mut start_frame = start.map(|seconds| (seconds * other_audio.sample_rate as f32) as usize).unwrap_or(0 as usize);
-            let mut stop_frame = stop.map(|seconds| (seconds * other_audio.sample_rate as f32) as usize).unwrap_or(other_audio.frames as usize);
+            let mut start_frame = start.map(|seconds| (seconds * other.sample_rate as f32) as usize).unwrap_or(0 as usize);
+            let mut stop_frame = stop.map(|seconds| (seconds * other.sample_rate as f32) as usize).unwrap_or(other.frames as usize);
 
             start_frame = start_frame.clamp(0, stop_frame);
-            stop_frame = stop_frame.clamp(start_frame, other_audio.frames as usize);
+            stop_frame = stop_frame.clamp(start_frame, other.frames as usize);
 
             
 
             if let Some(crossfade_seconds) = crossfade && crossfade_seconds > 0.0 {
                 let append_length = stop_frame.saturating_sub(start_frame);
 
-                let crossfade_frames = ((crossfade_seconds * other_audio.sample_rate as f32) as usize)
+                let crossfade_frames = ((crossfade_seconds * other.sample_rate as f32) as usize)
                     .min(audio.frames as usize)
                     .min(append_length);
 
                 for channel_index in 0..audio.channels as usize {
 
                     let channel = &mut audio.data[channel_index];
-                    let other_channel = &other_audio.data[channel_index];
+                    let other_channel = &other.data[channel_index];
 
                     let crossfade_start = channel.len() - crossfade_frames;
 
@@ -498,7 +493,7 @@ impl Audio {
                     let channel = &mut audio.data[channel_index];
 
                     for index in start_frame..stop_frame{
-                        channel.push(other_audio.data[channel_index][index]);
+                        channel.push(other.data[channel_index][index]);
                     }
                 }
             }
@@ -513,21 +508,15 @@ impl Audio {
     }
 
     #[lua(name="Overlay")]
-    pub fn overlay(this : mlua::AnyUserData,other : mlua::AnyUserData,position : Option<f32>,repeat : Option<bool>) -> mlua::Result<mlua::AnyUserData>{
+    pub fn overlay(this : mlua::AnyUserData,other : &Audio,position : Option<f32>,repeat : Option<bool>) -> mlua::Result<mlua::AnyUserData>{
             {
-                let other_audio = {
-                    let other_ref = other.borrow::<Audio>()?;
-
-                    other_ref.clone()
-                };
-
                 let mut audio = this.borrow_mut::<Audio>()?;
 
-                if audio.sample_rate != other_audio.sample_rate {
+                if audio.sample_rate != other.sample_rate {
                     return Err("cannot overlay audio with an audio of a different sample rate".into_lua_err())
                 }
 
-                if audio.channels != other_audio.channels {
+                if audio.channels != other.channels {
                     return Err("cannot overlay audio with an audio with a different ammount of channels".into_lua_err())
                 }
 
@@ -537,7 +526,7 @@ impl Audio {
 
                 for channel_index in 0..audio.channels as usize {
                     let channel = &mut audio.data[channel_index];
-                    let other_channel = &other_audio.data[channel_index];
+                    let other_channel = &other.data[channel_index];
 
                     let available = channel.len().saturating_sub(start_frame);
 
