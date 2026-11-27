@@ -61,7 +61,7 @@ end
 
     Asserts if a function throws an error.
 ]=]
-function module.AssertThrows<T>(callback: () -> (),... : T)
+function module.AssertThrows<T,A...,R...>(callback: (A...) -> R...,...: T)
     return nil :: unknown
 end
 
@@ -73,7 +73,7 @@ end
 
     Asserts if a function does not throw an error.
 ]=]
-function module.AssertDoesNotThrow<T>(callback: () -> (),... : T)
+function module.AssertDoesNotThrow<T,A...,R...>(callback: (A...) -> R...,...: T)
     return nil :: unknown
 end
 

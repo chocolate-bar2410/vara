@@ -66,18 +66,18 @@ Asserts if a value is not nil.
 
 <h3 markdown>AssertThrows<span class="API-type"> -> () </span></h3>
 ```luau
-unit.AssertThrows<T>(
-    callback: () -> (),
-    ... : T
+unit.AssertThrows<T,A...,R...>(
+    callback: (A...) -> R...,
+    ...: T
 )
 ```
 Asserts if a function throws an error.
 
 <h3 markdown>AssertThrows<span class="API-type"> -> () </span></h3>
 ```luau
-unit.AssertDoesNotThrow<T>(
-    callback: () -> (),
-    ... : T
+unit.AssertDoesNotThrow<T,A...,R...>(
+    callback: (A...) -> R...,
+    ...: T
 )
 ```
 Asserts if a function does not throw an error.
