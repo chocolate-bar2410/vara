@@ -16,7 +16,7 @@ Every method of that module script will be recognised as a individual test.
 --// test.spec.luau
 const module = {}
 
-function module["Add 2 numbers"]()
+module["Add 2 numbers"] = function()
 
 end
 
@@ -53,7 +53,7 @@ local function AddNumbers(A: number, B: number)
     return A + B
 end
 
-function module["Add 2 numbers"]()
+module["Add 2 numbers"] = function()
     unit.AssertEquals(2,AddNumbers(1,1))
     unit.AssertEquals(4,AddNumbers(2,2))
 
