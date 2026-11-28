@@ -7,9 +7,6 @@
         - [ ] DLL loading
         - [ ] calling from C ABI
         - [ ] buffer -> struct
-    - [ ] networking
-        - [ ] websockets
-        - [ ] UDP
     - [ ] system
         - [ ] gpu
             - [ ] gpu picking
@@ -17,5 +14,20 @@
     - [ ] media
         - [ ] audio
             - [ ] pitch shifting
+            - [ ] time stretch
+            - [ ] formants
             - [ ] larger decoding support (.mp3, .m4a)
             - [ ] .ogg vorbis encoding
+            - [ ] convolution
+
+### v0.5.0
+- [ ] standard library
+    - [ ] networking
+        - [ ] websockets
+        - [ ] UDP
+    - [ ] media
+        - [ ] audio
+            - [ ] phase vocoder
+            - [ ] FFT
+            - [ ] LPC
+            - [ ] spectral envelope
