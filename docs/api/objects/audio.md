@@ -39,35 +39,35 @@ The ammount of audio channels in the audio.
 
 <h3 markdown>Encode<span class="API-type"> -> buffer </span></h3>
 ```luau
-Image:Encode(format: AudioFormat): buffer
+Audio:Encode(format: AudioFormat): buffer
 ```
 
 Encodes the audio into a certain audio format.
 
 <h3 markdown>Clone<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Clone(): Audio  
+Audio:Clone(): Audio  
 ```
 
 Clones your audio.
 
 <h3 markdown>Reverse<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Reverse(): Audio  
+Audio:Reverse(): Audio  
 ```
 
 Reverses the audio data.
 
 <h3 markdown>Amplify<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Amplify(decibel: number): Audio  
+Audio:Amplify(decibel: number): Audio  
 ```
 
 Increases the volume by a set gain.
 
 <h3 markdown>Normalise<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Normalise(decibel: number?): Audio  
+Audio:Normalise(decibel: number?): Audio  
 ```
 
 Does a peak normalisation targetting the provided decibel level.
@@ -75,21 +75,21 @@ Does a peak normalisation targetting the provided decibel level.
 
 <h3 markdown>FadeIn<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:FadeIn(duration: number): Audio  
+Audio:FadeIn(duration: number): Audio  
 ```
 
 Adds a linear fade in that lasts for the given duration.
 
 <h3 markdown>FadeOut<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:FadeOut(duration: number): Audio  
+Audio:FadeOut(duration: number): Audio  
 ```
 
 Adds a linear fade out at the end of the audio that lasts for the given duration.
 
 <h3 markdown>Trim<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Trim(
+Audio:Trim(
     start: number,
     stop: number?
 ): Audio      
@@ -99,7 +99,7 @@ Trims down the audio to be between a start and a optional stop time.
 
 <h3 markdown>Lowpass<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Lowpass(
+Audio:Lowpass(
     frequency: number,
     q: number?
 ): Audio      
@@ -109,7 +109,7 @@ Applies a lowpass filter over the audio.
 
 <h3 markdown>Highpass<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Highpass(
+Audio:Highpass(
     frequency: number,
     q: number?
 ): Audio      
@@ -119,7 +119,7 @@ Applies a highpass filter over the audio.
 
 <h3 markdown>Notch<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Notch(
+Audio:Notch(
     center_hz: number,
     q: number?
 ): Audio      
@@ -129,7 +129,7 @@ Applies a notch filter over the audio.
 
 <h3 markdown>Resample<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Resample(
+Audio:Resample(
     sample_rate: number,
     filter: AudioResampleFilter
 ): Audio      
@@ -144,7 +144,7 @@ Interpolation filters supported:
 
 <h3 markdown>Append<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Append(
+Audio:Append(
     other: Audio,
     start: number?,
     stop: number?,
@@ -156,7 +156,7 @@ Appends another audio file to the end of this audio file.
 
 <h3 markdown>Overlay<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Overlay(
+Audio:Overlay(
     other: Audio,
     position: number?,
     loop : boolean?
@@ -167,21 +167,21 @@ overlays two audio files together.
 
 <h3 markdown>HardClip<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:HardClip(threshold: number): Audio 
+Audio:HardClip(threshold: number): Audio 
 ```
 
 Strictly clamps the audio to below the threshold.
 
 <h3 markdown>SoftClip<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:SoftClip(threshold: number): Audio 
+Audio:SoftClip(threshold: number): Audio 
 ```
 
 Clamps the audio to below the threshold while preserving peaks.
 
 <h3 markdown>Saturate<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Saturate(
+Audio:Saturate(
     drive: number,
     mode : AudioSaturationMode?
 ): Audio 
@@ -195,7 +195,7 @@ modes supported:
 
 <h3 markdown>Compress<span class="API-type"> -> Audio </span></h3>
 ```luau
-Image:Compress(config: AudioCompressConfig): Audio 
+Audio:Compress(config: AudioCompressConfig): Audio 
 ```
 
 Compresses the dynamic range of the audio, making quiet sounds louder and loud sounds quieter.
