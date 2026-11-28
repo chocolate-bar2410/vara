@@ -696,6 +696,7 @@ declare extern type ForeignLibrary with
         Defines a function within the library.
     ]=]
     function Define(self,name: string,args: {string},returns: string?) : ForeignLibrary
+    function __index(self,name: string): unknown
 end
 
 --[=[
