@@ -681,6 +681,22 @@ declare extern type Clipboard with
     function SetImage(self,image: Image)
 end
 
+--[=[
+    @class ForeignLibrary
+
+    An object that dynamically accesses a foriegn library via the C ABI.
+]=]
+declare extern type ForeignLibrary with
+    Defined: boolean
+    --[=[
+        @within ForeignLibrary
+        @method Define
+        @return Itself.
+
+        Defines a function within the library.
+    ]=]
+    function Define(self,name: string,args: {string},returns: string?) : ForeignLibrary
+end
 
 --[=[
     @class _RUNTIME

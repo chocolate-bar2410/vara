@@ -1,6 +1,6 @@
 use vara_util::table_builder::TableBuilder;
 
-use crate::ffi_library::ForiegnLibrary;
+use crate::ffi_library::ForeignLibrary;
 
 mod ffi_library;
 
@@ -11,8 +11,8 @@ const SUFFIX: &str = "dylib";
 #[cfg(target_os = "linux")]
 const SUFFIX: &str = "so";
 
-fn dl_open(_: &mlua::Lua,path: String) -> mlua::Result<ffi_library::ForiegnLibrary>{
-    ForiegnLibrary::new(path)
+fn dl_open(_: &mlua::Lua,path: String) -> mlua::Result<ffi_library::ForeignLibrary>{
+    ForeignLibrary::new(path)
 }
 
 pub fn get_module(context: &mlua::Lua) -> mlua::Result<mlua::Table> {

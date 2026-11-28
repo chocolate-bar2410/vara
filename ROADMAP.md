@@ -3,9 +3,10 @@
 ### v0.4.0
 - [ ] standard library
     - [ ] FFI
-        - [ ] suffix
-        - [ ] DLL loading
+        - [x] suffix
+        - [x] DLL loading
         - [ ] calling from C ABI
+            - [ ] function definitions
         - [ ] buffer -> struct
     - [ ] system
         - [ ] gpu

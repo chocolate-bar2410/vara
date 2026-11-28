@@ -13,7 +13,7 @@ module.Suffix = nil :: string
 
     generated function.
 ]=]
-module.DlOpen = function(path: string)
+module.DlOpen = function(path: string): ForeignLibrary
     return nil :: unknown
 end
 
