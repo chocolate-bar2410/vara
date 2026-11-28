@@ -3378,10 +3378,21 @@ dependencies = [
  "toml",
  "vara_chrono",
  "vara_colour",
+ "vara_ffi",
  "vara_files",
  "vara_media",
  "vara_net",
  "vara_system",
+ "vara_util",
+]
+
+[[package]]
+name = "vara_ffi"
+version = "0.0.0"
+dependencies = [
+ "mlua",
+ "smol",
+ "vara_files",
  "vara_util",
 ]
 

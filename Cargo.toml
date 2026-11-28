@@ -8,6 +8,7 @@ members = [
     "crates/vara-files",
     "crates/vara-net",
     "crates/vara-colour",
+    "crates/vara-ffi",
     "crates/vara-util"
 ]
 

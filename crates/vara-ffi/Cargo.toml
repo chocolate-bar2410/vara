@@ -1,0 +1,20 @@
+[package]
+name = "vara_ffi"
+edition = "2024"
+
+[lib]
+path = "lib.rs"
+
+[dependencies]
+
+mlua = { version = "0.12.1", features = [
+    "async",
+    "luau-jit",
+    "serde",
+    "macros",
+] }
+
+smol = "2.0.2"
+vara_util = { path = "../vara-util" }
+vara_files = { path = "../vara-files" }
+
