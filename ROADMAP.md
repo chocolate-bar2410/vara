@@ -5,13 +5,8 @@
     - [ ] FFI
         - [x] suffix
         - [x] DLL loading
-        - [ ] calling from C ABI
-            - [ ] function definitions
-        - [ ] buffer -> struct
-    - [ ] system
-        - [ ] gpu
-            - [ ] gpu picking
-            - [ ] compute shaders
+        - [x] calling from C ABI
+            - [x] function definitions
     - [ ] media
         - [ ] audio
             - [ ] pitch shifting
@@ -20,6 +15,10 @@
             - [ ] larger decoding support (.mp3, .m4a)
             - [ ] .ogg vorbis encoding
             - [ ] convolution
+    - [ ] system
+        - [ ] gpu
+            - [ ] gpu picking
+            - [ ] compute shaders
 
 ### v0.5.0
 - [ ] standard library
