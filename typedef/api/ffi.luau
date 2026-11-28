@@ -9,11 +9,11 @@ module.Suffix = nil :: string
 
 --[=[
     @within ffi
-    @method example
+    @method DlOpen
 
     generated function.
 ]=]
-module.example = function()
+module.DlOpen = function(path: string)
     return nil :: unknown
 end
 

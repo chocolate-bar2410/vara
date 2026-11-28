@@ -1,4 +1,5 @@
 local ffi = require("@vara/ffi")
-local fs = require("@vara/fs")
 
-print(ffi.Suffix)
+local lib = ffi.DlOpen("demo_scripts/ffi/test.dll")
+
+print(lib)
