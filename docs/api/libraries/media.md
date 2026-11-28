@@ -34,6 +34,18 @@ Creating a image from a raw buffer assumes the image is RGBA.
 
 Raw buffers are assumed to contain 32 bit float RGBA values.
 
+supported file formats:
+
+* PNG
+* JPEG
+* WEBP
+* PNM
+* BMP
+* QOI
+* TIFF
+* HDR
+* EXR
+
 <h3 markdown>Audio<span class="API-type"> -> Audio </span></h3>
 ```luau
 media.Audio(
@@ -41,6 +53,14 @@ media.Audio(
 ) : Audio
 ```
 Creates a audio from a File, pathstring or an audio config table.
+
+|format | codec                     | encode               | decode              |
+|-------|---------------------------|:--------------------:|:-------------------:|
+|.wav   | PCM, ADPCM                | :octicons-check-16:  | :octicons-check-16: |
+|.flac  | FLAC                      | :octicons-check-16:  | :octicons-check-16: |
+|.ogg   | Vorbis, FLAC              | :octicons-x-16:      | :octicons-check-16: |
+|.mkv   | PCM, Vorbis, ADPCM, FLAC  | :octicons-x-16:      | :octicons-check-16: |
+|.webm  | Vorbis, PCM               | :octicons-x-16:      | :octicons-check-16: |
 
 
 <h3 markdown>AudioConfigTable</h3>
