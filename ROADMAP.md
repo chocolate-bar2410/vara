@@ -1,27 +1,21 @@
 ## todo
 
-### v0.3.0
-- [ ] standard library
-    - [ ] system
-        - [x] system dialog
-            - [x] file choosing
-        - [x] clipboard
-    - [ ] media
-        - [x] images
-            - [x] arithmetic
-    - [ ] compatibility
-        - [x] switch to using a dedicated windows crate instead of manual FFI
-    - [ ] colour
-        - [x] RGB lerp
-        - [x] OKLCH lerp
-        - [x] arithmetic
-
 ### v0.4.0
 - [ ] standard library
+    - [ ] FFI
+        - [ ] suffix
+        - [ ] DLL loading
+        - [ ] calling from C ABI
+        - [ ] buffer -> struct
     - [ ] networking
-        - [ ] websockets?
-        - [ ] UDP?
+        - [ ] websockets
+        - [ ] UDP
     - [ ] system
         - [ ] gpu
             - [ ] gpu picking
             - [ ] compute shaders
+    - [ ] media
+        - [ ] audio
+            - [ ] pitch shifting
+            - [ ] larger decoding support (.mp3, .m4a)
+            - [ ] .ogg vorbis encoding
